@@ -1,12 +1,21 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <header className="w-full border-b bg-white/80 backdrop-blur sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <header className="w-full border-b bg-white sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 h-28 flex items-center justify-between">
         {/* Brand */}
-        <Link href="/" className="text-xl font-bold text-gray-900">
-          Duka Intelligence
+        <Link href="/" className="flex items-center gap-3 bg-white">
+          <Image
+            src="/logo.jpeg"
+            alt="Duka Intelligence"
+            width={460}
+            height={120}
+            className="h-24 w-auto object-contain"
+            priority
+          />
+          <span className="sr-only">Duka Intelligence</span>
         </Link>
 
         {/* Navigation */}

@@ -1,10 +1,10 @@
 export default function CTA() {
   return (
-    <section className="px-6 py-24 text-center">
-      <h2 className="text-4xl font-semibold mb-6">
+    <section className="px-6 py-16 md:py-20 text-center">
+      <h2 className="text-4xl font-semibold mb-5">
         Turn POS data into a revenue stream
       </h2>
-      <p className="text-lg text-gray-600 mb-10">
+      <p className="text-lg text-gray-600 mb-8">
         Deliver analytics without building infrastructure or hiring analytics teams.
       </p>
       <a

@@ -7,8 +7,28 @@
 html {
   scroll-behavior: smooth;
   font-family: 'Inter', sans-serif;
-  background-color: #ffffff;
   color: #111827;
+}
+
+body {
+  min-height: 100%;
+  background-color: #f1f5f9;
+  background-image: radial-gradient(
+      1200px 700px at 8% -10%,
+      rgba(59, 130, 246, 0.18),
+      transparent
+    ),
+    radial-gradient(
+      1000px 600px at 92% 0%,
+      rgba(14, 165, 233, 0.18),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      rgba(224, 242, 254, 0.7) 0%,
+      rgba(241, 245, 249, 0.6) 55%,
+      rgba(226, 232, 240, 0.5) 100%
+    );
 }
 
 h1, h2, h3, h4, h5, h6 {

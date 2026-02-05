@@ -12,10 +12,10 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="max-w-6xl mx-auto py-24 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-          About Duka Intelligence
+          Duka Intelligence
         </h1>
         <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-          Duka Intelligence is building the intelligence layer for African retail.
+          Analytics as a Service for African retail.
         </p>
       </section>
 
@@ -120,7 +120,7 @@ export default function AboutPage() {
               icon: ShieldCheck,
               title: "Privacy & Ownership First",
               description:
-                "POS providers always retain ownership of their data. Access is permission-based, fully transparent, and merchants consent via feature opt-ins.",
+                "POS providers always retain ownership of their data. Access is permission-based, fully transparent with merchants consent via feature opt-ins",
             },
           ].map((item, index) => (
             <div
@@ -139,7 +139,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Why It Matters */}
+            {/* Why It Matters */}
       <section className="bg-gray-50 py-24">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-semibold text-gray-900">
@@ -147,7 +147,7 @@ export default function AboutPage() {
           </h2>
 
           <p className="mt-6 text-lg text-gray-600">
-            Better data leads to:
+            Retail Intelligence leads to:
           </p>
 
           <div className="mt-12 space-y-6 text-left max-w-3xl mx-auto">
@@ -176,6 +176,7 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
+
 
       {/* Belief */}
       <section className="bg-gray-900 py-20 text-center">
