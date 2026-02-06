@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+
 import Hero from "@/components/Hero";
 import Tiers from "@/components/Tiers";
 import HowItWorks from "@/components/HowItWorks";
