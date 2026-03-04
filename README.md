@@ -1,13 +1,45 @@
-## Deployment (Netlify)
+# Duka Intelligence – Frontend MVP
 
-This project is configured for static export (`output: "export"`), and ships with a `netlify.toml`.
+Static, SEO-optimized marketing frontend for Duka Intelligence.
 
-**Netlify build settings**
-- Build command: `npm run build`
-- Publish directory: `out`
-- Node version: `18`
+## Stack
+- Next.js (App Router)
+- Tailwind CSS
+- Static Export
+- Netlify hosting
 
-**Custom domain**
-1. Add the site in Netlify (from Git).
-2. Go to **Domain management** and add `dukaintelligence.co.ke`.
-3. Update DNS at your registrar with the records Netlify provides.
+## Local Development
+```bash
+npm install
+npm run dev
+
+
+
+
+import Hero from "@/components/Hero";
+import Tiers from "@/components/Tiers";
+import HowItWorks from "@/components/HowItWorks";
+import DeliveryModes from "@/components/DeliveryModes";
+import CTA from "@/components/CTA";
+import Footer from "@/components/Footer";
+
+export default function HomePage() {
+  return (
+    <>
+      <Hero />
+      <Tiers />
+      <HowItWorks />
+      <DeliveryModes />
+      <CTA />
+      <Footer />
+    </>
+  );
+}
+
+
+
+
+
+
+
+

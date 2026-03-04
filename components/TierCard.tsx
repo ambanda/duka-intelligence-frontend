@@ -1,27 +1,19 @@
-import type { ComponentType } from "react";
-import type { LucideProps } from "lucide-react";
-
 type TierCardProps = {
-  icon?: ComponentType<LucideProps>;
+  icon: string;
   title: string;
   items: string[];
 };
+
 export default function TierCard({ icon, title, items }: TierCardProps) {
-  const Icon = icon;
   return (
-    <div className="p-6 border rounded-lg shadow-sm bg-white/85">
-      {Icon ? (
-        <div
-          className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-orange-50 text-orange-600 mb-4"
-          aria-hidden="true"
-        >
-          <Icon className="h-5 w-5" />
-        </div>
-      ) : null}
+    <div className="bg-white p-8 rounded-2xl shadow-sm border hover:shadow-md transition">
+      <div className="text-3xl mb-4">{icon}</div>
+
       <h3 className="text-xl font-semibold mb-4">{title}</h3>
-      <ul className="space-y-2 text-gray-700">
-        {items.map((item, index) => (
-          <li key={index}> {item}</li>
+
+      <ul className="space-y-2 text-gray-600">
+        {items.map((item) => (
+          <li key={item}>• {item}</li>
         ))}
       </ul>
     </div>
