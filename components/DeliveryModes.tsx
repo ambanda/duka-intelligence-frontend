@@ -8,7 +8,7 @@ export default function DeliveryModes() {
       </h2>
 
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <div className="bg-white/85 p-6 rounded-xl shadow-sm">
+        <div className="p-6 rounded-2xl shadow-sm border border-orange-100 bg-gradient-to-br from-orange-50 via-white to-amber-50">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-orange-600">
             <Plug className="h-4 w-4" />
           </span>
@@ -17,7 +17,7 @@ export default function DeliveryModes() {
           Expose analytics inside your POS
         </div>
 
-        <div className="bg-white/85 p-6 rounded-xl shadow-sm">
+        <div className="p-6 rounded-2xl shadow-sm border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-blue-50">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-orange-600">
             <LayoutDashboard className="h-4 w-4" />
           </span>
@@ -26,7 +26,7 @@ export default function DeliveryModes() {
           White-label retail intelligence
         </div>
 
-        <div className="bg-white/85 p-6 rounded-xl shadow-sm">
+        <div className="p-6 rounded-2xl shadow-sm border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-teal-50">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-orange-600">
             <FileText className="h-4 w-4" />
           </span>

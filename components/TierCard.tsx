@@ -9,7 +9,7 @@ type TierCardProps = {
 export default function TierCard({ icon, title, items }: TierCardProps) {
   const Icon = icon;
   return (
-    <div className="p-6 border rounded-lg shadow-sm bg-white/85">
+    <div className="p-6 border border-orange-100 rounded-2xl shadow-sm bg-gradient-to-br from-amber-50 via-white to-sky-50 transition hover:-translate-y-1 hover:shadow-md">
       {Icon ? (
         <div
           className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-orange-50 text-orange-600 mb-4"
