@@ -20,5 +20,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: "https://dukaintelligence.co.ke/contact",
       lastModified: new Date(),
     },
+    {
+      url: "https://dukaintelligence.co.ke/terms",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dukaintelligence.co.ke/privacy",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dukaintelligence.co.ke/dpa",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dukaintelligence.co.ke/aup",
+      lastModified: new Date(),
+    },
   ];
 }
