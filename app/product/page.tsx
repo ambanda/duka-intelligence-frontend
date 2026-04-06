@@ -1,12 +1,12 @@
 export const dynamic = "force-static";
 
 import Link from "next/link";
-import EmbeddedDashboardPreview from "@/components/EmbeddedDashboardPreview";
+import { LayoutDashboard } from "lucide-react";
 import Features from "@/components/Features";
 import IntegrationFlow from "@/components/IntegrationFlow";
 
 export default function ProductPage() {
-  const embedUrl =
+  const dashboardUrl =
     process.env.NEXT_PUBLIC_PRODUCT_EMBED_URL ??
     "https://dashboard.dukaintelligence.co.ke/?provider_id=kapu&sector=supermarket&shop_id=__default_shop__&role=provider_user&bundle_tier=core&request_id=%3Cuuid%3E&request_signature=%3Csig%3E&service=revenue&period=30d";
 
@@ -33,12 +33,17 @@ export default function ProductPage() {
             >
               Request a Demo
             </Link>
+            <a
+              href={dashboardUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3 text-base font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
+            >
+              <LayoutDashboard className="h-5 w-5 text-orange-500" />
+              Duka Intelligence
+            </a>
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto mt-8 max-w-6xl">
-        <EmbeddedDashboardPreview src={embedUrl} />
       </section>
 
       <div className="mx-auto max-w-6xl">
