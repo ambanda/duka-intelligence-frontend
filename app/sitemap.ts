@@ -13,6 +13,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: "https://dukaintelligence.co.ke/platform",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dukaintelligence.co.ke/ai-assistant",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dukaintelligence.co.ke/industries",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dukaintelligence.co.ke/integrations",
+      lastModified: new Date(),
+    },
+    {
       url: "https://dukaintelligence.co.ke/product",
       lastModified: new Date(),
     },

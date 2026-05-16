@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <header className="w-full border-b bg-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 h-36 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3 md:h-36 md:flex-row md:items-center md:justify-between">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 bg-white">
           <Image
@@ -19,12 +19,21 @@ export default function Navbar() {
         </Link>
 
         {/* Navigation */}
-        <nav className="flex items-center gap-8 text-sm font-medium text-gray-700">
+        <nav className="flex flex-wrap items-center gap-5 text-sm font-medium text-gray-700">
           <Link href="/about" className="hover:text-orange-600 transition">
             About
           </Link>
-          <Link href="/product" className="hover:text-orange-600 transition">
-            Product
+          <Link href="/platform" className="hover:text-orange-600 transition">
+            Platform
+          </Link>
+          <Link href="/ai-assistant" className="hover:text-orange-600 transition">
+            AI Assistant
+          </Link>
+          <Link href="/industries" className="hover:text-orange-600 transition">
+            Industries
+          </Link>
+          <Link href="/integrations" className="hover:text-orange-600 transition">
+            Integrations
           </Link>
           <Link
             href="/contact"
