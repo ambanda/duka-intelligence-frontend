@@ -1,5 +1,7 @@
 export const dynamic = "force-static";
 
+import AiAssistantLivePreview from "@/components/AiAssistantLivePreview";
+
 export default function AiAssistantPage() {
   return (
     <main className="px-6 py-16 md:py-20">
@@ -38,6 +40,8 @@ export default function AiAssistantPage() {
           </article>
         ))}
       </section>
+
+      <AiAssistantLivePreview />
 
       <section className="max-w-6xl mx-auto mt-14">
         <h2 className="text-3xl font-semibold text-gray-900">AI Flow</h2>
