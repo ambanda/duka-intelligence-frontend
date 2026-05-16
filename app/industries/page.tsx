@@ -13,7 +13,7 @@ export default function IndustriesPage() {
       </section>
 
       <section className="max-w-6xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-6 shadow-sm">
           <h2 className="text-2xl font-semibold text-slate-900">Retail Intelligence</h2>
           <p className="mt-3 text-gray-600">
             Broad commerce ecosystem coverage from supermarkets and pharmacies to
@@ -21,7 +21,7 @@ export default function IndustriesPage() {
           </p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm">
           <h2 className="text-2xl font-semibold text-slate-900">Lending Intelligence</h2>
           <p className="mt-3 text-gray-600">
             Financial operational intelligence for SACCOs, microfinance institutions,
@@ -29,7 +29,7 @@ export default function IndustriesPage() {
           </p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-6 shadow-sm">
           <h2 className="text-2xl font-semibold text-slate-900">Education Intelligence</h2>
           <p className="mt-3 text-gray-600">
             Institutional operational analytics for schools, colleges, and training institutions.

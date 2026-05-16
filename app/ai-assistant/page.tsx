@@ -23,8 +23,16 @@ export default function AiAssistantPage() {
           { title: "Detect Signals", text: "Identify risks, anomalies, and emerging patterns early." },
           { title: "Recommend Actions", text: "Get AI-assisted decision support aligned to operational realities." },
           { title: "Conversational Analysis", text: "Ask questions naturally and explore data in real time." },
-        ].map((item) => (
-          <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        ].map((item, index) => (
+          <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
+            index === 0
+              ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
+              : index === 1
+              ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
+              : index === 2
+              ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
+              : "border-orange-100 bg-gradient-to-br from-orange-50 to-white"
+          }`}>
             <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
             <p className="mt-3 text-sm text-gray-600">{item.text}</p>
           </article>
@@ -36,7 +44,7 @@ export default function AiAssistantPage() {
         <div className="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
             {["Operational Data", "Intelligence Models", "AI Context", "Business Decisions"].map((node) => (
-              <div key={node} className="rounded-xl border border-slate-200 bg-white p-4">
+              <div key={node} className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
                 <p className="font-medium text-slate-800">{node}</p>
               </div>
             ))}

@@ -13,7 +13,7 @@ export default function IntegrationsPage() {
       </section>
 
       <section className="max-w-6xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Connectors</h2>
           <ul className="mt-3 space-y-2 text-gray-600">
             <li>- API</li>
@@ -22,7 +22,7 @@ export default function IntegrationsPage() {
           </ul>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Embedded Delivery</h2>
           <ul className="mt-3 space-y-2 text-gray-600">
             <li>- iframe</li>
@@ -31,7 +31,7 @@ export default function IntegrationsPage() {
           </ul>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Authentication</h2>
           <ul className="mt-3 space-y-2 text-gray-600">
             <li>- HMAC</li>
@@ -46,7 +46,7 @@ export default function IntegrationsPage() {
         <div className="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
             {["Connect Data", "Normalize", "Generate Intelligence", "Embed Delivery"].map((node) => (
-              <div key={node} className="rounded-xl border border-slate-200 bg-white p-4">
+              <div key={node} className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
                 <p className="font-medium text-slate-800">{node}</p>
               </div>
             ))}

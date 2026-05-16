@@ -65,7 +65,7 @@ export default function HomePage() {
           </div>
           <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-4">
             {transformation.map((item, index) => (
-              <div key={item} className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+              <div key={item} className="rounded-xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-4 text-center shadow-sm">
                 <p className="text-sm font-medium text-slate-700">{item}</p>
                 {index < transformation.length - 1 ? (
                   <p className="mt-2 text-xs uppercase tracking-widest text-orange-500">Next</p>
@@ -84,7 +84,7 @@ export default function HomePage() {
             From Static Reports to Conversational Intelligence
           </h2>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <article className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+            <article className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-7 shadow-sm">
               <h3 className="text-xl font-semibold text-slate-900">Report-Centric Analytics</h3>
               <ul className="mt-4 space-y-2 text-gray-600">
                 {traditional.map((item) => (
@@ -129,8 +129,16 @@ export default function HomePage() {
                 title: "Easy Integration",
                 text: "Connect using APIs, CSV sync, or database connectors without building separate analytics infrastructure.",
               },
-            ].map((card) => (
-              <article key={card.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            ].map((card, index) => (
+              <article key={card.title} className={`rounded-2xl border p-6 shadow-sm ${
+                index === 0
+                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
+                  : index === 1
+                  ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
+                  : index === 2
+                  ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
+                  : "border-orange-100 bg-gradient-to-br from-orange-50 to-white"
+              }`}>
                 <card.icon className="h-6 w-6 text-orange-600" />
                 <h3 className="mt-4 text-lg font-semibold text-slate-900">{card.title}</h3>
                 <p className="mt-3 text-sm text-gray-600">{card.text}</p>
@@ -157,7 +165,7 @@ export default function HomePage() {
               embedded directly into the workflows of everyday business users.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
               AI Assistant Preview
             </p>
@@ -202,8 +210,14 @@ export default function HomePage() {
                 covers: "Schools, colleges, training institutions",
                 areas: "Fee collection trends, enrollment patterns, operational monitoring, financial performance, institutional analytics",
               },
-            ].map((item) => (
-              <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            ].map((item, index) => (
+              <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
+                index === 0
+                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
+                  : index === 1
+                  ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
+                  : "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
+              }`}>
                 <item.icon className="h-6 w-6 text-orange-600" />
                 <h3 className="mt-3 text-xl font-semibold text-slate-900">{item.title}</h3>
                 <p className="mt-3 text-sm text-gray-600"><strong>Covers:</strong> {item.covers}</p>
@@ -223,7 +237,13 @@ export default function HomePage() {
               { icon: Sparkles, title: "Generate Intelligence", text: "AI-powered operational analysis." },
               { icon: MessagesSquare, title: "Deliver Insights", text: "Embedded dashboards and conversational AI assistant." },
             ].map((step, index) => (
-              <article key={step.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <article key={step.title} className={`rounded-2xl border p-6 shadow-sm ${
+                index === 0
+                  ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
+                  : index === 1
+                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
+                  : "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
+              }`}>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Step {index + 1}</p>
                 <step.icon className="mt-3 h-6 w-6 text-orange-600" />
                 <h3 className="mt-3 text-lg font-semibold text-slate-900">{step.title}</h3>
@@ -253,8 +273,14 @@ export default function HomePage() {
                 title: "Fast Integration",
                 text: "Deploy using lightweight connectors and embedded delivery.",
               },
-            ].map((item) => (
-              <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            ].map((item, index) => (
+              <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
+                index === 0
+                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
+                  : index === 1
+                  ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
+                  : "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
+              }`}>
                 <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
                 <p className="mt-2 text-sm text-gray-600">{item.text}</p>
               </article>
@@ -264,7 +290,7 @@ export default function HomePage() {
       </section>
 
       <section className="px-6 py-10">
-        <div className="max-w-6xl mx-auto rounded-2xl border border-slate-200 bg-white p-6 flex flex-wrap items-center justify-center gap-5 text-sm font-semibold text-slate-700">
+        <div className="max-w-6xl mx-auto rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-6 flex flex-wrap items-center justify-center gap-5 text-sm font-semibold text-slate-700">
           <ShieldCheck className="h-4 w-4 text-emerald-600" />
           <span>Tenant Isolation</span>
           <span>Encrypted Data</span>

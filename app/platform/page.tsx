@@ -30,7 +30,7 @@ export default function PlatformPage() {
         <h2 className="text-3xl font-semibold text-gray-900">Platform Overview</h2>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-3">
           {["Connect", "Process", "Analyze", "Explain", "Decide"].map((step) => (
-            <div key={step} className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+            <div key={step} className="rounded-xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-4 text-center shadow-sm">
               <p className="font-medium text-slate-800">{step}</p>
             </div>
           ))}
@@ -40,8 +40,14 @@ export default function PlatformPage() {
       <section className="max-w-6xl mx-auto mt-14">
         <h2 className="text-3xl font-semibold text-gray-900">Intelligence Framework</h2>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {framework.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          {framework.map((item, index) => (
+            <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
+              index % 3 === 0
+                ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
+                : index % 3 === 1
+                ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
+                : "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
+            }`}>
               <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
               <p className="mt-3 text-sm text-gray-600">{item.text}</p>
             </article>
@@ -54,7 +60,7 @@ export default function PlatformPage() {
         <div className="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
             {["Connectors", "Intelligence Engine", "AI Layer", "Embedded Delivery"].map((node) => (
-              <div key={node} className="rounded-xl border border-slate-200 bg-white p-4">
+              <div key={node} className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
                 <p className="font-medium text-slate-800">{node}</p>
               </div>
             ))}
