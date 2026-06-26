@@ -8,29 +8,29 @@ type Message = {
 };
 
 const starterQuestions = [
-  "Why did sales decline this week?",
-  "Which products are driving profitability?",
-  "What operational risks should I monitor?",
-  "What branches are underperforming?",
+  "What needs attention today?",
+  "Summarize customer issues from chat and social channels.",
+  "Find the latest report and explain the key changes.",
+  "Prepare an approved follow-up list for my team.",
 ];
 
 function getAnswer(question: string) {
   const q = question.toLowerCase();
 
-  if (q.includes("sales") && q.includes("decline")) {
-    return "Sales declined 8.4% week-over-week. The largest driver was beverage stock-outs in 3 branches, followed by lower weekend traffic in Eastland branch.";
+  if (q.includes("attention") || q.includes("today")) {
+    return "Three items need attention: a service delay, a document awaiting review, and a performance movement in one workspace. I can show the cited sources or prepare the approved follow-up list.";
   }
-  if (q.includes("profit") || q.includes("profitability")) {
-    return "Top profitability drivers this week are packaged beverages, cooking oil, and household essentials. Margin expansion is strongest in Westlands and CBD branches.";
+  if (q.includes("customer") || q.includes("social") || q.includes("chat")) {
+    return "Customer issues are grouped into delivery questions, account updates, and unresolved support messages. Sources include the latest chat and social channel summaries available to your role.";
   }
-  if (q.includes("risk")) {
-    return "Key operational risks are rising stock-out frequency, declining repeat purchases in 2 branches, and delayed supplier lead times in high-velocity categories.";
+  if (q.includes("report") || q.includes("changes")) {
+    return "I found the latest workspace report. The main changes are higher activity, a small revenue shift, and two open operational risks. Source citations are attached for review.";
   }
-  if (q.includes("branches") || q.includes("underperform")) {
-    return "Underperforming branches are Eastland and Rongai, each below target by more than 6%. Main contributors are lower basket size and inventory availability gaps.";
+  if (q.includes("follow-up") || q.includes("team")) {
+    return "I can prepare the follow-up list using approved knowledge objects only. The list will include owner, reason, source, and recommended next action for each item.";
   }
 
-  return "DukaAI identified notable movement in sales, stock availability, and branch performance. Refine your question by branch, category, or date range for sharper insights.";
+  return "I can answer from governed knowledge objects available to your workspace. If the evidence is missing or your role cannot access it, I will say so instead of guessing.";
 }
 
 export default function AiAssistantLivePreview() {
@@ -39,7 +39,7 @@ export default function AiAssistantLivePreview() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      text: "Hi, I am DukaAI. Ask me an operational business question.",
+      text: "Hi, I am Duka. Ask me a workspace question or request an approved task.",
     },
   ]);
 
@@ -62,14 +62,25 @@ export default function AiAssistantLivePreview() {
   return (
     <section className="max-w-6xl mx-auto mt-12">
       <h2 className="text-3xl font-semibold text-gray-900">
-        Live DukaAI Preview
+        Workspace Assistant Preview
       </h2>
       <p className="mt-3 max-w-3xl text-gray-600">
-        Demonstrative preview: type a question or use examples below to simulate conversational analysis.
+        A simple preview of how teams can ask questions and trigger approved
+        tasks through WhatsApp or another familiar chat app.
       </p>
 
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
-        <div className="flex flex-wrap gap-2">
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between rounded-xl bg-slate-950 px-4 py-3 text-white">
+          <div>
+            <p className="text-sm font-semibold">Duka Assistant</p>
+            <p className="text-xs text-emerald-200">Workspace chat channel</p>
+          </div>
+          <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100">
+            Permission-aware
+          </span>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
           {starterQuestions.map((q) => (
             <button
               key={q}
@@ -82,7 +93,7 @@ export default function AiAssistantLivePreview() {
           ))}
         </div>
 
-        <div className="mt-4 max-h-[340px] space-y-3 overflow-y-auto rounded-xl border border-slate-200 bg-white p-4">
+        <div className="mt-4 max-h-[340px] space-y-3 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-4">
           {messages.map((msg, idx) => (
             <div key={`${msg.role}-${idx}`} className={msg.role === "user" ? "text-right" : "text-left"}>
               <div
@@ -99,7 +110,7 @@ export default function AiAssistantLivePreview() {
           {loading ? (
             <div className="text-left">
               <div className="inline-block max-w-[85%] rounded-xl bg-emerald-50 px-4 py-2 text-sm text-slate-600">
-                DukaAI is thinking...
+                Duka is checking governed knowledge objects...
               </div>
             </div>
           ) : null}
@@ -115,7 +126,7 @@ export default function AiAssistantLivePreview() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your business question..."
+            placeholder="Ask from your workspace knowledge..."
             className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:border-orange-400"
           />
           <button

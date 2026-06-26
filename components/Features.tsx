@@ -1,44 +1,38 @@
-import { Bot, LayoutDashboard, Lightbulb } from "lucide-react";
+import { Bot, MessageCircle, ShieldCheck } from "lucide-react";
 
 const features = [
   {
-    title: "Intelligence Dashboard",
+    title: "Governed Knowledge Objects",
     description:
-      "Track core retail KPIs across stores, categories, and time in one unified view.",
-    icon: LayoutDashboard,
+      "Transform systems, files, messages, and social channels into AI-safe objects with access rules, citations, freshness, and lineage.",
+    icon: ShieldCheck,
     bullets: [
-      "Real-time performance monitoring",
-      "Cross-branch comparisons",
-      "Export-ready reporting",
+      "Access-controlled retrieval",
+      "Source-aware answers",
+      "Freshness and quality context",
     ],
-    iconBg: "bg-sky-100 text-sky-700",
-    cardBg: "from-sky-50 to-white border-sky-100",
   },
   {
-    title: "Intelligent Insights",
+    title: "Chat App Interaction",
     description:
-      "Turn normalized POS data into clear signals on what changed, why it changed, and where to act.",
-    icon: Lightbulb,
+      "Let teams ask questions, retrieve information, and request approved follow-ups through WhatsApp and familiar chat apps.",
+    icon: MessageCircle,
     bullets: [
-      "Trend and anomaly detection",
-      "Category and SKU performance intelligence",
-      "Decision-ready recommendations",
+      "Workspace assistant channel",
+      "Allowlisted users",
+      "Role-aware answers",
     ],
-    iconBg: "bg-amber-100 text-amber-700",
-    cardBg: "from-amber-50 to-white border-amber-100",
   },
   {
-    title: "DukaAI Assistant",
+    title: "Workspace Skills",
     description:
-      "Ask retail questions in plain language and get instant answers grounded in your trusted data model.",
+      "Teach assistants safe skills for summaries, explanations, response drafts, task routing, and workflow handoffs.",
     icon: Bot,
     bullets: [
-      "Natural language analytics",
-      "Fast root-cause exploration",
-      "Guided next-best actions",
+      "Approved task execution",
+      "Controlled APIs",
+      "Audit-ready activity",
     ],
-    iconBg: "bg-emerald-100 text-emerald-700",
-    cardBg: "from-emerald-50 to-white border-emerald-100",
   },
 ];
 
@@ -50,11 +44,11 @@ export default function Features() {
           Product Features
         </p>
         <h2 className="mt-4 text-3xl md:text-4xl font-bold text-gray-900">
-          From Raw POS Data to Actionable Retail Intelligence
+          From Raw Information to a Trusted Workspace Assistant
         </h2>
         <p className="mt-5 text-gray-600 max-w-3xl mx-auto">
-          One integration gives your ecosystem live dashboards, intelligent
-          insights, and an AI assistant built on our retail data model.
+          Duka creates a governed knowledge layer first, then gives each
+          workspace assistant safe ways to retrieve, explain, and act.
         </p>
       </div>
 
@@ -62,11 +56,9 @@ export default function Features() {
         {features.map((feature) => (
           <article
             key={feature.title}
-            className={`rounded-2xl border bg-gradient-to-br ${feature.cardBg} p-7 shadow-sm transition hover:shadow-md`}
+            className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:shadow-md"
           >
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl ${feature.iconBg}`}
-            >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
               <feature.icon className="h-6 w-6" />
             </div>
 

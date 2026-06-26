@@ -13,16 +13,16 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Duka Intelligence builds the intelligence layer for African retail. Transform POS data into analytics-ready insights.",
+    "Duka Intelligence turns organizational data, documents, communications, and social channels into governed workspace AI assistants for teams.",
 
   keywords: [
-    "Retail Intelligence",
-    "Retail Analytics as a service",
-    "POS Analytics",
-    "African Retail data",
-    "Retail Data Africa",
-    "Embedded Analytics",
-    "Retail APIs",
+    "Workspace AI Assistant",
+    "AI Knowledge Layer",
+    "Governed Knowledge Objects",
+    "WhatsApp AI Assistant",
+    "Enterprise AI Governance",
+    "Knowledge API",
+    "Business AI Assistant",
   ],
 
   icons: {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Duka Intelligence",
     description:
-      "The intelligence layer for African retail ecosystems.",
+      "The AI knowledge layer for organizations that need governed workspace assistants.",
     url: "https://dukaintelligence.co.ke",
     siteName: "Duka Intelligence",
     images: [
@@ -74,7 +74,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {/* Structured Data for Google */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -89,4 +88,3 @@ export default function RootLayout({
     </html>
   );
 }
-

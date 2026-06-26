@@ -1,59 +1,131 @@
 export const dynamic = "force-static";
 
+import {
+  CheckCircle2,
+  ClipboardList,
+  KeyRound,
+  MessageCircle,
+  ShieldCheck,
+  Workflow,
+} from "lucide-react";
 import AiAssistantLivePreview from "@/components/AiAssistantLivePreview";
+
+const capabilities = [
+  {
+    title: "Ask from governed knowledge",
+    text: "Teams can retrieve answers from systems, documents, conversations, and approved knowledge objects.",
+  },
+  {
+    title: "Use familiar chat apps",
+    text: "Workspace assistants can operate through WhatsApp and other chat channels people already check daily.",
+  },
+  {
+    title: "Execute controlled tasks",
+    text: "Assistants can be taught skills for summaries, follow-ups, retrieval, and workflow handoffs within approved limits.",
+  },
+  {
+    title: "Respect access rules",
+    text: "Answers and actions are constrained by role, workspace, source permissions, citations, and audit requirements.",
+  },
+];
+
+const guardrails = [
+  "Dedicated workspace assistant channel",
+  "Allowlisted and role-aware users",
+  "No answer without permission or evidence",
+  "Citations and source context",
+  "Audit logs for sensitive actions",
+  "Safe fallback when context is missing",
+];
 
 export default function AiAssistantPage() {
   return (
     <main className="px-6 py-16 md:py-20">
       <section className="max-w-6xl mx-auto">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-          AI Assistant
+          Workspace Assistant
         </p>
-        <h1 className="mt-4 text-4xl md:text-5xl font-bold text-gray-900">
-          Your Embedded AI Business Intelligence Analyst
+        <h1 className="mt-4 text-4xl font-bold text-gray-900 md:text-5xl">
+          A governed assistant your team can reach through chat
         </h1>
         <p className="mt-6 max-w-4xl text-lg text-gray-600">
-          Business users should not require BI analyst intermediation for every
-          operational question. Duka Intelligence enables natural-language
-          exploration of business performance directly within operational workflows.
+          Duka gives every workspace a trusted assistant that can answer
+          questions, retrieve information, summarize activity, and execute
+          approved tasks through WhatsApp, dashboards, APIs, and embedded
+          workflows.
         </p>
       </section>
 
-      <section className="max-w-6xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { title: "Explain Trends", text: "Understand business changes with context-aware explanations." },
-          { title: "Detect Signals", text: "Identify risks, anomalies, and emerging patterns early." },
-          { title: "Recommend Actions", text: "Get AI-assisted decision support aligned to operational realities." },
-          { title: "Conversational Analysis", text: "Ask questions naturally and explore data in real time." },
-        ].map((item, index) => (
-          <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
-            index === 0
-              ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
-              : index === 1
-              ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
-              : index === 2
-              ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
-              : "border-orange-100 bg-gradient-to-br from-orange-50 to-white"
-          }`}>
-            <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-            <p className="mt-3 text-sm text-gray-600">{item.text}</p>
+      <section className="max-w-6xl mx-auto mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {capabilities.map((item, index) => (
+          <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            {index === 0 ? <CheckCircle2 className="h-6 w-6 text-orange-600" /> : null}
+            {index === 1 ? <MessageCircle className="h-6 w-6 text-orange-600" /> : null}
+            {index === 2 ? <Workflow className="h-6 w-6 text-orange-600" /> : null}
+            {index === 3 ? <ShieldCheck className="h-6 w-6 text-orange-600" /> : null}
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">{item.title}</h2>
+            <p className="mt-3 text-sm leading-6 text-gray-600">{item.text}</p>
           </article>
         ))}
       </section>
 
       <AiAssistantLivePreview />
 
-      <section className="max-w-6xl mx-auto mt-14">
-        <h2 className="text-3xl font-semibold text-gray-900">AI Flow</h2>
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-            {["Operational Data", "Intelligence Models", "AI Context", "Business Decisions"].map((node) => (
-              <div key={node} className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                <p className="font-medium text-slate-800">{node}</p>
+      <section className="max-w-6xl mx-auto mt-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+            Assistant Skills
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+            Teach assistants how to support real work
+          </h2>
+          <p className="mt-4 text-gray-600">
+            Duka assistants are not loose chatbots. They are taught workspace
+            and sector skills that run through governed knowledge objects and
+            controlled APIs.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              "Retrieve information",
+              "Summarize activity",
+              "Explain changes",
+              "Prepare follow-ups",
+              "Draft responses",
+              "Route tasks for approval",
+            ].map((skill) => (
+              <div key={skill} className="rounded-lg border border-slate-200 bg-white p-4 text-sm font-medium text-slate-700">
+                {skill}
               </div>
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto mt-14 rounded-2xl border border-emerald-200 bg-emerald-50 p-7">
+        <div className="flex items-start gap-4">
+          <KeyRound className="mt-1 h-7 w-7 shrink-0 text-emerald-700" />
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Guardrails come before answers
+            </h2>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {guardrails.map((item) => (
+                <div key={item} className="rounded-lg bg-white px-4 py-3 text-sm font-medium text-slate-700">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto mt-14 text-center">
+        <ClipboardList className="mx-auto h-8 w-8 text-orange-600" />
+        <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+          Give teams a safer way to work with company knowledge
+        </h2>
       </section>
     </main>
   );

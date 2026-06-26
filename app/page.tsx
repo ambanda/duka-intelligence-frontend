@@ -3,313 +3,315 @@ export const dynamic = "force-static";
 import Link from "next/link";
 import {
   Bot,
-  ChartLine,
+  CheckCircle2,
   Database,
-  GraduationCap,
-  HandCoins,
+  FileCheck2,
+  Layers3,
+  LockKeyhole,
+  MessageCircle,
   MessagesSquare,
-  MonitorCog,
   ShieldCheck,
   Sparkles,
-  Store,
   Workflow,
 } from "lucide-react";
+import WorkspaceAssistantVisual from "@/components/WorkspaceAssistantVisual";
+
+const sources = [
+  "Business systems and internal tools",
+  "Documents, PDFs, spreadsheets, and reports",
+  "Email, shared folders, and cloud storage",
+  "WhatsApp, chat apps, and team conversations",
+  "Social media channels and web inquiries",
+  "Sector platforms, exports, and APIs",
+];
+
+const layers = [
+  {
+    icon: Database,
+    title: "Connect",
+    text: "Bring structured and unstructured knowledge together from the places where work already happens.",
+  },
+  {
+    icon: Layers3,
+    title: "Process",
+    text: "Convert raw records, messages, and files into governed knowledge objects designed for AI use.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Govern",
+    text: "Apply tenant isolation, permissions, citations, freshness checks, lineage, and audit trails.",
+  },
+  {
+    icon: Sparkles,
+    title: "Teach Skills",
+    text: "Give each workspace assistant approved skills for retrieval, explanation, follow-up, and task execution.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Assist",
+    text: "Let teams ask questions and take action through WhatsApp, dashboards, APIs, and embedded workflows.",
+  },
+];
+
+const trustPoints = [
+  "Agents do not query raw operational systems directly.",
+  "Assistants use only the knowledge objects they are allowed to access.",
+  "Every answer can carry citations, freshness, lineage, and audit context.",
+];
+
+const sectorAssistants = [
+  "Financial services workspace assistant",
+  "Retail and trade workspace assistant",
+  "Restaurant and branch operations assistant",
+  "Advisory and professional services assistant",
+  "Customer engagement workspace assistant",
+  "Management and executive workspace assistant",
+];
 
 export default function HomePage() {
-  const transformation = [
-    "Operational Systems",
-    "Intelligence Engine",
-    "AI Assistant",
-    "Faster Business Decisions",
-  ];
-
-  const traditional = [
-    "Predefined dashboards",
-    "Static reporting",
-    "Delayed insights",
-    "Analyst dependency",
-    "Limited business exploration",
-  ];
-
-  const dukaApproach = [
-    "Natural-language analysis",
-    "AI-assisted reasoning",
-    "Dynamic business exploration",
-    "Embedded operational insights",
-    "Decision support in real time",
-  ];
-
   return (
     <main>
-      <section className="px-6 py-16 md:py-20 bg-gradient-to-b from-sky-50 to-white">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-            AI Business Intelligence
-          </p>
-          <h1 className="mt-4 max-w-5xl text-4xl md:text-5xl font-bold text-gray-900">
-            AI-Powered Business Intelligence for ERP & POS Platforms
-          </h1>
-          <p className="mt-6 max-w-4xl text-lg leading-8 text-gray-600">
-            Enable business users to analyze data directly, understand
-            operational performance, and make faster decisions through
-            AI-powered conversational intelligence embedded inside ERP and POS
-            workflows.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link href="/platform" className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600 transition">
-              Explore Platform
-            </Link>
-            <Link href="/contact" className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-900 hover:bg-slate-50 transition">
-              Book Demo
-            </Link>
-          </div>
-          <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-4">
-            {transformation.map((item, index) => (
-              <div key={item} className="rounded-xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-4 text-center shadow-sm">
-                <p className="text-sm font-medium text-slate-700">{item}</p>
-                {index < transformation.length - 1 ? (
-                  <p className="mt-2 text-xs uppercase tracking-widest text-orange-500">Next</p>
-                ) : (
-                  <p className="mt-2 text-xs uppercase tracking-widest text-emerald-600">Outcome</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-semibold text-center text-gray-900">
-            From Static Reports to Conversational Intelligence
-          </h2>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <article className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-7 shadow-sm">
-              <h3 className="text-xl font-semibold text-slate-900">Report-Centric Analytics</h3>
-              <ul className="mt-4 space-y-2 text-gray-600">
-                {traditional.map((item) => (
-                  <li key={item}>- {item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-7 shadow-sm">
-              <h3 className="text-xl font-semibold text-slate-900">AI-Powered Decision Intelligence</h3>
-              <ul className="mt-4 space-y-2 text-gray-700">
-                {dukaApproach.map((item) => (
-                  <li key={item}>- {item}</li>
-                ))}
-              </ul>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-semibold text-center text-gray-900">Core Value</h2>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: Bot,
-                title: "AI Business Intelligence Analyst",
-                text: "Ask business questions naturally and receive contextual insights, explanations, and recommendations instantly.",
-              },
-              {
-                icon: ChartLine,
-                title: "Operational Intelligence",
-                text: "Monitor revenue, products, inventory, operational efficiency, and demand patterns across business workflows.",
-              },
-              {
-                icon: MonitorCog,
-                title: "Embedded Inside Workflows",
-                text: "Deliver intelligence directly within ERP and POS systems using iframe, SDK, or APIs.",
-              },
-              {
-                icon: Workflow,
-                title: "Easy Integration",
-                text: "Connect using APIs, CSV sync, or database connectors without building separate analytics infrastructure.",
-              },
-            ].map((card, index) => (
-              <article key={card.title} className={`rounded-2xl border p-6 shadow-sm ${
-                index === 0
-                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
-                  : index === 1
-                  ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
-                  : index === 2
-                  ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
-                  : "border-orange-100 bg-gradient-to-br from-orange-50 to-white"
-              }`}>
-                <card.icon className="h-6 w-6 text-orange-600" />
-                <h3 className="mt-4 text-lg font-semibold text-slate-900">{card.title}</h3>
-                <p className="mt-3 text-sm text-gray-600">{card.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <section className="px-6 py-16 md:py-20 bg-slate-50">
+        <div className="max-w-6xl mx-auto grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
-            <h2 className="text-3xl font-semibold text-gray-900">
-              Business Intelligence That Understands Context
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              Workspace AI Assistant
+            </p>
+            <h1 className="mt-4 max-w-5xl text-4xl font-bold text-gray-900 md:text-5xl">
+              Your Organization's AI Workspace Assistant
+            </h1>
+            <p className="mt-6 max-w-4xl text-lg leading-8 text-gray-600">
+              Duka connects to your business systems, documents, emails,
+              chats, shared folders, and social media channels, then turns
+              them into governed knowledge objects your teams can query and
+              act on through WhatsApp, dashboards, and APIs.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/contact"
+                className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
+              >
+                Book a Demo
+              </Link>
+              <Link
+                href="/platform"
+                className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-900 transition hover:bg-slate-50"
+              >
+                Explore Platform
+              </Link>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3 text-sm font-medium text-slate-700">
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1">
+                WhatsApp-first access
+              </span>
+              <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1">
+                Governed knowledge objects
+              </span>
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1">
+                Skills with safe boundaries
+              </span>
+            </div>
+          </div>
+
+          <WorkspaceAssistantVisual />
+        </div>
+      </section>
+
+      <section className="px-6 py-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              Connect Every Source
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+              Bring together the knowledge your teams already use
             </h2>
-            <ul className="mt-6 space-y-3 text-gray-700">
-              <li>Why did sales decline this week?</li>
-              <li>Which products are driving profitability?</li>
-              <li>What operational risks should I monitor?</li>
-              <li>What branches are underperforming?</li>
-            </ul>
-            <p className="mt-6 text-gray-600">
-              Data science capabilities once reserved for specialists are now
-              embedded directly into the workflows of everyday business users.
+            <p className="mt-4 text-gray-600">
+              Duka connects operational data and communication history so teams
+              can retrieve information, understand context, and manage work
+              from one trusted assistant.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-              AI Assistant Preview
-            </p>
-            <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-              <p className="font-medium">You:</p>
-              <p>Why did sales decline this week?</p>
-            </div>
-            <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-slate-700">
-              <p className="font-medium">Duka AI:</p>
-              <p>
-                Sales declined 8.4% week-over-week, mainly from lower beverage
-                volume in 3 branches. Stock-out events and reduced weekend footfall
-                are the top drivers.
-              </p>
-            </div>
+          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {sources.map((source) => (
+              <article
+                key={source}
+                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <CheckCircle2 className="h-5 w-5 text-orange-600" />
+                <p className="mt-3 font-medium text-slate-800">{source}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="px-6 py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-semibold text-center text-gray-900">
-            Built for Operational Industries
-          </h2>
-          <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Store,
-                title: "Retail Intelligence",
-                covers: "Supermarkets, pharmacies, restaurants, hardware, appliance stores, wholesalers, distributors",
-                areas: "Sales performance, inventory movement, product intelligence, operational efficiency, demand forecasting",
-              },
-              {
-                icon: HandCoins,
-                title: "Lending Intelligence",
-                covers: "SACCOs, microfinance institutions, digital lenders",
-                areas: "Portfolio monitoring, repayment trends, branch performance, delinquency signals, operational risk indicators",
-              },
-              {
-                icon: GraduationCap,
-                title: "Education Intelligence",
-                covers: "Schools, colleges, training institutions",
-                areas: "Fee collection trends, enrollment patterns, operational monitoring, financial performance, institutional analytics",
-              },
-            ].map((item, index) => (
-              <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
-                index === 0
-                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
-                  : index === 1
-                  ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
-                  : "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
-              }`}>
-                <item.icon className="h-6 w-6 text-orange-600" />
-                <h3 className="mt-3 text-xl font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-3 text-sm text-gray-600"><strong>Covers:</strong> {item.covers}</p>
-                <p className="mt-3 text-sm text-gray-600"><strong>Intelligence Areas:</strong> {item.areas}</p>
-              </article>
-            ))}
+        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              Knowledge Object Processor
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+              From raw data to AI-safe knowledge objects
+            </h2>
+            <p className="mt-4 text-gray-600">
+              Duka cleans, extracts, normalizes, enriches, and organizes
+              business information into controlled knowledge objects. Assistants
+              interact with those objects instead of roaming through databases,
+              inboxes, folders, or admin tools.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                "Facts and metrics",
+                "Entities and relationships",
+                "Citations and source lineage",
+                "Access rules and ownership",
+                "Freshness and quality status",
+                "Allowed actions and task limits",
+              ].map((item) => (
+                <div key={item} className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-700">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       <section className="px-6 py-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-semibold text-center text-gray-900">How It Works</h2>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: Database, title: "Connect", text: "APIs, CSV sync, database connectors." },
-              { icon: Sparkles, title: "Generate Intelligence", text: "AI-powered operational analysis." },
-              { icon: MessagesSquare, title: "Deliver Insights", text: "Embedded dashboards and conversational AI assistant." },
-            ].map((step, index) => (
-              <article key={step.title} className={`rounded-2xl border p-6 shadow-sm ${
-                index === 0
-                  ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
-                  : index === 1
-                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
-                  : "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
-              }`}>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Step {index + 1}</p>
-                <step.icon className="mt-3 h-6 w-6 text-orange-600" />
-                <h3 className="mt-3 text-lg font-semibold text-slate-900">{step.title}</h3>
-                <p className="mt-2 text-sm text-gray-600">{step.text}</p>
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              How Duka Works
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+              A governed path from information to action
+            </h2>
+          </div>
+          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-5">
+            {layers.map((layer, index) => (
+              <article
+                key={layer.title}
+                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Layer {index + 1}
+                </p>
+                <layer.icon className="mt-4 h-6 w-6 text-orange-600" />
+                <h3 className="mt-3 font-semibold text-slate-900">{layer.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{layer.text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-semibold text-center text-gray-900">
-            Enable AI Intelligence Without Building Analytics Infrastructure
-          </h2>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                title: "New Revenue Streams",
-                text: "Launch intelligence subscriptions and premium analytics offerings.",
-              },
-              {
-                title: "Merchant Retention",
-                text: "Increase customer engagement through embedded intelligence.",
-              },
-              {
-                title: "Fast Integration",
-                text: "Deploy using lightweight connectors and embedded delivery.",
-              },
-            ].map((item, index) => (
-              <article key={item.title} className={`rounded-2xl border p-6 shadow-sm ${
-                index === 0
-                  ? "border-amber-100 bg-gradient-to-br from-amber-50 to-white"
-                  : index === 1
-                  ? "border-sky-100 bg-gradient-to-br from-sky-50 to-white"
-                  : "border-emerald-100 bg-gradient-to-br from-emerald-50 to-white"
-              }`}>
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-gray-600">{item.text}</p>
-              </article>
-            ))}
+      <section className="px-6 py-16 bg-slate-950">
+        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-300">
+              Chat App Interaction
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-white">
+              Ask and act through WhatsApp and familiar chat apps
+            </h2>
+            <p className="mt-4 text-slate-300">
+              Each workspace can have a dedicated assistant channel. Approved
+              users ask questions, retrieve information, request summaries, and
+              trigger allowed follow-ups without leaving the tools they already
+              use every day.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white p-5 shadow-sm">
+            <div className="rounded-xl bg-emerald-50 p-4 text-sm text-slate-700">
+              <p className="font-semibold text-slate-900">Team member</p>
+              <p className="mt-1">Summarize what needs attention today.</p>
+            </div>
+            <div className="mt-4 rounded-xl bg-slate-100 p-4 text-sm text-slate-700">
+              <p className="font-semibold text-slate-900">Duka Assistant</p>
+              <p className="mt-1">
+                Three items need review: customer follow-ups, a delayed document,
+                and a revenue movement in one location. I can show the sources or
+                prepare the approved follow-up list.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                <span className="rounded-full bg-white px-2 py-1">Allowed user</span>
+                <span className="rounded-full bg-white px-2 py-1">Citations ready</span>
+                <span className="rounded-full bg-white px-2 py-1">Task boundary checked</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-10">
-        <div className="max-w-6xl mx-auto rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-6 flex flex-wrap items-center justify-center gap-5 text-sm font-semibold text-slate-700">
-          <ShieldCheck className="h-4 w-4 text-emerald-600" />
-          <span>Tenant Isolation</span>
-          <span>Encrypted Data</span>
-          <span>Role-Based Access</span>
-          <span>Secure APIs</span>
+      <section className="px-6 py-16">
+        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
+          <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-7">
+            <LockKeyhole className="h-7 w-7 text-emerald-700" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">
+              AI agents should not roam your systems
+            </h2>
+            <p className="mt-4 text-slate-700">
+              Duka protects your organization by giving assistants access only
+              to governed knowledge objects, not raw operational systems. Each
+              answer and action is constrained by permissions, citations,
+              freshness, and workspace rules.
+            </p>
+            <ul className="mt-5 space-y-3">
+              {trustPoints.map((point) => (
+                <li key={point} className="flex gap-3 text-sm text-slate-700">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+            <Bot className="h-7 w-7 text-orange-600" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">
+              A workspace assistant for each sector
+            </h2>
+            <p className="mt-4 text-slate-600">
+              Duka is broad enough for many organizations, but each assistant is
+              shaped around the sector, workspace, and responsibilities it serves.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {sectorAssistants.map((assistant) => (
+                <div key={assistant} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-700">
+                  {assistant}
+                </div>
+              ))}
+            </div>
+          </article>
         </div>
       </section>
 
-      <section className="px-6 py-16 text-center bg-slate-900">
+      <section className="px-6 py-16 text-center bg-gray-50">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white">
-            Bring AI-Powered Intelligence Into Your Business Platform
+          <FileCheck2 className="mx-auto h-8 w-8 text-orange-600" />
+          <h2 className="mt-4 text-3xl font-semibold text-gray-900 md:text-4xl">
+            Build a governed assistant from your business knowledge
           </h2>
+          <p className="mt-4 text-gray-600">
+            One assistant per workspace, built from your systems, documents,
+            communications, and workflows.
+          </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link href="/contact" className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600 transition">
-              Book Demo
+            <Link
+              href="/contact"
+              className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
+            >
+              Book a Demo
             </Link>
-            <Link href="/contact" className="rounded-xl border border-white/30 px-6 py-3 font-semibold text-white hover:bg-white/10 transition">
-              Partner With Us
+            <Link
+              href="/ai-assistant"
+              className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-900 transition hover:bg-slate-50"
+            >
+              See Assistant
             </Link>
           </div>
         </div>

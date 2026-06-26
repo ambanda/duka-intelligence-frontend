@@ -1,21 +1,21 @@
 const integrationSteps = [
   {
     step: "01",
-    title: "Connect Data",
+    title: "Connect",
     description:
-      "Ingest POS data into the Duka Intelligence model to power trusted retail analytics.",
+      "Connect business systems, documents, email, chat apps, social channels, and APIs.",
   },
   {
     step: "02",
-    title: "Configure Experience",
+    title: "Process and Govern",
     description:
-      "Apply branding, access controls, and tenant settings for your product environment.",
+      "Turn raw information into governed knowledge objects with permissions, citations, and freshness.",
   },
   {
     step: "03",
-    title: "Launch Embedded Intelligence",
+    title: "Assist",
     description:
-      "Deliver the dashboard inside your product and extend the experience across your ecosystem.",
+      "Deliver answers and approved actions through WhatsApp, the Knowledge API, dashboards, and workflows.",
   },
 ];
 

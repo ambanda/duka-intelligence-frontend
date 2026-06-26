@@ -1,84 +1,61 @@
-import {
-  Download,
-  Shuffle,
-  BarChart3,
-  Rocket,
-} from "lucide-react";
+import { Download, LockKeyhole, MessageCircle, Shuffle, Sparkles } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
     {
       icon: Download,
-      title: "Ingest",
-      description: "Secure POS-agnostic ingestion",
-      accent: "from-orange-500/15 to-transparent",
+      title: "Connect",
+      description: "Bring in systems, documents, email, chat, social channels, and APIs.",
     },
     {
       icon: Shuffle,
-      title: "Normalize",
-      description: "ARTS-aligned data model",
-      accent: "from-emerald-500/15 to-transparent",
+      title: "Process",
+      description: "Convert raw information into governed knowledge objects.",
     },
     {
-      icon: BarChart3,
-      title: "Analyze",
-      description: "Retail domain metrics",
-      accent: "from-blue-500/15 to-transparent",
+      icon: LockKeyhole,
+      title: "Govern",
+      description: "Apply access control, citations, freshness, lineage, and audit rules.",
     },
     {
-      icon: Rocket,
-      title: "Deliver",
-      description: "APIs, dashboards, reports",
-      accent: "from-amber-500/15 to-transparent",
+      icon: Sparkles,
+      title: "Teach",
+      description: "Add approved skills for retrieval, summaries, follow-ups, and task handoffs.",
+    },
+    {
+      icon: MessageCircle,
+      title: "Assist",
+      description: "Deliver answers and actions through WhatsApp, APIs, dashboards, and workflows.",
     },
   ];
 
   return (
-    <section className="px-6 py-16 md:py-20 bg-gradient-to-b from-transparent to-sky-50/60">
+    <section className="px-6 py-16 md:py-20 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-semibold text-center text-gray-900">
-          Designed for POS ecosystems
+          Designed for governed workspace assistance
         </h2>
         <p className="mt-3 text-center text-gray-600 max-w-2xl mx-auto">
-          A clean, four-step pipeline that turns raw POS data into
-          decision-ready intelligence.
+          A controlled path from organizational knowledge to chat-accessible
+          answers and approved actions.
         </p>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-5 gap-4">
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="relative overflow-hidden rounded-2xl border bg-white/85 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${step.accent}`}
-                aria-hidden="true"
-              />
-              <div className="relative">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-orange-600">
-                    Step {index + 1}
-                  </span>
-                  <span className="text-xs uppercase tracking-widest text-gray-400">
-                    {step.title}
-                  </span>
-                </div>
-                <div className="mt-5 flex items-center gap-3">
-                  <span
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-orange-600 shadow-sm"
-                    aria-hidden="true"
-                  >
-                    <step.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {step.title}
-                  </h3>
-                </div>
-                <p className="mt-3 text-sm text-gray-600">
-                  {step.description}
-                </p>
-                <div className="mt-6 h-1 w-12 rounded-full bg-orange-500/80" />
-              </div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                Step {index + 1}
+              </span>
+              <step.icon className="mt-5 h-6 w-6 text-orange-600" />
+              <h3 className="mt-3 text-lg font-semibold text-gray-900">
+                {step.title}
+              </h3>
+              <p className="mt-3 text-sm text-gray-600">
+                {step.description}
+              </p>
             </div>
           ))}
         </div>
