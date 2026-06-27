@@ -7,6 +7,7 @@ import {
   Fingerprint,
   KeyRound,
   LockKeyhole,
+  Server,
   ShieldCheck,
   TimerReset,
 } from "lucide-react";
@@ -88,6 +89,31 @@ export default function TrustPage() {
         ))}
       </section>
 
+      <section className="max-w-6xl mx-auto mt-14 rounded-2xl border border-slate-200 bg-slate-50 p-7">
+        <Server className="h-7 w-7 text-orange-600" />
+        <h2 className="mt-4 text-2xl font-semibold text-slate-900">
+          Deployment choices for different governance models
+        </h2>
+        <p className="mt-3 max-w-4xl text-slate-600">
+          Duka can be delivered as managed SaaS for speed, or as a dedicated
+          instance when policy requires stronger isolation, customer-specific
+          deployment boundaries, or private integration controls.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {[
+            "Least-privilege access",
+            "Encryption in transit and at rest",
+            "Environment separation",
+            "Secrets management",
+            "Backup and recovery controls",
+            "Monitoring and incident workflows",
+          ].map((item) => (
+            <div key={item} className="rounded-lg border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700">
+              {item}
+            </div>
+          ))}
+        </div>
+      </section>
       <section className="max-w-6xl mx-auto mt-14 grid gap-8 lg:grid-cols-2">
         <article className="rounded-2xl border border-slate-200 bg-slate-50 p-7">
           <LockKeyhole className="h-7 w-7 text-orange-600" />
@@ -114,3 +140,5 @@ export default function TrustPage() {
     </main>
   );
 }
+
+

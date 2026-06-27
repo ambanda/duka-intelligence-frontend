@@ -9,7 +9,6 @@ import {
   Layers3,
   LockKeyhole,
   MessageCircle,
-  MessagesSquare,
   ShieldCheck,
   Sparkles,
   Workflow,
@@ -66,6 +65,19 @@ const sectorAssistants = [
   "Advisory and professional services assistant",
   "Customer engagement workspace assistant",
   "Management and executive workspace assistant",
+];
+
+const deploymentOptions = [
+  {
+    title: "Managed SaaS",
+    text: "The fastest path to a live workspace assistant. Duka manages the platform, updates, monitoring, connectors, and assistant delivery.",
+    points: ["Fastest rollout", "Managed operations", "Standard security controls"],
+  },
+  {
+    title: "Dedicated Instance",
+    text: "For organizations whose policy, regulator, or procurement rules require stronger isolation and customer-specific deployment boundaries.",
+    points: ["Single-tenant boundary", "Custom access controls", "Private integration paths"],
+  },
 ];
 
 export default function HomePage() {
@@ -290,6 +302,39 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="px-6 py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              Deployment Options
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+              Managed SaaS or dedicated instance
+            </h2>
+            <p className="mt-4 text-gray-600">
+              Deploy Duka as a fully managed SaaS platform for speed, or as a
+              dedicated instance when your governance model requires stronger
+              isolation, custom controls, or customer-specific infrastructure
+              boundaries.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {deploymentOptions.map((option) => (
+              <article key={option.title} className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+                <h3 className="text-2xl font-semibold text-slate-900">{option.title}</h3>
+                <p className="mt-3 text-slate-600">{option.text}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {option.points.map((point) => (
+                    <span key={point} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700">
+                      {point}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
       <section className="px-6 py-16 text-center bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <FileCheck2 className="mx-auto h-8 w-8 text-orange-600" />
@@ -319,3 +364,5 @@ export default function HomePage() {
     </main>
   );
 }
+
+

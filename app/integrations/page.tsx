@@ -5,9 +5,11 @@ import {
   Database,
   FileText,
   FolderOpen,
+  Gauge,
   Mail,
   MessageCircle,
   Plug,
+  Rocket,
   Share2,
 } from "lucide-react";
 
@@ -23,6 +25,13 @@ const integrations = [
 ];
 
 const flow = ["Connect", "Process", "Govern", "Teach Skills", "Assist"];
+
+const speedPaths = [
+  "Start with files, exports, and documents before deeper system work",
+  "Connect cloud folders, email, chat apps, and social channels in phases",
+  "Use APIs, databases, or warehouses where structured integrations already exist",
+  "Validate citations, access control, and answer quality before expanding scope",
+];
 
 export default function IntegrationsPage() {
   return (
@@ -63,6 +72,39 @@ export default function IntegrationsPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto mt-14 grid gap-8 lg:grid-cols-2">
+        <article className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+          <Gauge className="h-7 w-7 text-orange-600" />
+          <h2 className="mt-4 text-2xl font-semibold text-slate-900">
+            Designed for speed without forcing a rebuild
+          </h2>
+          <p className="mt-3 text-slate-600">
+            Duka can start with the knowledge sources you already have, then
+            expand into deeper integrations as trust, governance, and usage
+            patterns become clear.
+          </p>
+          <div className="mt-5 grid gap-3">
+            {speedPaths.map((path) => (
+              <div key={path} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-700">
+                {path}
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-7">
+          <Rocket className="h-7 w-7 text-emerald-700" />
+          <h2 className="mt-4 text-2xl font-semibold text-slate-900">
+            Pilot first, then expand safely
+          </h2>
+          <p className="mt-3 text-slate-700">
+            A workspace assistant can begin with one team, one channel, and a
+            focused knowledge set. From there, Duka can add more sources,
+            skills, users, workspaces, and controlled actions in phases.
+          </p>
+        </article>
       </section>
 
       <section className="max-w-6xl mx-auto mt-14 rounded-2xl border border-emerald-200 bg-emerald-50 p-7">
