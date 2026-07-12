@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUp, Bot, Loader2, Mail, ShieldCheck, UserRound } from "lucide-react";
@@ -80,9 +80,9 @@ function saveStoredMessages(messages: ChatMessage[]) {
   window.localStorage.setItem(MESSAGES_KEY, JSON.stringify(compact));
 }
 
-function formatAnswer(text: string) {
+function formatAnswer(text: string): { sentences: string[]; keyPoints: string[] } {
   const normalized = text.replace(/\s+/g, " ").trim();
-  if (!normalized) return [];
+  if (!normalized) return { sentences: [], keyPoints: [] };
 
   const [intro, keyPointText] = normalized.split(/Key points:/i);
   const sentences = intro
