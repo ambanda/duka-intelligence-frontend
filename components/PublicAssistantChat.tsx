@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUp, CheckCircle2, Loader2, Mail, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowUp, Bot, Loader2, Mail, ShieldCheck, UserRound } from "lucide-react";
 import {
   capturePublicAssistantLead,
   fetchPublicAssistantBootstrap,
@@ -20,13 +20,14 @@ type PublicAssistantChatProps = {
 };
 
 const VISITOR_KEY = "duka_public_assistant_visitor_id";
+const SESSION_KEY = "duka_public_assistant_session_id";
+const MESSAGES_KEY = "duka_public_assistant_messages";
 
-const fallbackPrompts = [
-  "What can Duka do?",
-  "Can Duka work through WhatsApp?",
-  "What systems can Duka connect to?",
-  "How is pricing structured?",
-];
+const firstVisitMessage =
+  "Work AI platform that unifies company knowledge, systems, and context, enabling AI to deliver real productivity gains across the enterprise.";
+
+const returningMessage =
+  "Welcome back to Duka. Thanks for checking out Duka Workspace AI platform. It is designed to help teams find knowledge and automate tasks efficiently. Ask Duka.";
 
 function createVisitorId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -35,13 +36,48 @@ function createVisitorId() {
   return `visitor_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
-function getVisitorId() {
-  if (typeof window === "undefined") return "server_visitor";
+function loadVisitorState() {
+  if (typeof window === "undefined") {
+    return { visitorId: "server_visitor", isReturning: false };
+  }
+
   const existing = window.localStorage.getItem(VISITOR_KEY);
-  if (existing) return existing;
+  if (existing) return { visitorId: existing, isReturning: true };
+
   const next = createVisitorId();
   window.localStorage.setItem(VISITOR_KEY, next);
-  return next;
+  return { visitorId: next, isReturning: false };
+}
+
+function loadStoredMessages(): ChatMessage[] | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(MESSAGES_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as ChatMessage[];
+    return Array.isArray(parsed) && parsed.length ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredMessages(messages: ChatMessage[]) {
+  if (typeof window === "undefined") return;
+  const compact = messages.slice(-30).map((message) => ({
+    role: message.role,
+    text: message.text,
+    response: message.response
+      ? {
+          status: message.response.status,
+          answer_type: message.response.answer_type,
+          queries_remaining: message.response.queries_remaining,
+          query_limit: message.response.query_limit,
+          email_captured: message.response.email_captured,
+          knowledge_object_ids: message.response.knowledge_object_ids,
+        }
+      : undefined,
+  }));
+  window.localStorage.setItem(MESSAGES_KEY, JSON.stringify(compact));
 }
 
 function formatAnswer(text: string) {
@@ -49,10 +85,11 @@ function formatAnswer(text: string) {
   if (!normalized) return [];
 
   const [intro, keyPointText] = normalized.split(/Key points:/i);
-  const introSentences = intro
+  const sentences = intro
     .split(/(?<=[.!?])\s+/)
     .map((item) => item.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .slice(0, 3);
 
   const keyPoints = keyPointText
     ? keyPointText
@@ -60,53 +97,43 @@ function formatAnswer(text: string) {
         .split(/;|\n|•|- /)
         .map((item) => item.trim())
         .filter(Boolean)
+        .slice(0, 5)
     : [];
 
-  return [
-    ...introSentences.slice(0, 3).map((item) => ({ type: "sentence" as const, text: item })),
-    ...keyPoints.slice(0, 5).map((item) => ({ type: "point" as const, text: item })),
-  ];
+  return { sentences, keyPoints };
 }
 
-function AssistantAnswer({ message }: { message: ChatMessage }) {
-  const parts = formatAnswer(message.text);
-  const response = message.response;
+function AssistantBubble({ message }: { message: ChatMessage }) {
+  const { sentences, keyPoints } = formatAnswer(message.text);
+  const remaining = message.response?.queries_remaining;
+  const showLimitHint = remaining !== null && remaining !== undefined && remaining <= 1;
 
   return (
-    <div className="max-w-[92%] rounded-2xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm ring-1 ring-slate-200">
-      <div className="space-y-2">
-        {parts.length > 0 ? (
-          parts.map((part, index) => (
-            <div key={`${part.type}-${index}`} className="flex gap-2 leading-6">
-              {part.type === "point" ? (
-                <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-600" />
-              ) : (
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />
-              )}
-              <span>{part.text}</span>
-            </div>
-          ))
+    <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 text-sm text-slate-800 shadow-sm ring-1 ring-emerald-100">
+      <div className="space-y-2 leading-6">
+        {sentences.length || keyPoints.length ? (
+          <>
+            {sentences.map((sentence, index) => (
+              <p key={`sentence-${index}`}>{sentence}</p>
+            ))}
+            {keyPoints.length ? (
+              <ul className="mt-2 space-y-1.5">
+                {keyPoints.map((point, index) => (
+                  <li key={`point-${index}`} className="flex gap-2">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </>
         ) : (
           <p>{message.text}</p>
         )}
       </div>
-
-      {response?.suggested_followups?.length ? (
-        <div className="mt-3 border-t border-slate-100 pt-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Next questions</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {response.suggested_followups.slice(0, 3).map((item) => (
-              <span key={item} className="rounded-full bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {response?.queries_remaining !== null && response?.queries_remaining !== undefined ? (
-        <p className="mt-3 text-xs text-slate-400">
-          {response.queries_remaining} free question{response.queries_remaining === 1 ? "" : "s"} left today before contact capture.
+      {showLimitHint ? (
+        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          {remaining === 0 ? "Share contact to continue the demo conversation." : "One free question left before contact capture."}
         </p>
       ) : null}
     </div>
@@ -125,43 +152,50 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
   const [leadLoading, setLeadLoading] = useState(false);
   const [leadRequired, setLeadRequired] = useState(false);
   const [emailCaptured, setEmailCaptured] = useState(false);
-  const [suggestedPrompts, setSuggestedPrompts] = useState(fallbackPrompts);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      text: "Work AI platform that unifies company knowledge, systems, and context, enabling AI to deliver real productivity gains across the enterprise.",
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const id = getVisitorId();
-    setVisitorId(id);
+    const state = loadVisitorState();
+    setVisitorId(state.visitorId);
+
+    const existingSession = window.localStorage.getItem(SESSION_KEY);
+    if (existingSession) setSessionId(existingSession);
+
+    const stored = loadStoredMessages();
+    if (stored?.length) {
+      setMessages(stored);
+      return;
+    }
+
+    const greeting = state.isReturning ? returningMessage : firstVisitMessage;
+    setMessages([{ role: "assistant", text: greeting }]);
 
     fetchPublicAssistantBootstrap()
       .then((payload) => {
-        setSuggestedPrompts(payload.suggested_prompts?.length ? payload.suggested_prompts : fallbackPrompts);
-        setMessages([
-          {
-            role: "assistant",
-            text: payload.opening_message,
-          },
-        ]);
+        if (!state.isReturning && payload.opening_message) {
+          setMessages([{ role: "assistant", text: payload.opening_message }]);
+        }
       })
       .catch(() => {
         setMessages((prev) => [
           ...prev,
           {
             role: "system",
-            text: "Public assistant API is not reachable right now. You can still book a demo or try again shortly.",
+            text: "Duka public assistant API is not reachable right now. You can still book a demo or try again shortly.",
           },
         ]);
       });
   }, []);
 
   useEffect(() => {
+    if (messages.length) saveStoredMessages(messages);
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, loading, leadRequired]);
+  }, [messages]);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [loading, leadRequired]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading && !!visitorId, [input, loading, visitorId]);
 
@@ -176,17 +210,11 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
     try {
       const response = await sendPublicAssistantMessage({ visitorId, sessionId, message: question });
       setSessionId(response.session_id);
+      if (typeof window !== "undefined") window.localStorage.setItem(SESSION_KEY, response.session_id);
       setLeadRequired(response.status === "lead_required");
       setEmailCaptured(response.email_captured);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: response.answer,
-          response,
-        },
-      ]);
-    } catch (error) {
+      setMessages((prev) => [...prev, { role: "assistant", text: response.answer, response }]);
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -221,7 +249,7 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
           text: "Thanks. You can continue asking questions, and we can tailor a demo around your organization, channel, and first workspace use case.",
         },
       ]);
-    } catch (error) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -235,47 +263,34 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
   }
 
   return (
-    <div className={compact ? "h-full" : "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"}>
-      <div className="flex items-center justify-between rounded-2xl bg-slate-950 px-4 py-3 text-white">
-        <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-orange-500 text-white">
-            <Sparkles className="h-5 w-5" />
+    <div className={compact ? "flex h-full flex-col overflow-hidden rounded-3xl bg-[#efe7dc]" : "overflow-hidden rounded-3xl border border-emerald-100 bg-[#efe7dc] shadow-sm"}>
+      <div className="flex items-center justify-between bg-[#075e54] px-4 py-3 text-white">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-emerald-100 text-[#075e54] ring-2 ring-white/20">
+            <UserRound className="h-6 w-6" />
           </div>
-          <div>
-            <p className="text-sm font-semibold">Duka Intelligence</p>
-            <p className="text-xs text-emerald-200">AI agent</p>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">Duka Intelligence</p>
+            <p className="text-xs text-emerald-100">AI agent</p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100">
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-emerald-50">
           <ShieldCheck className="h-3.5 w-3.5" />
-          Grounded KB
+          Public KB
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {suggestedPrompts.slice(0, compact ? 3 : 4).map((prompt) => (
-          <button
-            key={prompt}
-            type="button"
-            onClick={() => askQuestion(prompt)}
-            className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            {prompt}
-          </button>
-        ))}
-      </div>
-
-      <div className={compact ? "mt-4 h-[360px] space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3" : "mt-4 max-h-[440px] space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-4"}>
+      <div className={compact ? "min-h-0 flex-1 space-y-3 overflow-y-auto p-3" : "max-h-[520px] space-y-3 overflow-y-auto p-4"}>
         {messages.map((message, index) => (
           <div key={`${message.role}-${index}`} className={message.role === "user" ? "flex justify-end" : "flex justify-start"}>
             {message.role === "assistant" ? (
-              <AssistantAnswer message={message} />
+              <AssistantBubble message={message} />
             ) : message.role === "system" ? (
-              <div className="max-w-[92%] rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
+              <div className="max-w-[88%] rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
                 {message.text}
               </div>
             ) : (
-              <div className="max-w-[85%] rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white">
+              <div className="max-w-[82%] rounded-2xl rounded-tr-sm bg-[#dcf8c6] px-4 py-3 text-sm leading-6 text-slate-900 shadow-sm">
                 {message.text}
               </div>
             )}
@@ -284,15 +299,15 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
 
         {loading ? (
           <div className="flex justify-start">
-            <div className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm text-slate-600 shadow-sm ring-1 ring-slate-200">
-              <Loader2 className="h-4 w-4 animate-spin text-orange-500" />
+            <div className="inline-flex items-center gap-2 rounded-2xl rounded-tl-sm bg-white px-4 py-3 text-sm text-slate-600 shadow-sm ring-1 ring-emerald-100">
+              <Loader2 className="h-4 w-4 animate-spin text-[#075e54]" />
               Checking approved public knowledge...
             </div>
           </div>
         ) : null}
 
         {leadRequired && !emailCaptured ? (
-          <form onSubmit={submitLead} className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+          <form onSubmit={submitLead} className="rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm">
             <div className="flex items-start gap-3">
               <Mail className="mt-1 h-5 w-5 shrink-0 text-orange-600" />
               <div>
@@ -337,7 +352,7 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
       </div>
 
       <form
-        className="mt-4 flex gap-2"
+        className="flex gap-2 border-t border-black/5 bg-[#f7f7f7] p-3"
         onSubmit={(event) => {
           event.preventDefault();
           askQuestion(input);
@@ -346,23 +361,18 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask Duka about integrations, WhatsApp, pricing, or use cases..."
-          className="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 outline-none transition focus:border-orange-400"
+          placeholder="Ask Duka"
+          className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#075e54]"
         />
         <button
           type="submit"
           disabled={!canSend}
           aria-label="Send message"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-500 text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#075e54] text-white transition hover:bg-[#064d45] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <ArrowUp className="h-4 w-4" />
         </button>
       </form>
-
-      <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
-        <MessageCircle className="h-3.5 w-3.5" />
-        <span>The public assistant answers from approved Duka knowledge only.</span>
-      </div>
     </div>
   );
 }
