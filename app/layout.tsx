@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FloatingAssistantWidget from "@/components/FloatingAssistantWidget";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dukaintelligence.co.ke"),
@@ -84,6 +85,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <FloatingAssistantWidget />
       </body>
     </html>
   );

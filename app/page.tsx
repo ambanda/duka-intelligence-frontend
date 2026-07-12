@@ -96,7 +96,10 @@ export default function HomePage() {
               Duka connects to your business systems, documents, emails,
               chats, shared folders, and social media channels, then turns
               them into governed knowledge objects your teams can query and
-              act on through WhatsApp, dashboards, and APIs.
+              act on through WhatsApp, dashboards, and APIs. It is an agile
+              work AI platform with the depth of enterprise AI, the simplicity
+              of a WhatsApp text, and the flexibility to serve both internal
+              teams and customers.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
@@ -364,5 +367,6 @@ export default function HomePage() {
     </main>
   );
 }
+
 
 
