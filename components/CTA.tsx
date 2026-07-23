@@ -1,18 +1,19 @@
 export default function CTA() {
   return (
-    <section className="bg-orange-500 py-24 text-center px-6 text-white">
-      <h2 className="text-4xl font-semibold mb-6">
-        Build a governed assistant from your business knowledge
+    <section className="bg-[#101820] py-24 text-center px-6 text-white">
+      <h2 className="mb-6 text-4xl font-semibold">
+        Turn scattered knowledge into completed work
       </h2>
 
-      <p className="text-lg mb-10 opacity-90 max-w-2xl mx-auto">
-        Connect systems, documents, communications, and chat channels without
-        exposing raw operational data to AI agents.
+      <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-300">
+        Duka Intelligence uses AI to understand intent, find trusted answers
+        across enterprise knowledge, and help employees complete tasks in the
+        tools they already use.
       </p>
 
       <a
         href="/contact"
-        className="inline-block bg-white text-orange-600 px-10 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition"
+        className="inline-block rounded-xl bg-orange-500 px-10 py-4 text-lg font-semibold text-white transition hover:bg-orange-600"
       >
         Book a Demo
       </a>

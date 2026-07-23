@@ -14,16 +14,18 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Duka Intelligence turns organizational data, documents, communications, and social channels into governed workspace AI assistants for teams.",
+    "Duka Intelligence unifies enterprise knowledge into a governed AI platform and powers Duka Agents that help employees find trusted answers and complete tasks in the tools they already use.",
 
   keywords: [
-    "Workspace AI Assistant",
-    "AI Knowledge Layer",
-    "Governed Knowledge Objects",
-    "WhatsApp AI Assistant",
-    "Enterprise AI Governance",
-    "Knowledge API",
-    "Business AI Assistant",
+    "Duka Agents",
+    "Enterprise Knowledge AI",
+    "AI enterprise search",
+    "Workspace AI agents",
+    "Governed AI platform",
+    "Social media listening AI",
+    "WhatsApp AI assistant",
+    "AI for operations",
+    "Enterprise knowledge platform",
   ],
 
   icons: {
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Duka Intelligence",
     description:
-      "The AI knowledge layer for organizations that need governed workspace assistants.",
+      "The Core Platform unifies enterprise knowledge. Duka Agents turn it into trusted answers, recommendations, and completed work.",
     url: "https://dukaintelligence.co.ke",
     siteName: "Duka Intelligence",
     images: [

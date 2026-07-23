@@ -2,129 +2,95 @@ export const dynamic = "force-static";
 
 import Link from "next/link";
 import {
+  ArrowRight,
   Bot,
   CheckCircle2,
   Database,
   FileCheck2,
-  Layers3,
   LockKeyhole,
   MessageCircle,
+  Quote,
   ShieldCheck,
   Sparkles,
-  Workflow,
 } from "lucide-react";
 import WorkspaceAssistantVisual from "@/components/WorkspaceAssistantVisual";
 
-const sources = [
-  "Business systems and internal tools",
-  "Documents, PDFs, spreadsheets, and reports",
-  "Email, shared folders, and cloud storage",
-  "WhatsApp, chat apps, and team conversations",
-  "Social media channels and web inquiries",
-  "Sector platforms, exports, and APIs",
+const corePlatform = [
+  "Connect every enterprise source",
+  "Process structured and unstructured data",
+  "Create governed knowledge objects",
+  "Enforce access controls and permissions",
+  "Unify organizational knowledge",
 ];
 
-const layers = [
-  {
-    icon: Database,
-    title: "Connect",
-    text: "Bring structured and unstructured knowledge together from the places where work already happens.",
-  },
-  {
-    icon: Layers3,
-    title: "Process",
-    text: "Convert raw records, messages, and files into governed knowledge objects designed for AI use.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Govern",
-    text: "Apply tenant isolation, permissions, citations, freshness checks, lineage, and audit trails.",
-  },
-  {
-    icon: Sparkles,
-    title: "Teach Skills",
-    text: "Give each workspace assistant approved skills for retrieval, explanation, follow-up, and task execution.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Assist",
-    text: "Let teams ask questions and take action through WhatsApp, dashboards, APIs, and embedded workflows.",
-  },
+const dukaAgents = [
+  "Understand employee or client intent",
+  "Search and retrieve trusted knowledge",
+  "Answer with context and citations",
+  "Recommend next steps",
+  "Act through approved skills",
 ];
+
+const platformCapabilities = [
+  "Business systems, databases, and internal tools",
+  "Documents, spreadsheets, shared folders, and cloud storage",
+  "Emails, chats, WhatsApp, social media, websites, and APIs",
+  "Relational processing, unstructured text processing, entity extraction, lineage, and freshness checks",
+];
+
+const jobDoneFlow = ["Intent", "Find", "Answer", "Recommend", "Act", "Track"];
 
 const trustPoints = [
-  "Agents do not query raw operational systems directly.",
-  "Assistants use only the knowledge objects they are allowed to access.",
-  "Every answer can carry citations, freshness, lineage, and audit context.",
-];
-
-const sectorAssistants = [
-  "Financial services workspace assistant",
-  "Retail and trade workspace assistant",
-  "Restaurant and branch operations assistant",
-  "Advisory and professional services assistant",
-  "Customer engagement workspace assistant",
-  "Management and executive workspace assistant",
+  "Agents use governed knowledge, not raw operational access.",
+  "Permissions, citations, freshness, lineage, and audit logs are built into the workflow.",
+  "Approved skills define what an agent can retrieve, draft, route, or execute.",
 ];
 
 const deploymentOptions = [
   {
     title: "Managed SaaS",
-    text: "The fastest path to a live workspace assistant. Duka manages the platform, updates, monitoring, connectors, and assistant delivery.",
-    points: ["Fastest rollout", "Managed operations", "Standard security controls"],
+    text: "The fastest path to launch Duka with managed updates, monitoring, connectors, and platform operations.",
+    points: ["Fast rollout", "Managed operations", "Standard governance controls"],
   },
   {
     title: "Dedicated Instance",
-    text: "For organizations whose policy, regulator, or procurement rules require stronger isolation and customer-specific deployment boundaries.",
-    points: ["Single-tenant boundary", "Custom access controls", "Private integration paths"],
+    text: "For organizations whose policies require stronger isolation, custom controls, or customer-specific deployment boundaries.",
+    points: ["Single-tenant boundary", "Private integration paths", "Custom access controls"],
   },
 ];
 
 export default function HomePage() {
   return (
     <main>
-      <section className="px-6 py-16 md:py-20 bg-slate-50">
-        <div className="max-w-6xl mx-auto grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <section className="bg-[#101820] px-6 py-16 text-white md:py-20">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-              Workspace AI Assistant
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-300">
+              Core Platform + Duka Agents
             </p>
-            <h1 className="mt-4 max-w-5xl text-4xl font-bold text-gray-900 md:text-5xl">
-              Your Organization's AI Workspace Assistant
+            <h1 className="mt-4 max-w-5xl text-4xl font-bold text-white md:text-6xl">
+              From enterprise knowledge to completed work
             </h1>
-            <p className="mt-6 max-w-4xl text-lg leading-8 text-gray-600">
-              Duka connects to your business systems, documents, emails,
-              chats, shared folders, and social media channels, then turns
-              them into governed knowledge objects your teams can query and
-              act on through WhatsApp, dashboards, and APIs. It is an agile
-              work AI platform with the depth of enterprise AI, the simplicity
-              of a WhatsApp text, and the flexibility to serve both internal
-              teams and customers.
+            <p className="mt-6 max-w-4xl text-lg leading-8 text-slate-300">
+              Duka Intelligence connects your systems, documents,
+              communications, and social channels into a governed knowledge
+              platform, then powers Duka Agents that understand intent, find
+              trusted answers, recommend next steps, and help employees and
+              external clients complete tasks through tools like WhatsApp.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href="/contact"
-                className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
-              >
+              <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600">
                 Book a Demo
+                <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                href="/platform"
-                className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-900 transition hover:bg-slate-50"
-              >
+              <Link href="/platform" className="rounded-xl border border-white/20 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/15">
                 Explore Platform
               </Link>
             </div>
-            <div className="mt-8 flex flex-wrap gap-3 text-sm font-medium text-slate-700">
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1">
-                WhatsApp-first access
-              </span>
-              <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1">
-                Governed knowledge objects
-              </span>
-              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1">
-                Skills with safe boundaries
-              </span>
+            <div className="mt-8 flex flex-wrap gap-3 text-sm font-medium text-slate-200">
+              <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1">Enterprise knowledge AI</span>
+              <span className="rounded-full border border-orange-300/30 bg-orange-400/10 px-3 py-1">WhatsApp-ready agents</span>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">Internal teams + client self-service</span>
             </div>
           </div>
 
@@ -133,147 +99,132 @@ export default function HomePage() {
       </section>
 
       <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-              Connect Every Source
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
-              Bring together the knowledge your teams already use
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Two Connected Layers</p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900 md:text-4xl">
+              The platform brings knowledge together. The agents turn it into outcomes.
             </h2>
-            <p className="mt-4 text-gray-600">
-              Duka connects operational data and communication history so teams
-              can retrieve information, understand context, and manage work
-              from one trusted assistant.
-            </p>
           </div>
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sources.map((source) => (
-              <article
-                key={source}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-              >
-                <CheckCircle2 className="h-5 w-5 text-orange-600" />
-                <p className="mt-3 font-medium text-slate-800">{source}</p>
-              </article>
-            ))}
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <article className="rounded-2xl border border-slate-200 bg-white p-7 shadow-card">
+              <Database className="h-7 w-7 text-orange-600" />
+              <h3 className="mt-4 text-2xl font-semibold text-slate-900">The Core Platform</h3>
+              <p className="mt-3 text-slate-600">
+                Connects organizational systems, documents, communications,
+                social channels, and APIs, then processes them into a centralized,
+                permission-aware knowledge layer.
+              </p>
+              <div className="mt-5 grid gap-3">
+                {corePlatform.map((item) => (
+                  <div key={item} className="flex gap-3 text-sm font-medium text-slate-700">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-orange-200 bg-orange-50 p-7 shadow-card">
+              <Bot className="h-7 w-7 text-orange-600" />
+              <h3 className="mt-4 text-2xl font-semibold text-slate-900">Duka Agents</h3>
+              <p className="mt-3 text-slate-700">
+                AI-powered assistants that operate on governed knowledge to help
+                employees and external clients search, retrieve, understand,
+                recommend, and act in the tools they already use.
+              </p>
+              <div className="mt-5 grid gap-3">
+                {dukaAgents.map((item) => (
+                  <div key={item} className="flex gap-3 text-sm font-medium text-slate-700">
+                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-orange-600" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-              Knowledge Object Processor
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
-              From raw data to AI-safe knowledge objects
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">The Core Platform</p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900 md:text-4xl">
+              Unify enterprise knowledge without flattening security
             </h2>
             <p className="mt-4 text-gray-600">
-              Duka cleans, extracts, normalizes, enriches, and organizes
-              business information into controlled knowledge objects. Assistants
-              interact with those objects instead of roaming through databases,
-              inboxes, folders, or admin tools.
+              Duka handles connectors, ingestion, relational data processing,
+              unstructured document processing, conversation processing, entity
+              extraction, knowledge object creation, access control, lineage,
+              citations, and tenant isolation.
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="grid gap-3 md:grid-cols-2">
-              {[
-                "Facts and metrics",
-                "Entities and relationships",
-                "Citations and source lineage",
-                "Access rules and ownership",
-                "Freshness and quality status",
-                "Allowed actions and task limits",
-              ].map((item) => (
-                <div key={item} className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-medium text-slate-700">
-                  {item}
-                </div>
-              ))}
-            </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {platformCapabilities.map((item) => (
+              <div key={item} className="rounded-xl border border-slate-200 bg-[#fbfaf7] p-4 text-sm font-medium leading-6 text-slate-700">
+                {item}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-              How Duka Works
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Duka Agents</p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900 md:text-4xl">From intent to job done</h2>
+            <p className="mt-4 text-gray-600">
+              Duka Agents help people move from a question or request to a
+              trusted answer, a recommendation, and an approved action.
             </p>
-            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
-              A governed path from information to action
-            </h2>
           </div>
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-5">
-            {layers.map((layer, index) => (
-              <article
-                key={layer.title}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  Layer {index + 1}
-                </p>
-                <layer.icon className="mt-4 h-6 w-6 text-orange-600" />
-                <h3 className="mt-3 font-semibold text-slate-900">{layer.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{layer.text}</p>
-              </article>
+          <div className="mt-8 grid gap-3 md:grid-cols-6">
+            {jobDoneFlow.map((step, index) => (
+              <div key={step} className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{index + 1}</p>
+                <p className="mt-2 font-semibold text-slate-900">{step}</p>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16 bg-slate-950">
-        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-300">
-              Chat App Interaction
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold text-white">
-              Ask and act through WhatsApp and familiar chat apps
-            </h2>
-            <p className="mt-4 text-slate-300">
-              Each workspace can have a dedicated assistant channel. Approved
-              users ask questions, retrieve information, request summaries, and
-              trigger allowed follow-ups without leaving the tools they already
-              use every day.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white p-5 shadow-sm">
-            <div className="rounded-xl bg-emerald-50 p-4 text-sm text-slate-700">
-              <p className="font-semibold text-slate-900">Team member</p>
-              <p className="mt-1">Summarize what needs attention today.</p>
-            </div>
-            <div className="mt-4 rounded-xl bg-slate-100 p-4 text-sm text-slate-700">
-              <p className="font-semibold text-slate-900">Duka Assistant</p>
-              <p className="mt-1">
-                Three items need review: customer follow-ups, a delayed document,
-                and a revenue movement in one location. I can show the sources or
-                prepare the approved follow-up list.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                <span className="rounded-full bg-white px-2 py-1">Allowed user</span>
-                <span className="rounded-full bg-white px-2 py-1">Citations ready</span>
-                <span className="rounded-full bg-white px-2 py-1">Task boundary checked</span>
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-[#101820] p-6 text-white shadow-card">
+            <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+              <div>
+                <MessageCircle className="h-7 w-7 text-emerald-300" />
+                <h3 className="mt-4 text-2xl font-semibold text-white">Work happens where people already are</h3>
+                <p className="mt-3 text-slate-300">
+                  Duka Agents can work through WhatsApp, dashboards, APIs, and
+                  embedded workflows, so employees and external clients can get
+                  answers or complete approved requests without learning another
+                  system first.
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 text-sm text-slate-800">
+                <div className="rounded-xl bg-emerald-50 p-4">
+                  <p className="font-semibold text-slate-900">Employee or client</p>
+                  <p className="mt-1">What needs attention today?</p>
+                </div>
+                <div className="mt-4 rounded-xl bg-slate-100 p-4">
+                  <p className="font-semibold text-slate-900">Duka Agent</p>
+                  <p className="mt-1">
+                    I found the right context, cited the sources, and prepared an approved next step for review.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-16">
-        <div className="max-w-6xl mx-auto grid gap-8 lg:grid-cols-2">
-          <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-7">
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2">
+          <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-7 shadow-card">
             <LockKeyhole className="h-7 w-7 text-emerald-700" />
-            <h2 className="mt-4 text-3xl font-semibold text-slate-900">
-              AI agents should not roam your systems
-            </h2>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Safe by design</h2>
             <p className="mt-4 text-slate-700">
-              Duka protects your organization by giving assistants access only
-              to governed knowledge objects, not raw operational systems. Each
-              answer and action is constrained by permissions, citations,
-              freshness, and workspace rules.
+              Duka Agents do not roam raw operational systems. They work through
+              governed knowledge objects, approved skills, and controlled actions.
             </p>
             <ul className="mt-5 space-y-3">
               {trustPoints.map((point) => (
@@ -285,35 +236,27 @@ export default function HomePage() {
             </ul>
           </article>
 
-          <article className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
-            <Bot className="h-7 w-7 text-orange-600" />
-            <h2 className="mt-4 text-3xl font-semibold text-slate-900">
-              A workspace assistant for each sector
-            </h2>
+          <article className="rounded-2xl border border-slate-200 bg-white p-7 shadow-card">
+            <Quote className="h-7 w-7 text-orange-600" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Pricing built around your needs</h2>
             <p className="mt-4 text-slate-600">
-              Duka is broad enough for many organizations, but each assistant is
-              shaped around the sector, workspace, and responsibilities it serves.
+              Get the best pricing with a customized package that meets your
+              needs. Our team will understand your goals and provide a proposal
+              that works for you.
             </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {sectorAssistants.map((assistant) => (
-                <div key={assistant} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-700">
-                  {assistant}
-                </div>
-              ))}
-            </div>
+            <Link href="/pricing" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600">
+              Request Quote
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </article>
         </div>
       </section>
 
-      <section className="px-6 py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
+      <section className="px-6 py-16">
+        <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-              Deployment Options
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold text-gray-900">
-              Managed SaaS or dedicated instance
-            </h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Deployment Options</p>
+            <h2 className="mt-3 text-3xl font-semibold text-gray-900">Managed SaaS or dedicated instance</h2>
             <p className="mt-4 text-gray-600">
               Deploy Duka as a fully managed SaaS platform for speed, or as a
               dedicated instance when your governance model requires stronger
@@ -323,7 +266,7 @@ export default function HomePage() {
           </div>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             {deploymentOptions.map((option) => (
-              <article key={option.title} className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+              <article key={option.title} className="rounded-2xl border border-slate-200 bg-white p-7 shadow-card">
                 <h3 className="text-2xl font-semibold text-slate-900">{option.title}</h3>
                 <p className="mt-3 text-slate-600">{option.text}</p>
                 <div className="mt-5 flex flex-wrap gap-2">
@@ -338,35 +281,23 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <section className="px-6 py-16 text-center bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <FileCheck2 className="mx-auto h-8 w-8 text-orange-600" />
-          <h2 className="mt-4 text-3xl font-semibold text-gray-900 md:text-4xl">
-            Build a governed assistant from your business knowledge
+
+      <section className="bg-[#101820] px-6 py-16 text-center">
+        <div className="mx-auto max-w-4xl">
+          <FileCheck2 className="mx-auto h-8 w-8 text-orange-300" />
+          <h2 className="mt-4 text-3xl font-semibold text-white md:text-4xl">
+            Turn scattered knowledge into completed work
           </h2>
-          <p className="mt-4 text-gray-600">
-            One assistant per workspace, built from your systems, documents,
-            communications, and workflows.
+          <p className="mt-4 text-slate-300">
+            The Core Platform unifies and governs enterprise knowledge. Duka
+            Agents turn that knowledge into answers, recommendations, and action.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contact"
-              className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
-            >
-              Book a Demo
-            </Link>
-            <Link
-              href="/ai-assistant"
-              className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-900 transition hover:bg-slate-50"
-            >
-              See Assistant
-            </Link>
+            <Link href="/contact" className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600">Book a Demo</Link>
+            <Link href="/pricing" className="rounded-xl border border-white/20 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/15">Request Quote</Link>
           </div>
         </div>
       </section>
     </main>
   );
 }
-
-
-

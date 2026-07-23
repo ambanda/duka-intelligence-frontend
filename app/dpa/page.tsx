@@ -29,7 +29,7 @@ export default function DpaPage() {
           <h2 className="text-2xl font-semibold text-gray-900">1. Definitions</h2>
           <div className="mt-4 space-y-4 text-gray-700">
             <p><strong>Personal Data</strong><br />Any information relating to an identified or identifiable natural person.</p>
-            <p><strong>Processing</strong><br />Any operation performed on personal data including collection, storage, analysis, or deletion.</p>
+            <p><strong>Processing</strong><br />Any operation performed on personal data including collection, storage, organization, retrieval, analysis, generation, transmission, or deletion.</p>
             <p><strong>Controller</strong><br />The organization that determines the purposes and means of processing personal data.</p>
             <p><strong>Processor</strong><br />Akili Data, which processes personal data on behalf of the Controller.</p>
             <p><strong>Sub-processor</strong><br />Any third party engaged by Akili Data to process personal data on behalf of the Controller.</p>
@@ -39,25 +39,25 @@ export default function DpaPage() {
         <section className="mt-10">
           <h2 className="text-2xl font-semibold text-gray-900">2. Scope of Processing</h2>
           <p className="mt-4 text-gray-700">
-            Duka Intelligence provides analytics, reporting, and data insights based on business data integrated from external systems.
+            Duka Intelligence provides a governed enterprise knowledge platform and Duka Agents that support search, retrieval, summaries, recommendations, dashboards, APIs, chat interfaces, and approved workflow actions based on Customer Data integrated from authorized sources.
           </p>
           <p className="mt-3 text-gray-700">Processing activities may include:</p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
-            <li>Storage of business transaction data</li>
-            <li>Analysis of sales and operational metrics</li>
-            <li>Generation of dashboards and analytics</li>
-            <li>Processing of AI-generated insights</li>
-            <li>Data integration with third-party systems</li>
+            <li>Ingestion and storage of Customer Data from business systems, documents, communications, social channels, cloud storage, and APIs</li>
+            <li>Processing of structured, relational, unstructured, document, message, and conversation data</li>
+            <li>Entity extraction, data normalization, enrichment, indexing, and knowledge object creation</li>
+            <li>Search, retrieval, summarization, recommendations, answer generation, response drafting, and approved workflow support</li>
+            <li>Generation of dashboards, reports, citations, freshness indicators, lineage, audit logs, and operational views</li>
+            <li>Integration with third-party systems and communication channels authorized by the Controller</li>
           </ul>
           <p className="mt-3 text-gray-700">Personal data processed may include:</p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
-            <li>Customer names</li>
-            <li>Email addresses</li>
-            <li>Purchase records</li>
-            <li>Transaction identifiers</li>
-            <li>Device or technical data</li>
+            <li>Names, email addresses, phone numbers, roles, identifiers, and organization details</li>
+            <li>Customer, member, employee, supplier, or contact records</li>
+            <li>Message, document, transaction, task, workflow, or communication records</li>
+            <li>Device, technical, usage, query, or audit data</li>
           </ul>
-          <p className="mt-3 text-gray-700">The Controller determines the type of data shared with the Platform.</p>
+          <p className="mt-3 text-gray-700">The Controller determines the type of data shared with or connected to the Platform.</p>
         </section>
 
         <section className="mt-10">
@@ -67,7 +67,8 @@ export default function DpaPage() {
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
             <li>They have the legal right to process and share personal data.</li>
             <li>Data collected complies with applicable data protection laws.</li>
-            <li>Appropriate notices and consents have been provided to individuals where required.</li>
+            <li>Appropriate notices, permissions, and consents have been provided to individuals where required.</li>
+            <li>Connected systems, channels, files, APIs, and social accounts are authorized for the intended processing.</li>
           </ul>
           <p className="mt-4 text-gray-700"><strong>Processor Responsibilities</strong></p>
           <p className="mt-2 text-gray-700">Akili Data agrees to:</p>
@@ -75,6 +76,7 @@ export default function DpaPage() {
             <li>Process personal data only in accordance with the Customer&apos;s instructions.</li>
             <li>Maintain appropriate technical and organizational safeguards.</li>
             <li>Ensure confidentiality of personnel accessing personal data.</li>
+            <li>Support reasonable data protection requests where technically feasible and legally required.</li>
           </ul>
         </section>
 
@@ -85,6 +87,7 @@ export default function DpaPage() {
             <li>Encrypted data transmission</li>
             <li>Secure cloud infrastructure</li>
             <li>Role-based access control</li>
+            <li>Tenant or workspace separation where applicable</li>
             <li>Monitoring and logging of system activity</li>
             <li>Regular security updates</li>
           </ul>
@@ -99,7 +102,8 @@ export default function DpaPage() {
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
             <li>Cloud hosting providers</li>
             <li>AI processing services</li>
-            <li>Data infrastructure providers</li>
+            <li>Data infrastructure, storage, monitoring, and security providers</li>
+            <li>Communication, messaging, social channel, and integration providers</li>
           </ul>
           <p className="mt-3 text-gray-700">
             All sub-processors are required to implement appropriate security and confidentiality measures.
@@ -118,7 +122,7 @@ export default function DpaPage() {
 
         <section className="mt-10">
           <h2 className="text-2xl font-semibold text-gray-900">7. Data Breach Notification</h2>
-          <p className="mt-4 text-gray-700">In the event of a confirmed personal data breach affecting Customer data, Akili Data will:</p>
+          <p className="mt-4 text-gray-700">In the event of a confirmed personal data breach affecting Customer Data, Akili Data will:</p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
             <li>Notify the Customer without undue delay</li>
             <li>Provide reasonable information about the breach</li>
@@ -132,7 +136,7 @@ export default function DpaPage() {
           <p className="mt-3 text-gray-700">Upon termination of the Customer&apos;s account:</p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
             <li>Data may be deleted, anonymized, or returned where technically feasible</li>
-            <li>Certain data may be retained where required for legal or security purposes</li>
+            <li>Certain data may be retained where required for legal, security, dispute resolution, or compliance purposes</li>
           </ul>
         </section>
 

@@ -23,10 +23,10 @@ export default function AupPage() {
         <section className="mt-10">
           <h2 className="text-2xl font-semibold text-gray-900">1. Purpose</h2>
           <p className="mt-4 text-gray-700">
-            Duka Intelligence is designed to provide business analytics, data insights, and operational intelligence for retailers and businesses.
+            Duka Intelligence is designed to unify and govern enterprise knowledge, power Duka Agents, support enterprise search, social media listening, operational knowledge workflows, and approved AI-assisted actions.
           </p>
           <p className="mt-3 text-gray-700">
-            Users must use the Platform responsibly and in compliance with applicable laws.
+            Users must use the Platform responsibly, only with authorized data and systems, and in compliance with applicable laws, organizational policies, and third-party terms.
           </p>
         </section>
 
@@ -39,27 +39,29 @@ export default function AupPage() {
               <p><strong>Illegal Activities</strong></p>
               <ul className="mt-2 space-y-2 list-disc pl-6">
                 <li>Violate any applicable law or regulation</li>
-                <li>Process data obtained illegally</li>
-                <li>Facilitate fraud, money laundering, or other criminal activity</li>
+                <li>Process, retrieve, or connect data obtained illegally</li>
+                <li>Facilitate fraud, money laundering, harassment, discrimination, or other criminal activity</li>
               </ul>
             </div>
 
             <div>
               <p><strong>Unauthorized Access</strong></p>
               <ul className="mt-2 space-y-2 list-disc pl-6">
-                <li>Attempt to gain unauthorized access to systems or accounts</li>
+                <li>Attempt to gain unauthorized access to systems, accounts, workspaces, channels, or data</li>
+                <li>Connect systems, inboxes, files, social accounts, or APIs without proper authorization</li>
                 <li>Probe, scan, or test vulnerabilities of the Platform</li>
-                <li>Circumvent security or authentication measures</li>
+                <li>Circumvent security, authentication, access controls, or workspace permissions</li>
               </ul>
             </div>
 
             <div>
               <p><strong>Harmful Content</strong></p>
-              <p className="mt-2">Users may not upload or process:</p>
+              <p className="mt-2">Users may not upload, connect, generate, or process:</p>
               <ul className="mt-2 space-y-2 list-disc pl-6">
                 <li>Malware or malicious software</li>
                 <li>Content designed to disrupt systems</li>
-                <li>Data intended to harm individuals or businesses</li>
+                <li>Data intended to harm individuals, organizations, or public safety</li>
+                <li>Content that infringes intellectual property, privacy, confidentiality, or contractual rights</li>
               </ul>
             </div>
 
@@ -70,6 +72,7 @@ export default function AupPage() {
                 <li>Overload or interfere with the Platform</li>
                 <li>Use automated tools that disrupt normal operation</li>
                 <li>Resell or exploit the service without authorization</li>
+                <li>Use the Platform to create competing services through unauthorized copying or reverse engineering</li>
               </ul>
             </div>
           </div>
@@ -78,21 +81,24 @@ export default function AupPage() {
         <section className="mt-10">
           <h2 className="text-2xl font-semibold text-gray-900">3. Data Responsibility</h2>
           <p className="mt-4 text-gray-700">
-            Users are responsible for ensuring that any data uploaded to the Platform:
+            Users are responsible for ensuring that any data, system, document, communication channel, social channel, or API connected to the Platform:
           </p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
-            <li>Is lawfully collected</li>
-            <li>Does not violate privacy rights</li>
+            <li>Is lawfully collected and authorized for processing</li>
+            <li>Does not violate privacy, confidentiality, intellectual property, or contractual rights</li>
             <li>Complies with applicable data protection laws</li>
+            <li>Is accessed and used according to the user&apos;s role, permissions, and organizational policies</li>
           </ul>
         </section>
 
         <section className="mt-10">
-          <h2 className="text-2xl font-semibold text-gray-900">4. AI and Analytics Usage</h2>
-          <p className="mt-4 text-gray-700">Where the Platform provides AI-generated insights or analytics:</p>
+          <h2 className="text-2xl font-semibold text-gray-900">4. AI and Agent Usage</h2>
+          <p className="mt-4 text-gray-700">Where the Platform provides AI-generated outputs, Duka Agent responses, recommendations, drafts, summaries, or workflow suggestions:</p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
-            <li>Outputs are informational and should not be treated as guaranteed predictions.</li>
-            <li>Users remain responsible for decisions made based on such insights.</li>
+            <li>Outputs are informational and operational support, and should not be treated as guaranteed facts, predictions, legal advice, financial advice, or professional advice.</li>
+            <li>Users remain responsible for reviewing outputs before relying on them or taking action.</li>
+            <li>Users must not use AI outputs to make decisions where human review is required by law, regulation, contract, or organizational policy.</li>
+            <li>Users must not attempt to bypass configured access controls, citations, approval flows, or allowed-action boundaries.</li>
           </ul>
         </section>
 
@@ -101,8 +107,9 @@ export default function AupPage() {
           <p className="mt-4 text-gray-700">Akili Data reserves the right to:</p>
           <ul className="mt-3 space-y-2 text-gray-700 list-disc pl-6">
             <li>Suspend or terminate accounts violating this policy</li>
-            <li>Remove data that violates this policy</li>
+            <li>Remove, disable, or restrict data, content, integrations, agents, or workflows that violate this policy</li>
             <li>Investigate suspected misuse</li>
+            <li>Limit or block access to protect users, customers, third parties, or the Platform</li>
           </ul>
           <p className="mt-3 text-gray-700">Serious violations may be reported to relevant authorities.</p>
         </section>

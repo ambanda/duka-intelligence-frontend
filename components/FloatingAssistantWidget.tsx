@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
@@ -27,7 +27,7 @@ export default function FloatingAssistantWidget() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Open Duka Intelligence assistant"
-        className="inline-flex items-center gap-2 rounded-full bg-[#075e54] px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-slate-900/20 transition hover:bg-[#064d45]"
+        className="inline-flex items-center gap-2 rounded-full bg-[#0f766e] px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-slate-900/20 transition hover:bg-[#0b5f59]"
       >
         <MessageCircle className="h-5 w-5 text-emerald-100" />
         Ask Duka

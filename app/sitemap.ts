@@ -33,6 +33,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
+      url: "https://dukaintelligence.co.ke/pricing",
+      lastModified: new Date(),
+    },
+    {
       url: "https://dukaintelligence.co.ke/product",
       lastModified: new Date(),
     },

@@ -2,48 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global base styles */
+:root {
+  --duka-ink: #101820;
+  --duka-charcoal: #17212b;
+  --duka-cream: #fbfaf7;
+  --duka-orange: #f97316;
+  --duka-green: #0f766e;
+  --duka-border: #e5e7eb;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9fafb; /* gray-50 */
-  color: #111827;
+  background-color: var(--duka-cream);
+  color: var(--duka-ink);
 }
 
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
-/* Text */
 p {
   line-height: 1.75;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
 }
 
-/* Sections spacing */
 section {
   padding-top: 3rem;
   padding-bottom: 3rem;
 }
 
-/* Links */
 a {
   text-decoration: none;
 }
 
-/* Utility helpers */
 .bg-accent {
-  background-color: #f97316;
+  background-color: var(--duka-orange);
 }
 
 .bg-muted {
-  background-color: #f3f4f6;
+  background-color: #f4f1eb;
 }
-
-
-

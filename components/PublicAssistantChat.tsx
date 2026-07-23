@@ -24,10 +24,10 @@ const SESSION_KEY = "duka_public_assistant_session_id";
 const MESSAGES_KEY = "duka_public_assistant_messages";
 
 const firstVisitMessage =
-  "Work AI platform that unifies company knowledge, systems, and context, enabling AI to deliver real productivity gains across the enterprise.";
+  "Duka Intelligence unifies enterprise knowledge and powers Duka Agents that help employees find trusted answers and complete tasks in the tools they already use.";
 
 const returningMessage =
-  "Welcome back to Duka. Thanks for checking out Duka Workspace AI platform. It is designed to help teams find knowledge and automate tasks efficiently. Ask Duka.";
+  "Welcome back to Duka. Ask about the Core Platform, Duka Agents, enterprise search, social media listening, or how teams move from intent to job done.";
 
 function createVisitorId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -94,7 +94,7 @@ function formatAnswer(text: string): { sentences: string[]; keyPoints: string[] 
   const keyPoints = keyPointText
     ? keyPointText
         .replace(/\.$/, "")
-        .split(/;|\n|•|- /)
+        .split(/;|\n|â€¢|- /)
         .map((item) => item.trim())
         .filter(Boolean)
         .slice(0, 5)
@@ -246,7 +246,7 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
         ...prev,
         {
           role: "assistant",
-          text: "Thanks. You can continue asking questions, and we can tailor a demo around your organization, channel, and first workspace use case.",
+          text: "Thanks. You can continue asking questions, and we can tailor a demo around your organization, knowledge sources, channels, and first Duka Agent use case.",
         },
       ]);
     } catch {
@@ -271,7 +271,7 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">Duka Intelligence</p>
-            <p className="text-xs text-emerald-100">AI agent</p>
+            <p className="text-xs text-emerald-100">Duka Agent</p>
           </div>
         </div>
         <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-emerald-50">
@@ -301,7 +301,7 @@ export default function PublicAssistantChat({ mode = "inline" }: PublicAssistant
           <div className="flex justify-start">
             <div className="inline-flex items-center gap-2 rounded-2xl rounded-tl-sm bg-white px-4 py-3 text-sm text-slate-600 shadow-sm ring-1 ring-emerald-100">
               <Loader2 className="h-4 w-4 animate-spin text-[#075e54]" />
-              Checking approved public knowledge...
+              Checking governed public knowledge...
             </div>
           </div>
         ) : null}
