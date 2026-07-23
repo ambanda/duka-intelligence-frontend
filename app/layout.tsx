@@ -30,11 +30,11 @@ export const metadata: Metadata = {
 
   icons: {
     icon: [
-      { url: "/icon.png", sizes: "16x16", type: "image/png" },
-      { url: "/icon.png", sizes: "32x32", type: "image/png" },
+      { url: "/logo-icon-square.png", sizes: "512x512", type: "image/png" },
+      { url: "/logo-icon.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/icon.png",
-    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/logo-icon-square.png",
+    apple: [{ url: "/logo-icon-square.png", sizes: "512x512", type: "image/png" }],
   },
 
   openGraph: {
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     siteName: "Duka Intelligence",
     images: [
       {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
+        url: "/logo-horizontal-dark.png",
+        width: 1400,
+        height: 520,
         alt: "Duka Intelligence Logo",
       },
     ],
@@ -71,7 +71,7 @@ export default function RootLayout({
     "@type": "Organization",
     name: "Duka Intelligence",
     url: "https://dukaintelligence.co.ke",
-    logo: "https://dukaintelligence.co.ke/logo.png",
+    logo: "https://dukaintelligence.co.ke/logo-horizontal-dark.png",
   };
 
   return (

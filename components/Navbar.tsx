@@ -6,16 +6,14 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#101820]/95 text-white shadow-sm backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3 md:flex-row md:items-center md:justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <span className="rounded-xl bg-white px-3 py-2">
-            <Image
-              src="/logo.jpeg"
-              alt="Duka Intelligence"
-              width={230}
-              height={60}
-              className="h-12 w-auto object-contain md:h-14"
-              priority
-            />
-          </span>
+          <Image
+            src="/logo-horizontal-dark.png"
+            alt="Duka Intelligence"
+            width={420}
+            height={156}
+            className="h-12 w-auto rounded-md object-contain md:h-14"
+            priority
+          />
           <span className="sr-only">Duka Intelligence</span>
         </Link>
 
