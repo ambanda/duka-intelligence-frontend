@@ -1,0 +1,6 @@
+language: typescript
+stack: frontend
+layer: library
+tags:
+  - shared
+  - ui

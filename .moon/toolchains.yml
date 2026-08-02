@@ -1,0 +1,7 @@
+javascript:
+  packageManager: npm
+
+node:
+  version: 20.20.0
+
+npm: {}

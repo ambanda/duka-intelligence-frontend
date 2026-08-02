@@ -1,0 +1,13 @@
+projects:
+  website: apps/website
+  ui: packages/ui
+  api-client: packages/api-client
+  auth: packages/auth
+  config: packages/config
+
+vcs:
+  client: git
+  defaultBranch: main
+  provider: github
+
+telemetry: false

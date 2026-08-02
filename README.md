@@ -1,45 +1,27 @@
-# Duka Intelligence – Frontend MVP
+# Duka Intelligence Frontend
 
-Static, SEO-optimized marketing frontend for Duka Intelligence.
+Frontend monorepo for Duka Intelligence.
 
-## Stack
-- Next.js (App Router)
-- Tailwind CSS
-- Static Export
-- Netlify hosting
+## Applications
 
-## Local Development
+- `apps/website`: public, SEO-optimized Next.js website deployed as a static export.
+- `apps/workspace`: authenticated operational application, added in the next migration phase.
+
+## Shared Packages
+
+- `packages/ui`: shared visual primitives.
+- `packages/api-client`: generated and typed Duka API contracts.
+- `packages/auth`: provider-neutral authentication and session contracts.
+- `packages/config`: shared frontend tooling configuration.
+
+## Commands
+
 ```bash
 npm install
 npm run dev
+npm run build
+npm run verify:website
+npm run build:moon
+```
 
-
-
-
-import Hero from "@/components/Hero";
-import Tiers from "@/components/Tiers";
-import HowItWorks from "@/components/HowItWorks";
-import DeliveryModes from "@/components/DeliveryModes";
-import CTA from "@/components/CTA";
-import Footer from "@/components/Footer";
-
-export default function HomePage() {
-  return (
-    <>
-      <Hero />
-      <Tiers />
-      <HowItWorks />
-      <DeliveryModes />
-      <CTA />
-      <Footer />
-    </>
-  );
-}
-
-
-
-
-
-
-
-
+The root uses npm workspaces for dependency management and moonrepo for project-aware task orchestration. Netlify builds from the repository root and publishes `apps/website/out`.

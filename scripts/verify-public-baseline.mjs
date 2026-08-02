@@ -94,9 +94,12 @@ for (const storageKey of assistantContract.browserPersistence) {
   assert(chatSource.includes(storageKey), `Public assistant persistence key changed: ${storageKey}`);
 }
 
-const netlify = readFileSync(join(websiteRoot, "netlify.toml"), "utf8");
+const netlify = readFileSync(join(root, "netlify.toml"), "utf8");
 assert(netlify.includes('command = "npm run build"'), "Netlify build command changed");
-assert(netlify.includes('publish = "out"'), "Netlify publish directory changed");
+assert(
+  netlify.includes('publish = "apps/website/out"'),
+  "Netlify publish directory is not the website workspace output",
+);
 assert(netlify.includes('NODE_VERSION = "20.20.0"'), "Netlify Node version changed");
 
 const nextConfig = readFileSync(join(websiteRoot, "next.config.js"), "utf8");

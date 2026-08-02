@@ -24,3 +24,6 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# moonrepo local cache
+.moon/cache/
