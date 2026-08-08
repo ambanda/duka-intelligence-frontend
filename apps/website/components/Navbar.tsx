@@ -1,7 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LogIn } from "lucide-react";
+
+import { workspaceSignInUrl } from "@/lib/workspaceUrl";
 
 export default function Navbar() {
+  const signInUrl = workspaceSignInUrl();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#101820]/95 text-white shadow-sm backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3 md:flex-row md:items-center md:justify-between">
@@ -36,6 +41,13 @@ export default function Navbar() {
           <Link href="/about" className="transition hover:text-orange-300">
             Company
           </Link>
+          <a
+            href={signInUrl}
+            className="inline-flex items-center gap-2 border-l border-white/20 pl-5 font-semibold text-white transition hover:text-orange-300"
+          >
+            <LogIn aria-hidden="true" size={16} />
+            Workspace sign in
+          </a>
           <Link
             href="/contact"
             className="rounded-lg bg-orange-500 px-4 py-2 font-semibold text-white transition hover:bg-orange-600"

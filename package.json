@@ -8,13 +8,26 @@
   "scripts": {
     "dev": "npm run dev:website",
     "dev:website": "npm run dev --workspace=@duka/website",
+    "dev:workspace": "npm run dev --workspace=@duka/workspace",
     "build": "npm run build:website",
     "build:website": "npm run build --workspace=@duka/website",
+    "build:workspace": "npm run build --workspace=@duka/workspace",
+    "build:all": "npm run build:website && npm run build:workspace",
     "build:moon": "moon run website:build",
-    "verify:website": "node scripts/verify-public-baseline.mjs"
+    "build:workspace:moon": "moon run workspace:build",
+    "typecheck:workspace": "npm run typecheck --workspace=@duka/workspace",
+    "typecheck": "npm run typecheck:workspace",
+    "verify:website": "node scripts/verify-public-baseline.mjs",
+    "test:workspace": "npm run test --workspace=@duka/workspace",
+    "test:e2e:workspace": "playwright test --config apps/workspace/playwright.config.ts",
+    "verify:control-plane-contract": "node scripts/verify-control-plane-contract.mjs",
+    "verify:no-workspace-secrets": "node scripts/verify-workspace-bundle-secrets.mjs",
+    "test": "npm run typecheck && npm run test:workspace && npm run verify:website"
   },
   "devDependencies": {
-    "@moonrepo/cli": "^2.4.6"
+    "@moonrepo/cli": "^2.4.6",
+    "@playwright/test": "^1.62.1",
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=20.20.0 <23"
