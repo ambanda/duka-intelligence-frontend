@@ -39,7 +39,7 @@ export default function ContactPage() {
         <p className="text-lg text-slate-800">
           Email: tsah@dukaintelligence.co.ke
           <br />
-          WhatsApp: +254 734 686 211
+          WhatsApp: +254 725 375 358
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Link href="/pricing" className="rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600">
