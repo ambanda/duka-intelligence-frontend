@@ -59,6 +59,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+
+  verification: {
+    other: {
+      "facebook-domain-verification": "d2i4rmntakfpwt8etd6assnwblnd8x",
+    },
+  },
 };
 
 export default function RootLayout({
