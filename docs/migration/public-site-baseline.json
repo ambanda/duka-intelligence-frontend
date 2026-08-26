@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-08-02T09:21:20.850Z",
+  "branch": "migration/frontend-workspaces",
+  "baseCommit": "05f4fc93c464f5957fe9f47d1485bb711b71a1ca",
+  "localNodeVersion": "v22.18.0",
+  "netlifyNodeVersion": "20.20.0",
+  "websiteRoot": ".",
+  "buildCommand": "npm run build",
+  "publishDirectory": "out",
+  "routeOutput": [
+    {
+      "route": "/",
+      "output": "index.html",
+      "bytes": 102264,
+      "sha256": "d3dd988580d09c566d15efec7b8f82cb126e1b69dda7567f29f3c221527bf191"
+    },
+    {
+      "route": "/about",
+      "output": "about.html",
+      "bytes": 31182,
+      "sha256": "42247cdec9d4d09c636de51c6c6e493fff915fd12fb2de74f4498df48abe9e54"
+    },
+    {
+      "route": "/ai-assistant",
+      "output": "ai-assistant.html",
+      "bytes": 43201,
+      "sha256": "6bf1c546b80f116b0d9b817d17b5f55c5e416ca9d13803ec6ca8aa71efa937b5"
+    },
+    {
+      "route": "/aup",
+      "output": "aup.html",
+      "bytes": 31677,
+      "sha256": "147c9e930d4cbb68b40b5676c3655fd2436326d9899a731eb47fc788e50d93dd"
+    },
+    {
+      "route": "/contact",
+      "output": "contact.html",
+      "bytes": 21499,
+      "sha256": "0348b612eb948a8c113bc354d790fe1a96770f426a32a3ed81273e2ed2677504"
+    },
+    {
+      "route": "/dpa",
+      "output": "dpa.html",
+      "bytes": 39451,
+      "sha256": "0044557398498da79beb1f59bfd1fd3df5f0995482dcadd076fd4be812ac820e"
+    },
+    {
+      "route": "/industries",
+      "output": "industries.html",
+      "bytes": 56131,
+      "sha256": "0827afb16f9dd545899a3419c8e88846e5223ec4f9d94d6681f2063ddcfe03e3"
+    },
+    {
+      "route": "/integrations",
+      "output": "integrations.html",
+      "bytes": 42835,
+      "sha256": "5b1c32a63155e557d8cd5ab7b1b7f980e55d549da95fdd54afccdcbac354eaef"
+    },
+    {
+      "route": "/platform",
+      "output": "platform.html",
+      "bytes": 61541,
+      "sha256": "6fc3f4682325eb4dc9907259af1f5121b21621e6e3eddae0a13b90fc31eeeddc"
+    },
+    {
+      "route": "/pricing",
+      "output": "pricing.html",
+      "bytes": 39149,
+      "sha256": "7f7edceda2a123726ab88c9d7370af61490bc78e48742ca755a375a2f0653ad6"
+    },
+    {
+      "route": "/privacy",
+      "output": "privacy.html",
+      "bytes": 36680,
+      "sha256": "d5f6baf103fc1d00b84377b2356358d0344203605263a9ffb7bdcc18aa79c724"
+    },
+    {
+      "route": "/product",
+      "output": "product.html",
+      "bytes": 61539,
+      "sha256": "db1322b8410291a67a67d77dd341a40c5e20142190ed30ca4217f61b681be4eb"
+    },
+    {
+      "route": "/terms",
+      "output": "terms.html",
+      "bytes": 43795,
+      "sha256": "4439206ea5aed733542a1acd93c19c7fe2994f1fc88759370afe63999d83e69d"
+    },
+    {
+      "route": "/trust",
+      "output": "trust.html",
+      "bytes": 41898,
+      "sha256": "a55de7ca0d14e5c9e30b5e60e3b0963ef97b57d2a83c0c397fda5b62c639a247"
+    },
+    {
+      "route": "/robots.txt",
+      "output": "robots.txt",
+      "bytes": 76,
+      "sha256": "bb1157005861f964e4bb0757b64a0b9b86488bd9a492e78533c6a8440b82dde0"
+    },
+    {
+      "route": "/sitemap.xml",
+      "output": "sitemap.xml",
+      "bytes": 1600,
+      "sha256": "fcf8ba26d5b7857931560e8f636994106dc4783fcccf97cfe8376c1957fad90c"
+    }
+  ],
+  "metadataContract": {
+    "title": "Duka Intelligence",
+    "canonicalOrigin": "https://dukaintelligence.co.ke",
+    "robots": "index, follow",
+    "sitemap": "https://dukaintelligence.co.ke/sitemap.xml"
+  },
+  "assistantContract": {
+    "environmentVariable": "NEXT_PUBLIC_DUKA_PUBLIC_API_BASE_URL",
+    "defaultApiBaseUrl": "https://api.dukaintelligence.co.ke",
+    "endpoints": [
+      "/public/chat/bootstrap",
+      "/public/chat",
+      "/public/leads"
+    ],
+    "browserPersistence": [
+      "duka_public_assistant_visitor_id",
+      "duka_public_assistant_session_id",
+      "duka_public_assistant_messages"
+    ]
+  }
+}

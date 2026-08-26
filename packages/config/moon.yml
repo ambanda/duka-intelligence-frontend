@@ -1,0 +1,6 @@
+language: typescript
+stack: infrastructure
+layer: configuration
+tags:
+  - shared
+  - configuration

@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = "apps/website/out"
+  ignore = "node scripts/netlify-ignore.mjs website"
 
 [build.environment]
   NODE_VERSION = "20.20.0"

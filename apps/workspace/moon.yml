@@ -1,0 +1,42 @@
+language: typescript
+stack: frontend
+layer: application
+tags:
+  - next
+  - workspace-app
+dependsOn:
+  - api-client
+  - auth
+  - config
+  - ui
+
+tasks:
+  dev:
+    command: next dev -p 3001
+  build:
+    command: npm run build
+    toolchains:
+      - javascript
+      - node
+      - npm
+    inputs:
+      - app/**/*
+      - components/**/*
+      - lib/**/*
+      - public/**/*
+      - next.config.js
+      - package.json
+      - tsconfig.json
+    outputs:
+      - .next/**/*
+  typecheck:
+    command: npm run typecheck
+    toolchains:
+      - javascript
+      - node
+      - npm
+    inputs:
+      - app/**/*
+      - components/**/*
+      - lib/**/*
+      - tsconfig.json

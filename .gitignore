@@ -21,3 +21,13 @@ Thumbs.db
 # IDE
 .vscode/
 
+
+# Local Netlify folder
+.netlify
+
+# moonrepo local cache
+.moon/cache/
+
+# browser test artifacts
+test-results/
+playwright-report/

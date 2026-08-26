@@ -1,0 +1,26 @@
+language: typescript
+stack: frontend
+layer: application
+tags:
+  - next
+  - public-site
+
+tasks:
+  build:
+    command: npm run build
+    toolchains:
+      - javascript
+      - node
+      - npm
+    inputs:
+      - app/**/*
+      - components/**/*
+      - lib/**/*
+      - public/**/*
+      - next.config.js
+      - package.json
+      - postcss.config.js
+      - tailwind.config.js
+      - tsconfig.json
+    outputs:
+      - out/**/*

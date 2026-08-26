@@ -1,0 +1,18 @@
+{
+    "dashboard_environment_variables":  [
+
+                                        ],
+    "file_based_environment":  {
+                                   "NODE_VERSION":  {
+                                                        "value":  "20.20.0",
+                                                        "source":  "netlify.toml",
+                                                        "context":  "all_builds"
+                                                    }
+                               },
+    "public_assistant_api":  {
+                                 "netlify_variable_configured":  false,
+                                 "production_behavior":  "uses_code_fallback",
+                                 "fallback_url":  "https://api.dukaintelligence.co.ke",
+                                 "local_variable_file":  ".env.local"
+                             }
+}
