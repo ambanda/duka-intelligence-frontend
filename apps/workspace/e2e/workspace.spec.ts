@@ -34,10 +34,14 @@ test("channels renders live BFF data and disconnects through a CSRF mutation", a
 test("Meta Embedded Signup submits the one-time code immediately through the BFF", async ({ page }) => {
   let completionBody: Record<string, unknown> | null = null;
   await page.addInitScript(() => {
-    const metaWindow = window as typeof window & { FB?: { init: () => void; login: (callback: (value: unknown) => void) => void } };
+    const metaWindow = window as typeof window & {
+      __metaLoginOptions?: Record<string, unknown>;
+      FB?: { init: () => void; login: (callback: (value: unknown) => void, options: Record<string, unknown>) => void };
+    };
     metaWindow.FB = {
       init: () => undefined,
-      login: (callback) => {
+      login: (callback, options) => {
+        metaWindow.__metaLoginOptions = options;
         window.dispatchEvent(new MessageEvent("message", {
           origin: "https://www.facebook.com",
           data: JSON.stringify({ type: "WA_EMBEDDED_SIGNUP", event: "FINISH", data: { waba_id: "waba-1", phone_number_id: "phone-1", business_id: "business-1" } }),
@@ -62,6 +66,13 @@ test("Meta Embedded Signup submits the one-time code immediately through the BFF
 
   await page.goto("/w/workspace-e2e/channels/whatsapp/connect", { waitUntil: "load" });
   await page.getByRole("button", { name: "Continue with Meta" }).click();
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __metaLoginOptions?: Record<string, unknown> }).__metaLoginOptions)).toMatchObject({
+    config_id: "config-1",
+    auth_type: "rerequest",
+    response_type: "code",
+    override_default_response_type: true,
+    extras: { sessionInfoVersion: 3, setup: {} },
+  });
   await expect.poll(() => completionBody).toMatchObject({ authorization_code: "one-time-code", waba_id: "waba-1", phone_number_id: "phone-1" });
   await expect(page.getByRole("button", { name: "WhatsApp connected" })).toBeVisible();
 });
@@ -105,4 +116,64 @@ test("workspace administrator can discover and publish a sector skill", async ({
   await page.getByRole("button", { name: "Publish" }).click();
   await expect(page.getByText("Skill published and available to the workspace runtime.")).toBeVisible();
   await expect(page.getByText("Active")).toBeVisible();
+});
+
+test("channel administrator submits a template and sends an approved message", async ({ page }) => {
+  const approvedTemplate = {
+    template_record_id: "template-approved", provider_template_id: "meta-template-1",
+    name: "appointment_confirmation_v1", language: "en", category: "UTILITY",
+    components: [{ type: "BODY", text: "Appointment {{1}} is confirmed." }],
+    layout_type: "STANDARD", parameter_format: "positional", definition: {},
+    send_schema: { version: 1, parameter_format: "positional", fields: [{ key: "body.1", component: "body", value_type: "text", label: "Appointment reference", required: true }] },
+    validation_errors: [], draft_version: 1, quality_score: "GREEN", quality_updated_at: null,
+    status: "APPROVED", source: "duka", rejection_reason: null,
+    submitted_at: "2030-01-01T00:00:00Z", last_reconciled_at: "2030-01-01T00:00:00Z",
+    created_at: "2030-01-01T00:00:00Z", updated_at: "2030-01-01T00:00:00Z",
+  };
+  let templateCsrf = false;
+  let messageBody: Record<string, unknown> | null = null;
+
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/message-templates", async (route) => {
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ templates: [approvedTemplate] }) });
+  });
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/message-templates/drafts", async (route) => {
+    templateCsrf = Boolean(route.request().headers()["x-duka-csrf"]);
+    const body = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ ...approvedTemplate, template_record_id: "template-pending", provider_template_id: null, name: body.name, status: "DRAFT", draft_version: 1, validation_errors: [] }) });
+  });
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/message-templates/template-pending/validate", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ valid: true, issues: [], components: [], send_schema: { version: 1, parameter_format: "named", fields: [] } }) }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/message-templates/template-pending/submit", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ ...approvedTemplate, template_record_id: "template-pending", provider_template_id: "meta-template-2", name: "review_template_v1", status: "PENDING" }) }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/message-templates/reconcile", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ channel_id: "channel-1", reconciled: 2, approved: 1, pending: 1, rejected: 0 }) }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/contacts", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ contacts: [{ contact_id: "contact-1", recipient: "+254725375358", display_phone_number: "+254 *** 5358", contact_type: "customer", identity_status: "verified", marketing_consent_status: "opted_in", last_seen_at: "2030-01-01T00:00:00Z" }] }) }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/messages", async (route) => {
+    if (route.request().method() === "POST") {
+      messageBody = route.request().postDataJSON();
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ request_id: "request-1", message_record_id: "message-1", provider_message_id: "wamid-1", template_name: approvedTemplate.name, template_category: "UTILITY", processing_status: "completed", delivery_status: "sent", error_code: null, sent_at: "2030-01-01T00:00:00Z", delivered_at: null, read_at: null, created_at: "2030-01-01T00:00:00Z" }) });
+      return;
+    }
+    await route.fulfill({ contentType: "application/json", body: JSON.stringify({ messages: [] }) });
+  });
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/messages/request-1", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ request_id: "request-1", message_record_id: "message-1", provider_message_id: "wamid-1", template_name: approvedTemplate.name, template_category: "UTILITY", processing_status: "completed", delivery_status: "delivered", error_code: null, sent_at: "2030-01-01T00:00:00Z", delivered_at: "2030-01-01T00:01:00Z", read_at: null, created_at: "2030-01-01T00:00:00Z" }) }));
+
+  await page.goto("/w/workspace-e2e/channels/channel-1", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("appointment_confirmation_v1")).toBeVisible();
+  await page.getByRole("button", { name: "Create template" }).click();
+  await page.getByLabel("Template name").fill("review_template_v1");
+  await page.getByLabel("Body text").fill("Hello {{customer_name}}");
+  await page.getByLabel("Body example for {{customer_name}}").fill("Francis");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await page.getByRole("button", { name: "Run preflight" }).click();
+  await page.getByRole("button", { name: "Submit to Meta" }).click();
+  await expect(page.getByText("review_template_v1")).toBeVisible();
+  expect(templateCsrf).toBe(true);
+
+  await page.getByRole("tab", { name: /Messages/ }).click();
+  await page.getByLabel("Template").selectOption("template-approved");
+  await page.getByLabel("Contact").selectOption("+254725375358");
+  await page.getByLabel("Appointment reference").fill("APT-001");
+  await page.getByLabel("Business purpose").fill("appointment_confirmation");
+  await page.getByLabel("Business reference").fill("APT-001");
+  await page.getByRole("button", { name: "Send template" }).click();
+  await expect.poll(() => messageBody).toMatchObject({ recipient: "+254725375358", template_record_id: "template-approved", values: { "body.1": "APT-001" } });
+  await expect(page.getByText("wamid-1")).toBeVisible();
 });

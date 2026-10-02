@@ -1,7 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@duka/ui";
-import { AlertTriangle, MessageCircleMore, RefreshCw, Trash2 } from "lucide-react";
+import { AlertTriangle, MessageCircleMore, RefreshCw, Settings2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -27,7 +27,7 @@ function PendingRow({ session }: { session: PendingOnboardingView }) {
   );
 }
 
-function ChannelRow({ channel, csrfToken, onChanged, workspaceSlug }: { channel: ChannelView; csrfToken: string; onChanged: () => void; workspaceSlug: string }) {
+function ChannelRow({ canManage, channel, csrfToken, onChanged, workspaceSlug }: { canManage: boolean; channel: ChannelView; csrfToken: string; onChanged: () => void; workspaceSlug: string }) {
   const [busy, setBusy] = useState(false);
   async function disconnect() {
     if (!window.confirm(`Disconnect ${channel.display_name}? Messages will stop until the channel is reconnected.`)) return;
@@ -51,12 +51,15 @@ function ChannelRow({ channel, csrfToken, onChanged, workspaceSlug }: { channel:
       <div><span className="data-label">Transport</span><strong>{channel.transport.replaceAll("_", " ")}</strong></div>
       <div><span className="data-label">Webhook</span><strong>{channel.webhook_health.healthy ? "Healthy" : channel.webhook_health.status}</strong><small>{formatTimestamp(channel.webhook_health.last_received_at)}</small></div>
       <div><span className="data-label">WABA</span><strong>{channel.waba_identifier}</strong><small>Connected {formatTimestamp(channel.created_at)}</small></div>
-      <button aria-label={`Disconnect ${channel.display_name}`} className="icon-button channel-row__action" disabled={busy} onClick={disconnect} title="Disconnect channel" type="button"><Trash2 size={17} /></button>
+      <div className="channel-row__actions">
+        <Link aria-label={`Manage ${channel.display_name}`} className="icon-button" href={`/w/${workspaceSlug}/channels/${encodeURIComponent(channel.channel_id)}`} title="Manage channel"><Settings2 size={17} /></Link>
+        {canManage ? <button aria-label={`Disconnect ${channel.display_name}`} className="icon-button" disabled={busy} onClick={disconnect} title="Disconnect channel" type="button"><Trash2 size={17} /></button> : null}
+      </div>
     </article>
   );
 }
 
-export function ChannelsPanel({ csrfToken, workspaceSlug }: { csrfToken: string; workspaceSlug: string }) {
+export function ChannelsPanel({ canManage, csrfToken, workspaceSlug }: { canManage: boolean; csrfToken: string; workspaceSlug: string }) {
   const [data, setData] = useState<WorkspaceChannelsView | null>(null);
   const [error, setError] = useState<{ status: number; message: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +90,7 @@ export function ChannelsPanel({ csrfToken, workspaceSlug }: { csrfToken: string;
   return (
     <div className="channel-list">
       {data.pending_onboarding_sessions.map((session) => <PendingRow key={session.session_id} session={session} />)}
-      {data.channels.map((channel) => <ChannelRow channel={channel} csrfToken={csrfToken} key={channel.channel_id} onChanged={load} workspaceSlug={workspaceSlug} />)}
+      {data.channels.map((channel) => <ChannelRow canManage={canManage} channel={channel} csrfToken={csrfToken} key={channel.channel_id} onChanged={load} workspaceSlug={workspaceSlug} />)}
     </div>
   );
 }

@@ -9,6 +9,9 @@ out/
 .env
 .env.local
 
+# local HTTPS certificates
+apps/workspace/certificates/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
