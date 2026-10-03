@@ -47,6 +47,12 @@ export function toMembership(workspace: WorkspaceSummary): WorkspaceMembership {
   };
 }
 
+export function canonicalizeOidcCallbackUrl(currentUrl: URL, redirectUri: string): URL {
+  const callbackUrl = new URL(redirectUri);
+  callbackUrl.search = currentUrl.search;
+  return callbackUrl;
+}
+
 export async function buildOidcAuthorization(returnTo: string): Promise<{ url: URL; transaction: OidcTransaction }> {
   const settings = getOidcSettings();
   const config = await configuration();
@@ -73,7 +79,8 @@ export async function buildOidcAuthorization(returnTo: string): Promise<{ url: U
 export async function exchangeOidcCode(currentUrl: URL, transaction: OidcTransaction): Promise<ServerWorkspaceSession> {
   const settings = getOidcSettings();
   const config = await configuration();
-  const tokens = await oidc.authorizationCodeGrant(config, currentUrl, {
+  const callbackUrl = canonicalizeOidcCallbackUrl(currentUrl, settings.redirectUri);
+  const tokens = await oidc.authorizationCodeGrant(config, callbackUrl, {
     pkceCodeVerifier: transaction.codeVerifier,
     expectedState: transaction.state,
     expectedNonce: transaction.nonce,
