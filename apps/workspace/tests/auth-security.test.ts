@@ -2,6 +2,7 @@ import type { ServerWorkspaceSession } from "@duka/auth";
 import { describe, expect, it } from "vitest";
 
 import { validateMutationRequest } from "@/lib/auth/csrf";
+import { canonicalizeOidcCallbackUrl } from "@/lib/auth/oidc";
 import { safeReturnTo } from "@/lib/auth/return-to";
 
 const session = { csrfToken: "known-token" } as ServerWorkspaceSession;
@@ -27,5 +28,16 @@ describe("authentication request security", () => {
     expect(safeReturnTo("/w/workspace-a/overview")).toBe("/w/workspace-a/overview");
     expect(safeReturnTo("//evil.example")).toBe("/");
     expect(safeReturnTo("https://evil.example")).toBe("/");
+  });
+
+  it("uses the configured callback origin when a hosting runtime rewrites the request host", () => {
+    const callback = canonicalizeOidcCallbackUrl(
+      new URL("https://deploy-id--duka-workspace.netlify.app/auth/callback?code=known-code&state=known-state"),
+      "https://app.dukaintelligence.co.ke/auth/callback",
+    );
+
+    expect(callback.toString()).toBe(
+      "https://app.dukaintelligence.co.ke/auth/callback?code=known-code&state=known-state",
+    );
   });
 });
