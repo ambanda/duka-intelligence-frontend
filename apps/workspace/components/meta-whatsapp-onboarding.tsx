@@ -60,31 +60,57 @@ async function loadFacebookSdk(appId: string, version: string): Promise<Facebook
   });
 }
 
-function waitForMetaAssets(): { promise: Promise<MetaAssets>; cancel: () => void } {
-  let cancel: () => void = () => {};
+function waitForMetaAssets(onProgress?: (message: string) => void): { promise: Promise<MetaAssets>; cancel: (reason?: string) => void } {
+  let cancel: (reason?: string) => void = () => {};
   const promise = new Promise<MetaAssets>((resolve, reject) => {
-    const timer = window.setTimeout(() => finish(() => reject(new Error("Meta asset selection timed out"))), 120_000);
+    const timer = window.setTimeout(() => finish(() => reject(new Error("Meta asset selection timed out"))), 480_000);
     function finish(action: () => void) {
       window.clearTimeout(timer);
       window.removeEventListener("message", receive);
       action();
     }
     function receive(event: MessageEvent) {
-      if (!["https://www.facebook.com", "https://web.facebook.com"].includes(event.origin)) return;
+      let origin: URL;
+      try { origin = new URL(event.origin); } catch { return; }
+      if (origin.protocol !== "https:" || (origin.hostname !== "facebook.com" && !origin.hostname.endsWith(".facebook.com"))) return;
       let payload: unknown = event.data;
       if (typeof payload === "string") {
         try { payload = JSON.parse(payload); } catch { return; }
       }
       if (!payload || typeof payload !== "object") return;
-      const message = payload as { type?: string; event?: string; data?: Record<string, string> };
-      if (message.type !== "WA_EMBEDDED_SIGNUP" || message.event !== "FINISH" || !message.data) return;
+      const message = payload as { type?: string; event?: string; data?: Record<string, string>; error_message?: string };
+      if (message.type !== "WA_EMBEDDED_SIGNUP") return;
+      console.info("[Meta Embedded Signup]", {
+        event: message.event ?? "UNKNOWN",
+        hasWabaId: Boolean(message.data?.waba_id),
+        hasPhoneNumberId: Boolean(message.data?.phone_number_id),
+      });
+      if (message.event === "CANCEL") {
+        const step = message.data?.current_step;
+        finish(() => reject(new Error(step ? `Meta signup was cancelled at ${step}` : "Meta signup was cancelled")));
+        return;
+      }
+      if (message.event === "ERROR") {
+        finish(() => reject(new Error(message.data?.error_message || message.error_message || "Meta could not complete asset selection")));
+        return;
+      }
+      if (message.event === "FINISH_ONLY_WABA") {
+        finish(() => reject(new Error("Meta returned a WhatsApp Business Account without a phone number. Select a phone number and try again.")));
+        return;
+      }
+      if (message.event !== "FINISH" || !message.data) return;
       const wabaId = message.data.waba_id;
       const phoneNumberId = message.data.phone_number_id;
       if (wabaId && phoneNumberId) {
-        finish(() => resolve({ wabaId, phoneNumberId, businessId: message.data?.business_id }));
+        onProgress?.("WhatsApp assets selected. Securing the authorization with Duka.");
+        finish(() => resolve({
+          wabaId,
+          phoneNumberId,
+          businessId: message.data?.business_id ?? message.data?.businessId,
+        }));
       }
     }
-    cancel = () => finish(() => reject(new Error("Meta signup cancelled")));
+    cancel = (reason = "Meta signup cancelled") => finish(() => reject(new Error(reason)));
     window.addEventListener("message", receive);
   });
   return { promise, cancel };
@@ -112,6 +138,7 @@ export function MetaWhatsAppOnboarding({
   const [status, setStatus] = useState<OnboardingView | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [metaProgress, setMetaProgress] = useState<string | null>(null);
   const [pin, setPin] = useState("");
   const sessionId = status?.session_id ?? initialSessionId;
 
@@ -137,8 +164,13 @@ export function MetaWhatsAppOnboarding({
   async function startConnection() {
     setBusy(true);
     setError(null);
+    setMetaProgress("Opening Meta Embedded Signup.");
     let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
+    let postAuthorizationTimer: number | null = null;
     try {
+      if (window.location.protocol !== "https:" || !window.isSecureContext) {
+        throw new Error("Meta Embedded Signup requires a trusted HTTPS workspace page");
+      }
       const createResponse = await fetch(`/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/channels/whatsapp/onboarding-sessions`, {
         method: "POST",
         headers: requestHeaders(csrfToken),
@@ -147,14 +179,39 @@ export function MetaWhatsAppOnboarding({
       if (!createResponse.ok) throw new Error("Duka could not start WhatsApp onboarding");
       const onboarding = await createResponse.json() as CreateOnboardingSessionResponse;
       const facebook = await loadFacebookSdk(onboarding.meta_app_id, onboarding.graph_api_version);
-      assetWaiter = waitForMetaAssets();
+      setMetaProgress("Select the Business Portfolio, WhatsApp account, and phone number in Meta.");
+      assetWaiter = waitForMetaAssets(setMetaProgress);
       const codePromise = new Promise<string>((resolve, reject) => {
         facebook.login(
-          (response) => response.authResponse?.code ? resolve(response.authResponse.code) : reject(new Error("Meta authorization was cancelled")),
-          { config_id: onboarding.meta_configuration_id, response_type: "code", override_default_response_type: true },
+          (response) => {
+            if (response.authResponse?.code) {
+              console.info("[Meta Embedded Signup]", { authorization: "received" });
+              setMetaProgress("Meta authorization received. Waiting for WhatsApp asset details.");
+              postAuthorizationTimer = window.setTimeout(
+                () => assetWaiter?.cancel(
+                  "Meta authorized Duka but did not return WhatsApp assets. Confirm that the Configuration ID uses the WhatsApp Embedded Signup variation and WhatsApp accounts asset type.",
+                ),
+                15_000,
+              );
+              resolve(response.authResponse.code);
+              return;
+            }
+            reject(new Error(`Meta authorization did not complete${response.status ? ` (${response.status})` : ""}`));
+          },
+          {
+            config_id: onboarding.meta_configuration_id,
+            auth_type: "rerequest",
+            response_type: "code",
+            override_default_response_type: true,
+            extras: {
+              sessionInfoVersion: 3,
+              setup: {},
+            },
+          },
         );
       });
       const [assets, authorizationCode] = await Promise.all([assetWaiter.promise, codePromise]);
+      if (postAuthorizationTimer !== null) window.clearTimeout(postAuthorizationTimer);
       const completeResponse = await fetch("/api/bff/channels/whatsapp/onboarding/complete", {
         method: "POST",
         headers: requestHeaders(csrfToken),
@@ -173,7 +230,9 @@ export function MetaWhatsAppOnboarding({
       assetWaiter?.cancel();
       setError(reason instanceof Error ? reason.message : "WhatsApp onboarding failed");
     } finally {
+      if (postAuthorizationTimer !== null) window.clearTimeout(postAuthorizationTimer);
       setBusy(false);
+      setMetaProgress(null);
     }
   }
 
@@ -208,6 +267,7 @@ export function MetaWhatsAppOnboarding({
           <li><span>3</span><div><strong>Validate and activate</strong><p>Duka validates ownership, secures credentials, registers the phone, and waits for a signed webhook.</p></div></li>
         </ol>
         {error ? <div className="inline-error"><AlertTriangle size={17} /><span>{error}</span></div> : null}
+        {busy && metaProgress ? <p className="field-help" aria-live="polite">{metaProgress}</p> : null}
         {status?.required_action === "provide_registration_pin" ? (
           <form className="pin-form" onSubmit={submitPin}>
             <label htmlFor="registration-pin">Six-digit registration PIN</label>

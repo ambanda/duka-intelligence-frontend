@@ -8,9 +8,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { workspaceSlug } = await params;
     const { client, session } = await requireBffContext(request);
     const membership = requireBffWorkspace(session, workspaceSlug);
-    if (session.authMode === "development") {
-      return NextResponse.json({ workspace_id: membership.workspaceId, channels: [], pending_onboarding_sessions: [] });
-    }
     return NextResponse.json(sanitizeWorkspaceChannels(await client.listChannels(membership.workspaceId)));
   } catch (error) {
     return bffErrorResponse(error);

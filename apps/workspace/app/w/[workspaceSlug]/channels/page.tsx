@@ -4,12 +4,13 @@ import Link from "next/link";
 
 import { ChannelsPanel } from "@/components/channels-panel";
 import { requireWorkspace } from "@/lib/auth/workspace";
+import { canManageChannels } from "@/lib/channels/permissions";
 
 export const metadata = { title: "Channels" };
 
 export default async function ChannelsPage({ params }: { params: Promise<{ workspaceSlug: string }> }) {
   const { workspaceSlug } = await params;
-  const { session } = await requireWorkspace(workspaceSlug);
+  const { membership, session } = await requireWorkspace(workspaceSlug);
 
   return (
     <>
@@ -19,7 +20,7 @@ export default async function ChannelsPage({ params }: { params: Promise<{ works
         eyebrow="Access channels"
         title="Channels"
       />
-      <ChannelsPanel csrfToken={session.csrfToken} workspaceSlug={workspaceSlug} />
+      <ChannelsPanel canManage={canManageChannels(membership.roles)} csrfToken={session.csrfToken} workspaceSlug={workspaceSlug} />
     </>
   );
 }

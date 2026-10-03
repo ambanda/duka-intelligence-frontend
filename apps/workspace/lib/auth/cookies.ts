@@ -43,7 +43,8 @@ export async function writeTransactionCookie(value: string): Promise<void> {
     httpOnly: true,
     secure,
     sameSite: "lax",
-    path: "/auth/callback",
+    // Production uses a __Host- cookie, which browsers only accept with Path=/.
+    path: "/",
     maxAge: 10 * 60,
     priority: "high",
   });
@@ -56,7 +57,7 @@ export async function takeTransactionCookie(): Promise<string | null> {
     httpOnly: true,
     secure,
     sameSite: "lax",
-    path: "/auth/callback",
+    path: "/",
     maxAge: 0,
   });
   return value;

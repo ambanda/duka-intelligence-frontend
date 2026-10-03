@@ -158,6 +158,178 @@ export interface WhatsAppAssetsResponse {
   assets: WhatsAppAsset[];
 }
 
+export type WhatsAppTemplateCategory = "UTILITY" | "MARKETING";
+export type WhatsAppTemplateParameterFormat = "named" | "positional";
+export type WhatsAppTemplateValueType = "text" | "currency" | "date_time";
+
+export interface WhatsAppTemplateParameterDefinition {
+  name: string;
+  label?: string | null;
+  example: string;
+  value_type: WhatsAppTemplateValueType;
+}
+
+export interface WhatsAppTemplateHeaderDefinition {
+  format: "TEXT" | "IMAGE" | "VIDEO" | "DOCUMENT" | "LOCATION";
+  text?: string | null;
+  parameters: WhatsAppTemplateParameterDefinition[];
+  example_media_handle?: string | null;
+}
+
+export interface WhatsAppTemplateButtonDefinition {
+  type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "COPY_CODE";
+  text?: string | null;
+  url?: string | null;
+  phone_number?: string | null;
+  example?: string | null;
+  action_key?: string | null;
+}
+
+export interface WhatsAppTemplateDefinition {
+  parameter_format: WhatsAppTemplateParameterFormat;
+  header?: WhatsAppTemplateHeaderDefinition | null;
+  body: { text: string; parameters: WhatsAppTemplateParameterDefinition[] };
+  footer_text?: string | null;
+  buttons: WhatsAppTemplateButtonDefinition[];
+}
+
+export interface WhatsAppTemplateSendField {
+  key: string;
+  component: "header" | "body" | "button";
+  value_type: "text" | "currency" | "date_time" | "image" | "video" | "document" | "location" | "quick_reply" | "url_suffix" | "copy_code";
+  label: string;
+  required: boolean;
+  position?: number;
+  parameter_name?: string;
+  index?: number;
+}
+
+export interface WhatsAppTemplateSendSchema {
+  version: number;
+  parameter_format: WhatsAppTemplateParameterFormat;
+  fields: WhatsAppTemplateSendField[];
+}
+
+export interface WhatsAppTemplatePreflightIssue {
+  severity: "error" | "warning";
+  code: string;
+  message: string;
+  path: string;
+}
+
+export interface WhatsAppTemplatePreflightResponse {
+  valid: boolean;
+  issues: WhatsAppTemplatePreflightIssue[];
+  components: Array<Record<string, unknown>>;
+  send_schema: WhatsAppTemplateSendSchema;
+}
+
+export interface WhatsAppMessageTemplate {
+  template_record_id: string;
+  channel_id: string;
+  provider_template_id: string | null;
+  name: string;
+  language: string;
+  category: WhatsAppTemplateCategory | "AUTHENTICATION";
+  components: Array<Record<string, unknown>>;
+  layout_type: string;
+  parameter_format: WhatsAppTemplateParameterFormat;
+  definition: WhatsAppTemplateDefinition | Record<string, never>;
+  send_schema: WhatsAppTemplateSendSchema;
+  validation_errors: WhatsAppTemplatePreflightIssue[];
+  draft_version: number;
+  quality_score: string;
+  quality_updated_at: string | null;
+  status: string;
+  source: string;
+  rejection_reason: string | null;
+  submitted_at: string | null;
+  last_reconciled_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WhatsAppMessageTemplateListResponse {
+  templates: WhatsAppMessageTemplate[];
+}
+
+export interface CreateWhatsAppMessageTemplateRequest {
+  name: string;
+  language: string;
+  category: WhatsAppTemplateCategory;
+  header_text?: string | null;
+  header_example?: string | null;
+  body_text: string;
+  body_examples: string[];
+  footer_text?: string | null;
+  quick_replies: string[];
+  idempotency_key: string;
+}
+
+export interface CreateWhatsAppTemplateDraftRequest {
+  name: string;
+  language: string;
+  category: WhatsAppTemplateCategory;
+  definition: WhatsAppTemplateDefinition;
+  idempotency_key: string;
+}
+
+export interface UpdateWhatsAppTemplateDraftRequest extends Omit<CreateWhatsAppTemplateDraftRequest, "idempotency_key"> {
+  draft_version: number;
+}
+
+export interface WhatsAppTemplateReconciliationResponse {
+  channel_id: string;
+  reconciled: number;
+  approved: number;
+  pending: number;
+  rejected: number;
+}
+
+export interface WhatsAppContact {
+  contact_id: string;
+  phone_number_e164: string;
+  contact_type: string;
+  identity_status: string;
+  marketing_consent_status: string;
+  status: string;
+  last_seen_at: string;
+}
+
+export interface WhatsAppContactListResponse {
+  contacts: WhatsAppContact[];
+}
+
+export interface SendWorkspaceWhatsAppTemplateRequest {
+  recipient: string;
+  template_record_id: string;
+  body_parameters: string[];
+  header_parameters: string[];
+  values?: Record<string, unknown>;
+  purpose: string;
+  business_reference: string;
+  idempotency_key: string;
+}
+
+export interface WorkspaceWhatsAppMessage {
+  request_id: string;
+  message_record_id: string;
+  provider_message_id: string | null;
+  template_name: string;
+  template_category: string;
+  processing_status: string;
+  delivery_status: string | null;
+  error_code: string | null;
+  sent_at: string | null;
+  delivered_at: string | null;
+  read_at: string | null;
+  created_at: string | null;
+}
+
+export interface WorkspaceWhatsAppMessageListResponse {
+  messages: WorkspaceWhatsAppMessage[];
+}
+
 export interface JsonSchema {
   type?: "object" | "array" | "string" | "integer" | "number" | "boolean";
   title?: string;
@@ -325,6 +497,137 @@ export class DukaApiClient {
   listWhatsappAssets(workspaceId: string, channelId: string): Promise<WhatsAppAssetsResponse> {
     return this.get(
       `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/whatsapp-assets`,
+    );
+  }
+
+  listWhatsappMessageTemplates(
+    workspaceId: string,
+    channelId: string,
+  ): Promise<WhatsAppMessageTemplateListResponse> {
+    return this.get(
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates`,
+    );
+  }
+
+  createWhatsappMessageTemplate(
+    workspaceId: string,
+    channelId: string,
+    payload: CreateWhatsAppMessageTemplateRequest,
+  ): Promise<WhatsAppMessageTemplate> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates`,
+      payload,
+    );
+  }
+
+  createWhatsappTemplateDraft(
+    workspaceId: string,
+    channelId: string,
+    payload: CreateWhatsAppTemplateDraftRequest,
+  ): Promise<WhatsAppMessageTemplate> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/drafts`,
+      payload,
+    );
+  }
+
+  updateWhatsappTemplateDraft(
+    workspaceId: string,
+    channelId: string,
+    templateRecordId: string,
+    payload: UpdateWhatsAppTemplateDraftRequest,
+  ): Promise<WhatsAppMessageTemplate> {
+    return this.request(
+      "PUT",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/${encodeURIComponent(templateRecordId)}/draft`,
+      payload,
+    );
+  }
+
+  validateWhatsappTemplateDraft(
+    workspaceId: string,
+    channelId: string,
+    templateRecordId: string,
+  ): Promise<WhatsAppTemplatePreflightResponse> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/${encodeURIComponent(templateRecordId)}/validate`,
+    );
+  }
+
+  submitWhatsappTemplateDraft(
+    workspaceId: string,
+    channelId: string,
+    templateRecordId: string,
+    idempotencyKey: string,
+  ): Promise<WhatsAppMessageTemplate> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/${encodeURIComponent(templateRecordId)}/submit`,
+      { idempotency_key: idempotencyKey },
+    );
+  }
+
+  reconcileWhatsappMessageTemplates(
+    workspaceId: string,
+    channelId: string,
+  ): Promise<WhatsAppTemplateReconciliationResponse> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/reconcile`,
+    );
+  }
+
+  async deleteWhatsappMessageTemplate(
+    workspaceId: string,
+    channelId: string,
+    templateRecordId: string,
+  ): Promise<void> {
+    await this.request(
+      "DELETE",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/${encodeURIComponent(templateRecordId)}`,
+    );
+  }
+
+  listWhatsappContacts(
+    workspaceId: string,
+    channelId: string,
+  ): Promise<WhatsAppContactListResponse> {
+    return this.get(
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts`,
+    );
+  }
+
+  listWorkspaceWhatsappMessages(
+    workspaceId: string,
+    channelId: string,
+  ): Promise<WorkspaceWhatsAppMessageListResponse> {
+    return this.get(
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/messages`,
+    );
+  }
+
+  sendWorkspaceWhatsappTemplate(
+    workspaceId: string,
+    channelId: string,
+    payload: SendWorkspaceWhatsAppTemplateRequest,
+  ): Promise<WorkspaceWhatsAppMessage> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/messages`,
+      payload,
+    );
+  }
+
+  getWorkspaceWhatsappMessage(
+    workspaceId: string,
+    channelId: string,
+    requestId: string,
+  ): Promise<WorkspaceWhatsAppMessage> {
+    return this.get(
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/messages/${encodeURIComponent(requestId)}`,
     );
   }
 
