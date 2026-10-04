@@ -359,6 +359,7 @@ export interface CreateOnboardingSessionResponse {
   expires_at: string;
   meta_app_id: string;
   meta_configuration_id: string;
+  embedded_signup_version: "v3" | "v4";
   graph_api_version: string;
 }
 
@@ -367,8 +368,10 @@ export interface CompleteEmbeddedSignupRequest {
   state: string;
   authorization_code: string;
   waba_id: string;
-  phone_number_id: string;
+  phone_number_id?: string | null;
   meta_business_id?: string | null;
+  completion_type?: "phone_complete" | "phone_pending" | "waba_only" | null;
+  meta_event_name?: string | null;
   registration_pin?: string | null;
 }
 
@@ -377,6 +380,9 @@ export interface OnboardingStatusResponse {
   channel_id: string | null;
   status: string;
   workspace_id: string;
+  embedded_signup_version: "v3" | "v4";
+  completion_type: string | null;
+  phone_setup_status: string;
   waba_id: string | null;
   phone_number_id: string | null;
   bot_phone_number: string | null;

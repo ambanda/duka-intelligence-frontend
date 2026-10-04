@@ -10,6 +10,9 @@ const labels: Record<string, string> = {
   failed: "Connection failed",
   onboarding: "Starting connection",
   pending: "Starting connection",
+  phone_setup_pending: "Phone setup required",
+  phone_verification_pending: "Waiting for phone verification",
+  phone_registration_pending: "Waiting for phone registration",
   provisioning: "Configuring webhook",
   registering_phone: "Registering phone",
   requires_action: "Action required",
@@ -24,7 +27,10 @@ export function channelStatusLabel(status: string): string {
 export function channelStatusTone(status: string): StatusTone {
   if (status === "active") return "success";
   if (["failed", "disconnected", "cancelled"].includes(status)) return "danger";
-  if (["requires_action", "verification_pending"].includes(status)) return "warning";
+  if ([
+    "requires_action", "verification_pending", "phone_setup_pending",
+    "phone_verification_pending", "phone_registration_pending",
+  ].includes(status)) return "warning";
   return "neutral";
 }
 

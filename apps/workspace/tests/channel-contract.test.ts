@@ -6,6 +6,7 @@ import { sanitizeChannel, sanitizeOnboarding } from "@/lib/channels/sanitize";
 
 const onboarding: OnboardingStatusResponse = {
   session_id: "session-1", channel_id: "channel-1", status: "requires_action", workspace_id: "workspace-a",
+  embedded_signup_version: "v4", completion_type: "phone_pending", phone_setup_status: "pending",
   waba_id: "123456789", phone_number_id: "987654321", bot_phone_number: "+254700000000", display_name: "Acme",
   expires_at: "2030-01-01T00:00:00Z", error_code: null, error_summary: null, required_action: "provide_registration_pin",
 };

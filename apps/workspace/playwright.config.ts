@@ -24,6 +24,7 @@ export default defineConfig({
     env: {
       WORKSPACE_AUTH_MODE: "development",
       WORKSPACE_APP_URL: "http://localhost:3001",
+      NEXT_PUBLIC_WORKSPACE_E2E_ALLOW_HTTP: "true",
       DUKA_DEV_PRINCIPAL_ID: "principal-e2e",
       DUKA_DEV_WORKSPACE_ID: "workspace-e2e",
       DUKA_DEV_WORKSPACE_SLUG: "workspace-e2e",

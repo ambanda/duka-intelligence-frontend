@@ -9,7 +9,15 @@ export async function POST(request: NextRequest) {
     const { client, session } = await requireBffContext(request);
     requireBffMutation(request, session);
     const body = await readBffJson<CompleteEmbeddedSignupRequest>(request);
-    if (!body.session_id || !body.state || !body.authorization_code || !body.waba_id || !body.phone_number_id) {
+    const eventName = body.meta_event_name?.toUpperCase();
+    const wabaOnly = eventName === "FINISH_ONLY_WABA" || body.completion_type === "waba_only";
+    if (
+      !body.session_id
+      || !body.state
+      || !body.authorization_code
+      || !body.waba_id
+      || (!wabaOnly && !body.phone_number_id)
+    ) {
       throw new BffError(400, "embedded_signup_payload_invalid", "Meta onboarding information is incomplete.");
     }
     return NextResponse.json(sanitizeOnboarding(await client.completeWhatsappOnboarding(body)), { status: 202 });
