@@ -203,14 +203,24 @@ export function MetaWhatsAppOnboarding({
               resolve(response.authResponse.code);
               return;
             }
-            reject(new Error(`Meta authorization did not complete${response.status ? ` (${response.status})` : ""}`));
+            console.warn("[Meta Embedded Signup] Authorization code missing", {
+              status: response.status ?? "unknown",
+              hasAuthResponse: Boolean(response.authResponse),
+              authResponseFields: response.authResponse ? Object.keys(response.authResponse) : [],
+            });
+            reject(new Error(
+              response.status === "connected"
+                ? "Meta returned an existing Facebook session without an Embedded Signup authorization code. Close the Meta window and try again."
+                : `Meta authorization did not complete${response.status ? ` (${response.status})` : ""}`,
+            ));
           },
           {
             config_id: onboarding.meta_configuration_id,
+            auth_type: "rerequest",
             response_type: "code",
             override_default_response_type: true,
             extras: onboarding.embedded_signup_version === "v4"
-              ? {}
+              ? { setup: {} }
               : { sessionInfoVersion: 3, setup: {} },
           },
         );

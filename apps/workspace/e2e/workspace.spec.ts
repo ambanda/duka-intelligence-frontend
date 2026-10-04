@@ -68,9 +68,10 @@ test("Meta Embedded Signup submits the one-time code immediately through the BFF
   await page.getByRole("button", { name: "Continue with Meta" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __metaLoginOptions?: Record<string, unknown> }).__metaLoginOptions)).toMatchObject({
     config_id: "config-v4",
+    auth_type: "rerequest",
     response_type: "code",
     override_default_response_type: true,
-    extras: {},
+    extras: { setup: {} },
   });
   await expect.poll(() => completionBody).toMatchObject({
     authorization_code: "one-time-code",
