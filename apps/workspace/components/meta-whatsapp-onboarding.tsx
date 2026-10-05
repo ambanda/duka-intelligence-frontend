@@ -3,7 +3,7 @@
 import type { CreateOnboardingSessionResponse } from "@duka/api-client";
 import { StatusBadge } from "@duka/ui";
 import { AlertTriangle, Check, ExternalLink, LoaderCircle, LockKeyhole } from "lucide-react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import { channelStatusLabel, channelStatusTone } from "@/lib/channels/status";
 import type { OnboardingView } from "@/lib/channels/contracts";
@@ -24,6 +24,11 @@ interface FacebookLoginResponse {
 interface FacebookSdk {
   init(options: { appId: string; cookie: boolean; version: string; xfbml: boolean }): void;
   login(callback: (response: FacebookLoginResponse) => void, options: Record<string, unknown>): void;
+}
+
+interface PreparedSignup {
+  onboarding: CreateOnboardingSessionResponse;
+  facebook: FacebookSdk;
 }
 
 declare global {
@@ -150,9 +155,12 @@ export function MetaWhatsAppOnboarding({
 }) {
   const [status, setStatus] = useState<OnboardingView | null>(null);
   const [busy, setBusy] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const [preparedSignup, setPreparedSignup] = useState<PreparedSignup | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [metaProgress, setMetaProgress] = useState<string | null>(null);
   const [pin, setPin] = useState("");
+  const preparationStarted = useRef(false);
   const sessionId = status?.session_id ?? initialSessionId;
 
   const pollStatus = useCallback(async (id: string) => {
@@ -174,11 +182,10 @@ export function MetaWhatsAppOnboarding({
     return () => window.clearInterval(timer);
   }, [pollStatus, sessionId, status]);
 
-  async function startConnection() {
-    setBusy(true);
+  const prepareConnection = useCallback(async () => {
+    setPreparing(true);
     setError(null);
-    setMetaProgress("Opening Meta Embedded Signup.");
-    let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
+    setMetaProgress("Preparing a secure Meta connection.");
     try {
       const insecureE2eAllowed = process.env.NEXT_PUBLIC_WORKSPACE_E2E_ALLOW_HTTP === "true";
       if (!insecureE2eAllowed && (window.location.protocol !== "https:" || !window.isSecureContext)) {
@@ -189,9 +196,36 @@ export function MetaWhatsAppOnboarding({
         headers: requestHeaders(csrfToken),
         body: JSON.stringify({ sector, shop_id: shopId }),
       });
-      if (!createResponse.ok) throw new Error("Duka could not start WhatsApp onboarding");
+      if (!createResponse.ok) throw new Error("Duka could not prepare WhatsApp onboarding");
       const onboarding = await createResponse.json() as CreateOnboardingSessionResponse;
       const facebook = await loadFacebookSdk(onboarding.meta_app_id, onboarding.graph_api_version);
+      setPreparedSignup({ onboarding, facebook });
+    } catch (reason) {
+      setPreparedSignup(null);
+      setError(reason instanceof Error ? reason.message : "WhatsApp onboarding preparation failed");
+    } finally {
+      setPreparing(false);
+      setMetaProgress(null);
+    }
+  }, [csrfToken, sector, shopId, workspaceSlug]);
+
+  useEffect(() => {
+    if (!canManage || preparationStarted.current) return;
+    preparationStarted.current = true;
+    void prepareConnection();
+  }, [canManage, prepareConnection]);
+
+  async function startConnection() {
+    if (!preparedSignup) {
+      await prepareConnection();
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setMetaProgress("Opening Meta Embedded Signup.");
+    let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
+    try {
+      const { onboarding, facebook } = preparedSignup;
       setMetaProgress("Select the Business Portfolio, WhatsApp account, and phone number in Meta.");
       assetWaiter = waitForMetaAssets(setMetaProgress);
       const codePromise = new Promise<string>((resolve, reject) => {
@@ -244,6 +278,7 @@ export function MetaWhatsAppOnboarding({
       setStatus(await completeResponse.json());
     } catch (reason) {
       assetWaiter?.cancel();
+      setPreparedSignup(null);
       setError(reason instanceof Error ? reason.message : "WhatsApp onboarding failed");
     } finally {
       setBusy(false);
@@ -283,19 +318,23 @@ export function MetaWhatsAppOnboarding({
         </ol>
         {error ? <div className="inline-error"><AlertTriangle size={17} /><span>{error}</span></div> : null}
         {status?.error_summary ? <div className="inline-error"><AlertTriangle size={17} /><span>{status.error_summary}</span></div> : null}
-        {busy && metaProgress ? <p className="field-help" aria-live="polite">{metaProgress}</p> : null}
+        {(busy || preparing) && metaProgress ? <p className="field-help" aria-live="polite">{metaProgress}</p> : null}
         {status?.required_action === "provide_registration_pin" ? (
           <form className="pin-form" onSubmit={submitPin}>
             <label htmlFor="registration-pin">Six-digit registration PIN</label>
             <div><input autoComplete="one-time-code" id="registration-pin" inputMode="numeric" maxLength={6} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} pattern="\d{6}" required type="password" value={pin} /><button className="duka-button duka-button--primary" disabled={busy || pin.length !== 6} type="submit">Continue</button></div>
           </form>
         ) : (
-          <button className="duka-button duka-button--primary" disabled={!canManage || busy || status?.status === "active"} onClick={startConnection} type="button">
-            {busy ? <LoaderCircle className="spin" size={17} /> : <ExternalLink size={17} />}
+          <button className="duka-button duka-button--primary" disabled={!canManage || busy || preparing || status?.status === "active"} onClick={startConnection} type="button">
+            {busy || preparing ? <LoaderCircle className="spin" size={17} /> : <ExternalLink size={17} />}
             {status?.status === "active"
               ? "WhatsApp connected"
+              : preparing
+                ? "Preparing secure connection"
               : busy
                 ? "Securing connection"
+                : !preparedSignup
+                  ? "Prepare Meta connection"
                 : status?.required_action?.startsWith("complete_phone")
                   ? "Continue phone setup"
                   : "Continue with Meta"}
