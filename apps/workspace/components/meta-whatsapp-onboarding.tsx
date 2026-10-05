@@ -3,15 +3,17 @@
 import type { CreateOnboardingSessionResponse } from "@duka/api-client";
 import { StatusBadge } from "@duka/ui";
 import { AlertTriangle, Check, ExternalLink, LoaderCircle, LockKeyhole } from "lucide-react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import { channelStatusLabel, channelStatusTone } from "@/lib/channels/status";
 import type { OnboardingView } from "@/lib/channels/contracts";
 
 interface MetaAssets {
   wabaId: string;
-  phoneNumberId: string;
+  phoneNumberId?: string;
   businessId?: string;
+  completionType: "phone_complete" | "waba_only";
+  eventName: string;
 }
 
 interface FacebookLoginResponse {
@@ -22,6 +24,11 @@ interface FacebookLoginResponse {
 interface FacebookSdk {
   init(options: { appId: string; cookie: boolean; version: string; xfbml: boolean }): void;
   login(callback: (response: FacebookLoginResponse) => void, options: Record<string, unknown>): void;
+}
+
+interface PreparedSignup {
+  onboarding: CreateOnboardingSessionResponse;
+  facebook: FacebookSdk;
 }
 
 declare global {
@@ -94,21 +101,32 @@ function waitForMetaAssets(onProgress?: (message: string) => void): { promise: P
         finish(() => reject(new Error(message.data?.error_message || message.error_message || "Meta could not complete asset selection")));
         return;
       }
-      if (message.event === "FINISH_ONLY_WABA") {
-        finish(() => reject(new Error("Meta returned a WhatsApp Business Account without a phone number. Select a phone number and try again.")));
+      if (message.event !== "FINISH" && message.event !== "FINISH_ONLY_WABA") return;
+      const wabaId = message.data?.waba_id;
+      const phoneNumberId = message.data?.phone_number_id;
+      if (!wabaId) {
+        finish(() => reject(new Error("Meta did not return the selected Messaging account ID.")));
         return;
       }
-      if (message.event !== "FINISH" || !message.data) return;
-      const wabaId = message.data.waba_id;
-      const phoneNumberId = message.data.phone_number_id;
-      if (wabaId && phoneNumberId) {
-        onProgress?.("WhatsApp assets selected. Securing the authorization with Duka.");
-        finish(() => resolve({
-          wabaId,
-          phoneNumberId,
-          businessId: message.data?.business_id ?? message.data?.businessId,
-        }));
+      if (message.event === "FINISH" && !phoneNumberId) {
+        finish(() => reject(new Error("Meta did not return the selected business phone number ID.")));
+        return;
       }
+      const completionType = message.event === "FINISH_ONLY_WABA"
+        ? "waba_only"
+        : "phone_complete";
+      onProgress?.(
+        phoneNumberId
+          ? "WhatsApp assets selected. Securing the authorization with Duka."
+          : "WhatsApp account authorized. Duka will track the remaining phone setup.",
+      );
+      finish(() => resolve({
+        wabaId,
+        phoneNumberId,
+        businessId: message.data?.business_id ?? message.data?.businessId,
+        completionType,
+        eventName: message.event ?? "FINISH",
+      }));
     }
     cancel = (reason = "Meta signup cancelled") => finish(() => reject(new Error(reason)));
     window.addEventListener("message", receive);
@@ -137,9 +155,12 @@ export function MetaWhatsAppOnboarding({
 }) {
   const [status, setStatus] = useState<OnboardingView | null>(null);
   const [busy, setBusy] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const [preparedSignup, setPreparedSignup] = useState<PreparedSignup | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [metaProgress, setMetaProgress] = useState<string | null>(null);
   const [pin, setPin] = useState("");
+  const preparationStarted = useRef(false);
   const sessionId = status?.session_id ?? initialSessionId;
 
   const pollStatus = useCallback(async (id: string) => {
@@ -161,14 +182,13 @@ export function MetaWhatsAppOnboarding({
     return () => window.clearInterval(timer);
   }, [pollStatus, sessionId, status]);
 
-  async function startConnection() {
-    setBusy(true);
+  const prepareConnection = useCallback(async () => {
+    setPreparing(true);
     setError(null);
-    setMetaProgress("Opening Meta Embedded Signup.");
-    let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
-    let postAuthorizationTimer: number | null = null;
+    setMetaProgress("Preparing a secure Meta connection.");
     try {
-      if (window.location.protocol !== "https:" || !window.isSecureContext) {
+      const insecureE2eAllowed = process.env.NEXT_PUBLIC_WORKSPACE_E2E_ALLOW_HTTP === "true";
+      if (!insecureE2eAllowed && (window.location.protocol !== "https:" || !window.isSecureContext)) {
         throw new Error("Meta Embedded Signup requires a trusted HTTPS workspace page");
       }
       const createResponse = await fetch(`/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/channels/whatsapp/onboarding-sessions`, {
@@ -176,9 +196,36 @@ export function MetaWhatsAppOnboarding({
         headers: requestHeaders(csrfToken),
         body: JSON.stringify({ sector, shop_id: shopId }),
       });
-      if (!createResponse.ok) throw new Error("Duka could not start WhatsApp onboarding");
+      if (!createResponse.ok) throw new Error("Duka could not prepare WhatsApp onboarding");
       const onboarding = await createResponse.json() as CreateOnboardingSessionResponse;
       const facebook = await loadFacebookSdk(onboarding.meta_app_id, onboarding.graph_api_version);
+      setPreparedSignup({ onboarding, facebook });
+    } catch (reason) {
+      setPreparedSignup(null);
+      setError(reason instanceof Error ? reason.message : "WhatsApp onboarding preparation failed");
+    } finally {
+      setPreparing(false);
+      setMetaProgress(null);
+    }
+  }, [csrfToken, sector, shopId, workspaceSlug]);
+
+  useEffect(() => {
+    if (!canManage || preparationStarted.current) return;
+    preparationStarted.current = true;
+    void prepareConnection();
+  }, [canManage, prepareConnection]);
+
+  async function startConnection() {
+    if (!preparedSignup) {
+      await prepareConnection();
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setMetaProgress("Opening Meta Embedded Signup.");
+    let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
+    try {
+      const { onboarding, facebook } = preparedSignup;
       setMetaProgress("Select the Business Portfolio, WhatsApp account, and phone number in Meta.");
       assetWaiter = waitForMetaAssets(setMetaProgress);
       const codePromise = new Promise<string>((resolve, reject) => {
@@ -187,31 +234,32 @@ export function MetaWhatsAppOnboarding({
             if (response.authResponse?.code) {
               console.info("[Meta Embedded Signup]", { authorization: "received" });
               setMetaProgress("Meta authorization received. Waiting for WhatsApp asset details.");
-              postAuthorizationTimer = window.setTimeout(
-                () => assetWaiter?.cancel(
-                  "Meta authorized Duka but did not return WhatsApp assets. Confirm that the Configuration ID uses the WhatsApp Embedded Signup variation and WhatsApp accounts asset type.",
-                ),
-                15_000,
-              );
               resolve(response.authResponse.code);
               return;
             }
-            reject(new Error(`Meta authorization did not complete${response.status ? ` (${response.status})` : ""}`));
+            console.warn("[Meta Embedded Signup] Authorization code missing", {
+              status: response.status ?? "unknown",
+              hasAuthResponse: Boolean(response.authResponse),
+              authResponseFields: response.authResponse ? Object.keys(response.authResponse) : [],
+            });
+            reject(new Error(
+              response.status === "connected"
+                ? "Meta returned an existing Facebook session without an Embedded Signup authorization code. Close the Meta window and try again."
+                : `Meta authorization did not complete${response.status ? ` (${response.status})` : ""}`,
+            ));
           },
           {
             config_id: onboarding.meta_configuration_id,
             auth_type: "rerequest",
             response_type: "code",
             override_default_response_type: true,
-            extras: {
-              sessionInfoVersion: 3,
-              setup: {},
-            },
+            extras: onboarding.embedded_signup_version === "v4"
+              ? { setup: {} }
+              : { sessionInfoVersion: 3, setup: {} },
           },
         );
       });
       const [assets, authorizationCode] = await Promise.all([assetWaiter.promise, codePromise]);
-      if (postAuthorizationTimer !== null) window.clearTimeout(postAuthorizationTimer);
       const completeResponse = await fetch("/api/bff/channels/whatsapp/onboarding/complete", {
         method: "POST",
         headers: requestHeaders(csrfToken),
@@ -222,15 +270,17 @@ export function MetaWhatsAppOnboarding({
           waba_id: assets.wabaId,
           phone_number_id: assets.phoneNumberId,
           meta_business_id: assets.businessId,
+          completion_type: assets.completionType,
+          meta_event_name: assets.eventName,
         }),
       });
       if (!completeResponse.ok) throw new Error("Duka could not secure the Meta authorization");
       setStatus(await completeResponse.json());
     } catch (reason) {
       assetWaiter?.cancel();
+      setPreparedSignup(null);
       setError(reason instanceof Error ? reason.message : "WhatsApp onboarding failed");
     } finally {
-      if (postAuthorizationTimer !== null) window.clearTimeout(postAuthorizationTimer);
       setBusy(false);
       setMetaProgress(null);
     }
@@ -267,16 +317,27 @@ export function MetaWhatsAppOnboarding({
           <li><span>3</span><div><strong>Validate and activate</strong><p>Duka validates ownership, secures credentials, registers the phone, and waits for a signed webhook.</p></div></li>
         </ol>
         {error ? <div className="inline-error"><AlertTriangle size={17} /><span>{error}</span></div> : null}
-        {busy && metaProgress ? <p className="field-help" aria-live="polite">{metaProgress}</p> : null}
+        {status?.error_summary ? <div className="inline-error"><AlertTriangle size={17} /><span>{status.error_summary}</span></div> : null}
+        {(busy || preparing) && metaProgress ? <p className="field-help" aria-live="polite">{metaProgress}</p> : null}
         {status?.required_action === "provide_registration_pin" ? (
           <form className="pin-form" onSubmit={submitPin}>
             <label htmlFor="registration-pin">Six-digit registration PIN</label>
             <div><input autoComplete="one-time-code" id="registration-pin" inputMode="numeric" maxLength={6} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} pattern="\d{6}" required type="password" value={pin} /><button className="duka-button duka-button--primary" disabled={busy || pin.length !== 6} type="submit">Continue</button></div>
           </form>
         ) : (
-          <button className="duka-button duka-button--primary" disabled={!canManage || busy || status?.status === "active"} onClick={startConnection} type="button">
-            {busy ? <LoaderCircle className="spin" size={17} /> : <ExternalLink size={17} />}
-            {status?.status === "active" ? "WhatsApp connected" : busy ? "Securing connection" : "Continue with Meta"}
+          <button className="duka-button duka-button--primary" disabled={!canManage || busy || preparing || status?.status === "active"} onClick={startConnection} type="button">
+            {busy || preparing ? <LoaderCircle className="spin" size={17} /> : <ExternalLink size={17} />}
+            {status?.status === "active"
+              ? "WhatsApp connected"
+              : preparing
+                ? "Preparing secure connection"
+              : busy
+                ? "Securing connection"
+                : !preparedSignup
+                  ? "Prepare Meta connection"
+                : status?.required_action?.startsWith("complete_phone")
+                  ? "Continue phone setup"
+                  : "Continue with Meta"}
           </button>
         )}
         {!canManage ? <p className="field-help">A workspace administrator role is required to connect channels.</p> : null}

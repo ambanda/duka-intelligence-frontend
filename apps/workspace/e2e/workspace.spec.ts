@@ -53,27 +53,33 @@ test("Meta Embedded Signup submits the one-time code immediately through the BFF
   await page.route("**/api/bff/workspaces/workspace-e2e/channels/whatsapp/onboarding-sessions", async (route) => route.fulfill({
     status: 201,
     contentType: "application/json",
-    body: JSON.stringify({ session_id: "session-1", status: "pending", state: "state-12345678901234567890123456789012", expires_at: "2030-01-01T00:00:00Z", meta_app_id: "app-1", meta_configuration_id: "config-1", graph_api_version: "v23.0" }),
+    body: JSON.stringify({ session_id: "session-1", status: "pending", state: "state-12345678901234567890123456789012", expires_at: "2030-01-01T00:00:00Z", meta_app_id: "app-1", meta_configuration_id: "config-v4", embedded_signup_version: "v4", graph_api_version: "v25.0" }),
   }));
   await page.route("**/api/bff/channels/whatsapp/onboarding/complete", async (route) => {
     completionBody = route.request().postDataJSON();
     await route.fulfill({
       status: 202,
       contentType: "application/json",
-      body: JSON.stringify({ session_id: "session-1", channel_id: "channel-1", status: "active", bot_phone_number: "+254700000000", display_name: "E2E SACCO", expires_at: "2030-01-01T00:00:00Z", error_code: null, error_summary: null, required_action: null }),
+      body: JSON.stringify({ session_id: "session-1", channel_id: "channel-1", status: "active", workspace_id: "workspace-e2e", embedded_signup_version: "v4", completion_type: "phone_complete", phone_setup_status: "verified", waba_id: "waba-1", phone_number_id: "phone-1", bot_phone_number: "+254700000000", display_name: "E2E SACCO", expires_at: "2030-01-01T00:00:00Z", error_code: null, error_summary: null, required_action: null }),
     });
   });
 
   await page.goto("/w/workspace-e2e/channels/whatsapp/connect", { waitUntil: "load" });
   await page.getByRole("button", { name: "Continue with Meta" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __metaLoginOptions?: Record<string, unknown> }).__metaLoginOptions)).toMatchObject({
-    config_id: "config-1",
+    config_id: "config-v4",
     auth_type: "rerequest",
     response_type: "code",
     override_default_response_type: true,
-    extras: { sessionInfoVersion: 3, setup: {} },
+    extras: { setup: {} },
   });
-  await expect.poll(() => completionBody).toMatchObject({ authorization_code: "one-time-code", waba_id: "waba-1", phone_number_id: "phone-1" });
+  await expect.poll(() => completionBody).toMatchObject({
+    authorization_code: "one-time-code",
+    waba_id: "waba-1",
+    phone_number_id: "phone-1",
+    completion_type: "phone_complete",
+    meta_event_name: "FINISH",
+  });
   await expect(page.getByRole("button", { name: "WhatsApp connected" })).toBeVisible();
 });
 
