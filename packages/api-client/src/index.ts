@@ -652,6 +652,12 @@ export class DukaApiClient {
     return this.get(`/v1/channels/whatsapp/meta/onboarding/${encodeURIComponent(sessionId)}`);
   }
 
+  cancelWhatsappOnboarding(sessionId: string, reason?: string): Promise<OnboardingStatusResponse> {
+    return this.request("DELETE", `/v1/channels/whatsapp/meta/onboarding/${encodeURIComponent(sessionId)}`, {
+      reason: reason || null,
+    });
+  }
+
   resumeWhatsappOnboarding(sessionId: string, registrationPin: string): Promise<OnboardingStatusResponse> {
     return this.request("POST", `/v1/channels/whatsapp/meta/onboarding/${encodeURIComponent(sessionId)}/resume`, {
       registration_pin: registrationPin,

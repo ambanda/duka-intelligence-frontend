@@ -6,25 +6,13 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { OperationalEmptyState } from "./operational-empty-state";
-import type { ChannelView, PendingOnboardingView, WorkspaceChannelsView } from "@/lib/channels/contracts";
+import type { ChannelView, WorkspaceChannelsView } from "@/lib/channels/contracts";
 import { channelStatusLabel, channelStatusTone, formatTimestamp } from "@/lib/channels/status";
 
 function errorMessage(status: number): string {
   if (status === 401) return "Your session expired. Sign in again to view channels.";
   if (status === 403) return "You do not have permission to view channels in this workspace.";
   return "Channel status could not be loaded from the Duka control plane.";
-}
-
-function PendingRow({ session }: { session: PendingOnboardingView }) {
-  return (
-    <article className="channel-row">
-      <div className="channel-row__identity"><MessageCircleMore size={20} /><div><strong>{session.display_name || "WhatsApp onboarding"}</strong><span>{session.bot_phone_number || session.session_id}</span></div></div>
-      <StatusBadge tone={channelStatusTone(session.status)}>{channelStatusLabel(session.status)}</StatusBadge>
-      <div><span className="data-label">Scope</span><strong>{session.sector} / {session.shop_id}</strong></div>
-      <div><span className="data-label">Updated</span><strong>{formatTimestamp(session.updated_at)}</strong></div>
-      <Link className="text-link channel-row__action" href={`channels/whatsapp/connect?session=${encodeURIComponent(session.session_id)}`}>Resume</Link>
-    </article>
-  );
 }
 
 function ChannelRow({ canManage, channel, csrfToken, onChanged, workspaceSlug }: { canManage: boolean; channel: ChannelView; csrfToken: string; onChanged: () => void; workspaceSlug: string }) {
@@ -83,13 +71,12 @@ export function ChannelsPanel({ canManage, csrfToken, workspaceSlug }: { canMana
 
   if (loading) return <div className="loading-state" aria-live="polite"><RefreshCw className="spin" size={18} />Loading authorized channels...</div>;
   if (error) return <div className="error-state"><AlertTriangle size={20} /><div><strong>Channels unavailable</strong><p>{error.message}</p>{error.status === 401 ? <Link className="text-link" href="/sign-in">Sign in again</Link> : <button className="duka-button duka-button--secondary" onClick={load}>Retry</button>}</div></div>;
-  if (!data || (!data.channels.length && !data.pending_onboarding_sessions.length)) {
+  if (!data || !data.channels.length) {
     return <OperationalEmptyState actionHref={`/w/${workspaceSlug}/channels/whatsapp/connect`} actionLabel="Connect WhatsApp" description="No channels are connected. Add a WhatsApp Business account, then assign internal, self-service, or campaign access policies." icon={MessageCircleMore} title="No connected channels" />;
   }
 
   return (
     <div className="channel-list">
-      {data.pending_onboarding_sessions.map((session) => <PendingRow key={session.session_id} session={session} />)}
       {data.channels.map((channel) => <ChannelRow canManage={canManage} channel={channel} csrfToken={csrfToken} key={channel.channel_id} onChanged={load} workspaceSlug={workspaceSlug} />)}
     </div>
   );

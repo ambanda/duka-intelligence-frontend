@@ -224,8 +224,10 @@ export function MetaWhatsAppOnboarding({
     setError(null);
     setMetaProgress("Opening Meta Embedded Signup.");
     let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
+    let onboardingSessionId: string | null = null;
     try {
       const { onboarding, facebook } = preparedSignup;
+      onboardingSessionId = onboarding.session_id;
       setMetaProgress("Select the Business Portfolio, WhatsApp account, and phone number in Meta.");
       assetWaiter = waitForMetaAssets(setMetaProgress);
       const codePromise = new Promise<string>((resolve, reject) => {
@@ -250,12 +252,13 @@ export function MetaWhatsAppOnboarding({
           },
           {
             config_id: onboarding.meta_configuration_id,
-            auth_type: "rerequest",
             response_type: "code",
             override_default_response_type: true,
-            extras: onboarding.embedded_signup_version === "v4"
-              ? { setup: {} }
-              : { sessionInfoVersion: 3, setup: {} },
+            extras: {
+              sessionInfoVersion: "3",
+              version: onboarding.embedded_signup_version,
+              setup: {},
+            },
           },
         );
       });
@@ -278,6 +281,19 @@ export function MetaWhatsAppOnboarding({
       setStatus(await completeResponse.json());
     } catch (reason) {
       assetWaiter?.cancel();
+      if (onboardingSessionId) {
+        try {
+          await fetch(`/api/bff/channels/whatsapp/onboarding/${encodeURIComponent(onboardingSessionId)}`, {
+            method: "DELETE",
+            headers: requestHeaders(csrfToken),
+            body: JSON.stringify({
+              reason: reason instanceof Error ? reason.message : "Meta Embedded Signup did not complete",
+            }),
+          });
+        } catch {
+          // The original Meta failure remains the actionable error for the administrator.
+        }
+      }
       setPreparedSignup(null);
       setError(reason instanceof Error ? reason.message : "WhatsApp onboarding failed");
     } finally {
