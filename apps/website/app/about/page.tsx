@@ -1,84 +1,74 @@
 export const dynamic = "force-static";
 
-import { Bot, Building2, Database, MessageCircle, ShieldCheck, Workflow } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  BarChart3,
+  Building2,
+  MessageCircle,
+  ShieldCheck,
+  Store,
+  Workflow,
+} from "lucide-react";
+
+import { positioning } from "@/lib/brand";
 
 export default function AboutPage() {
   return (
-    <main className="bg-white">
-      <section className="bg-[#101820] px-6 text-white">
-        <div className="mx-auto max-w-6xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-300">
-            About Duka Intelligence
-          </p>
-          <h1 className="mt-4 text-4xl font-bold text-white md:text-5xl">
-            We help organizations turn enterprise knowledge into completed work
+    <main>
+      <section className="bg-[#101820] px-6 py-16 text-white">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-sm font-semibold text-orange-300">About Duka Intelligence</p>
+          <h1 className="mt-4 max-w-4xl text-4xl font-bold text-white md:text-5xl">
+            Every business deserves a capable assistant
           </h1>
-          <p className="mt-6 mx-auto max-w-4xl text-lg text-slate-300">
-            Duka Intelligence, operated by Akili Data, builds the Core Platform
-            that unifies enterprise knowledge and powers Duka Agents that help
-            employees find trusted answers and complete tasks in familiar tools.
-          </p>
+          <p className="mt-6 max-w-3xl text-lg text-slate-300">{positioning}</p>
         </div>
       </section>
 
-      <section className="px-6">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2">
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <Store className="h-8 w-8 text-orange-600" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Duka means shop</h2>
+          </div>
+          <div>
+            <p className="text-lg text-slate-700">
+              In Swahili, duka is a shop. We use the name more broadly: every business has a front door where people arrive, a service counter where work gets done and a back office where decisions are made.
+            </p>
+            <p className="mt-4 text-slate-600">
+              Duka Intelligence connects those three experiences through an assistant customers and staff can reach on WhatsApp, backed by a governed workspace for administrators and managers.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#f2f5f3] px-6 py-16">
+        <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
           {[
-            {
-              icon: Workflow,
-              title: "Our Mission",
-              text: "Make enterprise knowledge easier to find, trust, and act on without exposing raw systems directly to AI agents.",
-            },
-            {
-              icon: Building2,
-              title: "Who We Serve",
-              text: "Organizations that need governed AI for internal teams, external client self-service, operations, enterprise search, social listening, and approved action in daily workflows.",
-            },
+            { icon: MessageCircle, title: "Meet people where they are", text: "Use WhatsApp as the familiar front door for discovery, self-service, support and staff operations." },
+            { icon: Workflow, title: "Turn conversation into work", text: "Connect intent to approved services, workflows, handoffs, collections and business outcomes." },
+            { icon: ShieldCheck, title: "Keep the business in control", text: "Respect tenant ownership, identity, roles, consent, payment accounts and auditable actions." },
+            { icon: BarChart3, title: "Make activity understandable", text: "Turn customer journeys and connected operating data into useful reports and decisions." },
           ].map((item) => (
-            <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
+            <article key={item.title} className="rounded-lg border border-slate-200 bg-white p-6">
               <item.icon className="h-6 w-6 text-orange-600" />
-              <h2 className="mt-4 text-2xl font-semibold text-gray-900">{item.title}</h2>
-              <p className="mt-3 text-gray-600">{item.text}</p>
+              <h2 className="mt-4 text-xl font-semibold text-slate-900">{item.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="bg-[#fbfaf7] px-6">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-semibold text-gray-900">
-            What Makes Us Different
-          </h2>
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-            {[
-              {
-                icon: Database,
-                title: "The Core Platform",
-                text: "Systems, documents, communications, social channels, and APIs are unified into governed enterprise knowledge.",
-              },
-              {
-                icon: Bot,
-                title: "Duka Agents",
-                text: "AI agents understand intent, find trusted answers, recommend next steps, and help complete approved tasks.",
-              },
-              {
-                icon: MessageCircle,
-                title: "Agents Where People Already Are",
-                text: "Duka Agents can be accessed through familiar channels like WhatsApp, so employees and external clients can get help without learning a new system first.",
-              },
-              {
-                icon: ShieldCheck,
-                title: "Governance Before Action",
-                text: "Access control, citations, freshness, lineage, tenant isolation, and audit context are built into the agent layer.",
-              },
-            ].map((item) => (
-              <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
-                <item.icon className="h-6 w-6 text-orange-600" />
-                <h3 className="mt-3 text-xl font-semibold text-gray-900">{item.title}</h3>
-                <p className="mt-2 text-gray-600">{item.text}</p>
-              </article>
-            ))}
-          </div>
+      <section className="bg-white px-6 py-16 text-center">
+        <div className="mx-auto max-w-4xl">
+          <Building2 className="mx-auto h-8 w-8 text-emerald-700" />
+          <h2 className="mt-4 text-3xl font-semibold text-slate-900">Built by Akili Data for practical business use</h2>
+          <p className="mt-4 text-slate-600">Start with one customer or staff journey, prove the value and expand at the pace the business can support.</p>
+          <Link href="/contact" className="mt-7 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600">
+            Talk to our team
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     </main>

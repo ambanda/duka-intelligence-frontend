@@ -4,28 +4,27 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingAssistantWidget from "@/components/FloatingAssistantWidget";
+import { positioning } from "@/lib/brand";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dukaintelligence.co.ke"),
 
   title: {
-    default: "Duka Intelligence",
+    default: "Duka Intelligence | Your Business Assistant on WhatsApp",
     template: "%s | Duka Intelligence",
   },
 
-  description:
-    "Duka Intelligence unifies enterprise knowledge into a governed AI platform and powers Duka Agents that help employees find trusted answers and complete tasks in the tools they already use.",
+  description: positioning,
 
   keywords: [
-    "Duka Agents",
-    "Enterprise Knowledge AI",
-    "AI enterprise search",
-    "Workspace AI agents",
-    "Governed AI platform",
-    "Social media listening AI",
-    "WhatsApp AI assistant",
-    "AI for operations",
-    "Enterprise knowledge platform",
+    "WhatsApp business assistant",
+    "WhatsApp customer self-service",
+    "WhatsApp business automation",
+    "WhatsApp staff operations",
+    "WhatsApp payments",
+    "Enterprise search",
+    "Business intelligence",
+    "Customer journey automation",
   ],
 
   icons: {
@@ -39,8 +38,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title: "Duka Intelligence",
-    description:
-      "The Core Platform unifies enterprise knowledge. Duka Agents turn it into trusted answers, recommendations, and completed work.",
+    description: positioning,
     url: "https://dukaintelligence.co.ke",
     siteName: "Duka Intelligence",
     images: [
@@ -74,10 +72,13 @@ export default function RootLayout({
 }) {
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "SoftwareApplication"],
     name: "Duka Intelligence",
     url: "https://dukaintelligence.co.ke",
     logo: "https://dukaintelligence.co.ke/logo-horizontal-dark.png",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web and WhatsApp",
+    description: positioning,
   };
 
   return (

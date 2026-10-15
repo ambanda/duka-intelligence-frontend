@@ -1,154 +1,111 @@
 export const dynamic = "force-static";
 
+import Link from "next/link";
 import {
-  BadgeCheck,
+  ArrowRight,
+  BarChart3,
   Bot,
-  CheckCircle2,
-  ClipboardList,
-  KeyRound,
+  CalendarCheck2,
+  ClipboardCheck,
+  Headphones,
   MessageCircle,
   SearchCheck,
-  ShieldCheck,
-  Sparkles,
-  Workflow,
+  ShoppingBag,
+  UserCheck,
 } from "lucide-react";
-import AiAssistantLivePreview from "@/components/AiAssistantLivePreview";
 
-const capabilities = [
-  {
-    title: "Understand intent",
-    text: "Employees ask in natural language. Duka Agents interpret the request and identify the knowledge or action needed.",
-    icon: Sparkles,
-  },
-  {
-    title: "Find trusted answers",
-    text: "Agents search governed enterprise knowledge across systems, documents, communications, and channels.",
-    icon: SearchCheck,
-  },
-  {
-    title: "Recommend next steps",
-    text: "Agents can summarize context, explain what changed, and recommend practical next steps.",
-    icon: BadgeCheck,
-  },
-  {
-    title: "Complete approved tasks",
-    text: "Agents can draft responses, prepare follow-ups, trigger workflows, and route items for approval.",
-    icon: Workflow,
-  },
+const customerJobs = [
+  { icon: UserCheck, title: "Register", text: "Provide the information required to start an approved business journey." },
+  { icon: CalendarCheck2, title: "Book", text: "Choose a service, ticket, provider, date or time from what the business currently offers." },
+  { icon: ShoppingBag, title: "Buy and pay", text: "Review products or services, confirm an order and pay into the merchant's connected account." },
+  { icon: Headphones, title: "Get support", text: "Use self-service where possible and move into a tracked human handoff when needed." },
 ];
 
-const flow = ["Intent", "Trusted Answer", "Recommendation", "Approved Action", "Job Done"];
-
-const skills = [
-  "Search organizational knowledge",
-  "Retrieve relevant information",
-  "Answer with context and citations",
-  "Summarize activity",
-  "Explain what changed",
-  "Prepare follow-up lists",
-  "Draft responses",
-  "Trigger approved workflows",
-  "Escalate for human approval",
+const staffJobs = [
+  "Ask for today's schedule or work queue",
+  "Manage orders, appointments and customer handoffs",
+  "Search approved enterprise knowledge",
+  "Receive inspection, approval and collection tasks",
+  "Review utilization, journey and performance summaries",
 ];
 
-const guardrails = [
-  "Dedicated workspace agent channel",
-  "Allowlisted and role-aware users",
-  "No answer without permission or evidence",
-  "Citations and source context",
-  "Audit logs for sensitive actions",
-  "Safe fallback when context is missing",
-];
-
-export default function AiAssistantPage() {
+export default function ProductPage() {
   return (
-    <main className="px-6 py-16 md:py-20">
-      <section className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">
-          Duka Agents
-        </p>
-        <h1 className="mt-4 text-4xl font-bold text-gray-900 md:text-5xl">
-          AI agents that help employees move from intent to job done
-        </h1>
-        <p className="mt-6 max-w-4xl text-lg text-gray-600">
-          Duka Agents understand intent, find trusted answers across governed
-          enterprise knowledge, recommend next steps, and help employees complete
-          approved tasks in the tools they already use, including WhatsApp.
-        </p>
-      </section>
-
-      <section className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {capabilities.map((item) => (
-          <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
-            <item.icon className="h-6 w-6 text-orange-600" />
-            <h2 className="mt-4 text-lg font-semibold text-slate-900">{item.title}</h2>
-            <p className="mt-3 text-sm leading-6 text-gray-600">{item.text}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="mx-auto mt-14 max-w-6xl">
-        <h2 className="text-3xl font-semibold text-gray-900">From search to answer to job done</h2>
-        <div className="mt-6 grid gap-3 md:grid-cols-5">
-          {flow.map((item, index) => (
-            <div key={item} className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{index + 1}</p>
-              <p className="mt-2 font-semibold text-slate-900">{item}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <AiAssistantLivePreview />
-
-      <section className="mx-auto mt-14 grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">
-            Agent Skills
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold text-gray-900">
-            Useful assistance, bounded by approved skills
-          </h2>
-          <p className="mt-4 text-gray-600">
-            Duka Agents do not act freely across raw company systems. They work
-            through governed knowledge objects, approved skills, and controlled
-            workflows.
+    <main>
+      <section className="bg-[#101820] px-6 py-16 text-white">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-sm font-semibold text-orange-300">The Duka assistant</p>
+          <h1 className="mt-4 max-w-4xl text-4xl font-bold text-white md:text-5xl">
+            One assistant for customers, staff and managers
+          </h1>
+          <p className="mt-6 max-w-3xl text-lg text-slate-300">
+            Customers get a guided route to the business. Staff get authorized tools and knowledge. Managers get a connected view of work and outcomes.
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {skills.map((skill) => (
-              <div key={skill} className="rounded-lg border border-slate-200 bg-[#fbfaf7] p-4 text-sm font-medium text-slate-700">
-                {skill}
-              </div>
+      </section>
+
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-center gap-3">
+            <MessageCircle className="h-7 w-7 text-emerald-700" />
+            <h2 className="text-3xl font-semibold text-slate-900">Customer self-service on WhatsApp</h2>
+          </div>
+          <div className="mt-9 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {customerJobs.map((job) => (
+              <article key={job.title} className="rounded-lg border border-slate-200 p-5">
+                <job.icon className="h-6 w-6 text-orange-600" />
+                <h3 className="mt-4 text-lg font-semibold text-slate-900">{job.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{job.text}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto mt-14 rounded-2xl border border-emerald-200 bg-emerald-50 p-7 max-w-6xl shadow-card">
-        <div className="flex items-start gap-4">
-          <KeyRound className="mt-1 h-7 w-7 shrink-0 text-emerald-700" />
+      <section className="bg-[#f2f5f3] px-6 py-16">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">
-              Guardrails come before answers
-            </h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {guardrails.map((item) => (
-                <div key={item} className="rounded-lg bg-white px-4 py-3 text-sm font-medium text-slate-700">
-                  {item}
-                </div>
-              ))}
-            </div>
+            <ClipboardCheck className="h-7 w-7 text-orange-600" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Staff operations through WhatsApp</h2>
+            <p className="mt-4 text-slate-600">
+              A staff member sees only the business knowledge and actions allowed by their tenant, workspace, shop and role.
+            </p>
           </div>
+          <ul className="divide-y divide-slate-300 border-y border-slate-300">
+            {staffJobs.map((job) => (
+              <li key={job} className="flex items-start gap-3 py-4 text-sm text-slate-700">
+                <SearchCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+                {job}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <section className="mx-auto mt-14 text-center max-w-6xl">
-        <ClipboardList className="mx-auto h-8 w-8 text-orange-600" />
-        <h2 className="mt-3 text-3xl font-semibold text-gray-900">
-          Give employees an AI agent that can find answers and finish work
-        </h2>
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
+          <article className="border-l-4 border-orange-500 pl-6">
+            <Bot className="h-7 w-7 text-orange-600" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">AI where interpretation helps</h2>
+            <p className="mt-4 text-slate-600">Duka can understand natural-language intent, find approved context, summarize evidence and explain the next step.</p>
+          </article>
+          <article className="border-l-4 border-emerald-600 pl-6">
+            <BarChart3 className="h-7 w-7 text-emerald-700" />
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Workflows where correctness matters</h2>
+            <p className="mt-4 text-slate-600">Business services validate identity, availability, prices, payment evidence, approvals and state changes before an action completes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="bg-[#12352f] px-6 py-16 text-center text-white">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-3xl font-semibold text-white">Choose the first job your Duka assistant should complete</h2>
+          <p className="mt-4 text-emerald-50/80">Begin with discovery, booking, ordering, staff search or another focused journey.</p>
+          <Link href="/contact" className="mt-7 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600">
+            See Duka in action
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </section>
     </main>
   );

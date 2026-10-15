@@ -31,8 +31,13 @@ const routes = [
 ];
 
 const requiredHomeContent = [
-  "<title>Duka Intelligence</title>",
-  "Duka Intelligence unifies enterprise knowledge into a governed AI platform",
+  "<title>Duka Intelligence | Your Business Assistant on WhatsApp</title>",
+  "Duka Intelligence is a WhatsApp-first business assistant",
+  "From the first hello to the daily report",
+  "Start with what matters now",
+  "Use Embedded Signup with your Facebook account",
+  "Chat on WhatsApp",
+  "https://wa.me/254725375358",
   "https://dukaintelligence.co.ke",
   "Open Duka Intelligence assistant",
   "Ask Duka",

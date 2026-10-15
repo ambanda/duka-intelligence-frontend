@@ -1,7 +1,7 @@
 export const dynamic = "force-static";
 
-import PlatformPage from "@/app/platform/page";
+import AssistantProductPage from "@/app/ai-assistant/page";
 
 export default function ProductPage() {
-  return <PlatformPage />;
+  return <AssistantProductPage />;
 }

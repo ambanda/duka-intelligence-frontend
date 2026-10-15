@@ -1,118 +1,87 @@
 import {
-  BadgeCheck,
-  Bot,
-  Braces,
-  Database,
-  FileText,
-  FolderOpen,
-  Mail,
+  BarChart3,
+  CalendarCheck2,
+  CheckCircle2,
+  ClipboardCheck,
   MessageCircle,
-  SearchCheck,
-  ShieldCheck,
-  Share2,
-  Sparkles,
-  Workflow,
+  Search,
+  ShoppingBag,
+  UserCheck,
 } from "lucide-react";
 
-const sources = [
-  { label: "Systems", icon: Database },
-  { label: "Documents", icon: FileText },
-  { label: "Email", icon: Mail },
-  { label: "Chats", icon: MessageCircle },
-  { label: "Social", icon: Share2 },
-  { label: "APIs", icon: Braces },
-];
-
-const platform = ["Connectors", "Data processing", "Knowledge objects", "Access controls"];
-const agents = ["Understand intent", "Find answers", "Recommend", "Act safely"];
-const outputs = ["WhatsApp", "Dashboards", "APIs", "Workflows"];
+const journey = ["Discover", "Register", "Self-serve", "Staff action", "Report"];
 
 export default function WorkspaceAssistantVisual() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#17212b] p-4 text-white shadow-glow md:p-5">
-      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+    <div className="border-y border-white/15 py-6 text-white">
+      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-300">
-            Duka Intelligence
-          </p>
-          <h3 className="mt-1 text-xl font-semibold text-white">
-            Enterprise knowledge to job done
-          </h3>
+          <p className="text-sm font-semibold text-orange-300">One connected journey</p>
+          <h2 className="mt-1 text-2xl font-semibold text-white">
+            A customer starts on WhatsApp. Your team sees the work.
+          </h2>
         </div>
-        <BadgeCheck className="h-6 w-6 text-emerald-300" />
+        <p className="max-w-sm text-sm text-slate-300">
+          Every step stays connected to the right business, customer and outcome.
+        </p>
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[0.85fr_1.1fr_0.95fr]">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
-            <FolderOpen className="h-4 w-4 text-orange-300" />
-            Sources
+      <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr_0.8fr] lg:items-stretch">
+        <section className="rounded-lg border border-emerald-300/25 bg-emerald-950/35 p-4" aria-label="Customer WhatsApp experience">
+          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-200">
+            <MessageCircle className="h-5 w-5" />
+            Customer on WhatsApp
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {sources.map((source) => (
-              <div key={source.label} className="flex min-h-12 items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
-                <source.icon className="h-4 w-4 shrink-0 text-orange-300" />
-                <span className="text-sm font-medium text-slate-100">{source.label}</span>
-              </div>
-            ))}
+          <div className="mt-4 space-y-3 text-sm">
+            <div className="ml-8 rounded-lg bg-white px-3 py-2 text-slate-900">
+              I would like to book a consultation.
+            </div>
+            <div className="mr-5 rounded-lg bg-emerald-100 px-3 py-2 text-slate-900">
+              Here are the services and available times for this business.
+            </div>
+            <div className="ml-8 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-slate-900">
+              <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+              Booking confirmed
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="rounded-xl border border-emerald-300/30 bg-emerald-400/10 p-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-emerald-300" />
-            <h3 className="font-semibold text-white">The Core Platform</h3>
-          </div>
-          <p className="mt-2 text-sm leading-6 text-emerald-50">
-            Unifies structured and unstructured enterprise knowledge into a
-            governed layer that AI can safely use.
-          </p>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            {platform.map((item) => (
-              <span key={item} className="rounded-lg border border-emerald-200/20 bg-white/10 px-3 py-2 text-sm font-medium text-emerald-50">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-orange-300/30 bg-orange-400/10 p-4">
-          <div className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-orange-300" />
-            <h3 className="font-semibold text-white">Duka Agents</h3>
-          </div>
-          <div className="mt-4 space-y-2">
-            {agents.map((item) => (
-              <div key={item} className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-orange-50">
-                <Sparkles className="h-4 w-4 text-orange-300" />
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-xl border border-white/10 bg-slate-950 p-4">
-        <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr_auto_1fr] md:items-center">
-          {["Intent", "Trusted answer", "Recommendation", "Approved action", "Job done"].map((step, index) => (
-            <div key={step} className="contents">
-              <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-center text-sm font-semibold text-slate-100">
+        <section className="flex flex-col justify-center py-2" aria-label="Duka customer journey">
+          <div className="grid gap-2 sm:grid-cols-5 sm:items-center">
+            {journey.map((step) => (
+              <div key={step} className="flex min-h-16 items-center justify-center border-b border-white/15 px-2 py-3 text-center text-sm font-semibold text-white sm:border-b-0 sm:border-r sm:last:border-r-0">
                 {step}
               </div>
-              {index < 4 ? <span className="hidden text-center text-orange-300 md:block">→</span> : null}
+            ))}
+          </div>
+          <div className="mt-5 grid grid-cols-4 gap-3 text-center text-xs text-slate-300">
+            <Search className="mx-auto h-5 w-5 text-orange-300" />
+            <ShoppingBag className="mx-auto h-5 w-5 text-orange-300" />
+            <UserCheck className="mx-auto h-5 w-5 text-orange-300" />
+            <BarChart3 className="mx-auto h-5 w-5 text-orange-300" />
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-orange-300/25 bg-orange-950/25 p-4" aria-label="Staff operations experience">
+          <div className="flex items-center gap-2 text-sm font-semibold text-orange-200">
+            <ClipboardCheck className="h-5 w-5" />
+            Staff and managers
+          </div>
+          <div className="mt-4 divide-y divide-white/10 text-sm">
+            <div className="flex items-center gap-3 py-3">
+              <CalendarCheck2 className="h-5 w-5 text-orange-300" />
+              <span>New booking added to today&apos;s schedule</span>
             </div>
-          ))}
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {outputs.map((output) => (
-            <span key={output} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
-              {output}
-            </span>
-          ))}
-          <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100">
-            Permissions + citations + audit logs
-          </span>
-        </div>
+            <div className="flex items-center gap-3 py-3">
+              <UserCheck className="h-5 w-5 text-orange-300" />
+              <span>Front desk notified and assigned</span>
+            </div>
+            <div className="flex items-center gap-3 py-3">
+              <BarChart3 className="h-5 w-5 text-orange-300" />
+              <span>Journey and utilization updated</span>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
