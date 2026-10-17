@@ -14,8 +14,12 @@ import {
   UserCheck,
 } from "lucide-react";
 
+import { serviceCentres } from "@/lib/brand";
+
+const centreIcons = [MessageCircle, ShoppingBag, ClipboardCheck];
+
 const customerJobs = [
-  { icon: UserCheck, title: "Register", text: "Provide the information required to start an approved business journey." },
+  { icon: UserCheck, title: "Request a service", text: "Provide the information required to start an approved Service Desk journey." },
   { icon: CalendarCheck2, title: "Book", text: "Choose a service, ticket, provider, date or time from what the business currently offers." },
   { icon: ShoppingBag, title: "Buy and pay", text: "Review products or services, confirm an order and pay into the merchant's connected account." },
   { icon: Headphones, title: "Get support", text: "Use self-service where possible and move into a tracked human handoff when needed." },
@@ -44,11 +48,28 @@ export default function ProductPage() {
         </div>
       </section>
 
+      <section className="bg-white px-6 py-12">
+        <div className="mx-auto grid max-w-6xl border-y border-slate-200 md:grid-cols-3">
+          {serviceCentres.map((centre, index) => {
+            const CentreIcon = centreIcons[index];
+
+            return (
+              <article key={centre.id} className="border-b border-slate-200 px-5 py-7 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
+                <CentreIcon className="h-6 w-6 text-orange-600" />
+                <p className="mt-5 text-xs font-semibold text-emerald-800">{centre.capability}</p>
+                <h2 className="mt-1 text-xl font-semibold text-slate-900">{centre.name}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{centre.description}</p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="bg-white px-6 py-16">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-3">
             <MessageCircle className="h-7 w-7 text-emerald-700" />
-            <h2 className="text-3xl font-semibold text-slate-900">Customer self-service on WhatsApp</h2>
+            <h2 className="text-3xl font-semibold text-slate-900">Service Desk self-service on WhatsApp</h2>
           </div>
           <div className="mt-9 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {customerJobs.map((job) => (
@@ -66,7 +87,7 @@ export default function ProductPage() {
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <ClipboardCheck className="h-7 w-7 text-orange-600" />
-            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Staff operations through WhatsApp</h2>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-900">Back Office operations through WhatsApp</h2>
             <p className="mt-4 text-slate-600">
               A staff member sees only the business knowledge and actions allowed by their tenant, workspace, shop and role.
             </p>

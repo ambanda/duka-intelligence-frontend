@@ -34,8 +34,10 @@ const requiredHomeContent = [
   "<title>Duka Intelligence | Your Business Assistant on WhatsApp</title>",
   "Duka Intelligence is a WhatsApp-first business assistant",
   "From the first hello to the daily report",
-  "Start with what matters now",
-  "Use Embedded Signup with your Facebook account",
+  "Start with the service centre you need now",
+  "Front Desk",
+  "Service Desk",
+  "Back Office",
   "Chat on WhatsApp",
   "https://wa.me/254725375358",
   "https://dukaintelligence.co.ke",
@@ -87,6 +89,25 @@ const home = readFileSync(join(outputRoot, "index.html"), "utf8");
 for (const content of requiredHomeContent) {
   assert(home.includes(content), `Home output no longer contains: ${content}`);
 }
+
+const pricing = readFileSync(join(outputRoot, "pricing.html"), "utf8");
+for (const content of [
+  "$20",
+  "$50",
+  "$28",
+  "independently selectable modules",
+  "Facebook Embedded Signup",
+  "newly onboarded Front Desk customer",
+]) {
+  assert(pricing.includes(content), `Pricing output no longer contains: ${content}`);
+}
+
+const trust = readFileSync(join(outputRoot, "trust.html"), "utf8");
+assert(trust.includes("Meta Tech Provider"), "Trust output no longer contains the Meta Tech Provider identity");
+assert(
+  existsSync(join(outputRoot, "meta-tech-provider.png")),
+  "Meta Tech Provider badge is missing from static output",
+);
 
 const apiSource = readFileSync(join(websiteRoot, "lib", "publicAssistantApi.ts"), "utf8");
 const chatSource = readFileSync(join(websiteRoot, "components", "PublicAssistantChat.tsx"), "utf8");

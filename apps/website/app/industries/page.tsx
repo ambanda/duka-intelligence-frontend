@@ -13,28 +13,28 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { dukaWhatsAppChatUrl } from "@/lib/brand";
+import { dukaWhatsAppChatUrl, serviceCentres } from "@/lib/brand";
 
 const journeys = [
   {
     title: "Clinics and wellness",
     icon: HeartPulse,
-    steps: ["Discover available services", "Book or reschedule an appointment", "Pay a required deposit", "Give staff today's schedule", "Report utilization and cancellations"],
+    steps: ["Discover services, locations and requirements", "Book, reschedule and pay a required deposit", "Manage schedules and review utilization or cancellations"],
   },
   {
     title: "Retail and professional services",
     icon: ShoppingBag,
-    steps: ["Browse products or services", "Ask a product or service question", "Confirm an order or booking", "Collect payment into the merchant account", "Track demand and completed journeys"],
+    steps: ["Discover products, services and current campaigns", "Confirm an order or booking and collect payment", "Manage fulfilment and review demand or completed journeys"],
   },
   {
     title: "Markets and auctions",
     icon: CircleDollarSign,
-    steps: ["Register sellers, buyers and preferences", "Inspect and approve a lot", "Match buyers and open bidding", "Collect a required payment", "Coordinate collection or delivery"],
+    steps: ["Register sellers, buyers and buying preferences", "Inspect lots, match buyers, bid and collect payment", "Approve exceptions and coordinate collection or delivery"],
   },
   {
     title: "SACCOs and member organizations",
     icon: UsersRound,
-    steps: ["Explain public products and requirements", "Guide a member to the next step", "Provide verified member self-service", "Search authorized documents", "Review portfolio and operational metrics"],
+    steps: ["Explain public products, requirements and next steps", "Provide verified member self-service", "Search authorized knowledge and review operational metrics"],
   },
 ];
 
@@ -61,9 +61,9 @@ export default function IndustriesPage() {
               <h2 className="mt-4 text-2xl font-semibold text-slate-900">{journey.title}</h2>
               <ol className="mt-5 space-y-3">
                 {journey.steps.map((step, index) => (
-                  <li key={step} className="flex items-start gap-3 text-sm text-slate-700">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs font-semibold text-emerald-800">{index + 1}</span>
-                    <span className="pt-0.5">{step}</span>
+                  <li key={step} className="grid gap-1 border-b border-slate-100 pb-3 text-sm last:border-b-0 sm:grid-cols-[110px_1fr]">
+                    <span className="font-semibold text-emerald-800">{serviceCentres[index].name}</span>
+                    <span className="text-slate-700">{step}</span>
                   </li>
                 ))}
               </ol>

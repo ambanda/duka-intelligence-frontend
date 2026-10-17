@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { workspaceSignInUrl } from "@/lib/workspaceUrl";
@@ -7,10 +8,13 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-slate-200 bg-[#101820] text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <p className="text-xs text-slate-400">
-          (c) 2026 Duka Intelligence by Akili Data. All rights reserved.
-        </p>
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-4">
+          <Image src="/meta-tech-provider.png" alt="Meta Tech Provider" width={980} height={553} className="h-10 w-auto rounded object-contain" />
+          <p className="text-xs text-slate-400">
+            (c) 2026 Duka Intelligence by Akili Data. All rights reserved.
+          </p>
+        </div>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <a href={signInUrl} className="font-semibold text-white transition hover:text-orange-300">
             Workspace sign in

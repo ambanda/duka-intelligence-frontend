@@ -1,6 +1,7 @@
 export const dynamic = "force-static";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
@@ -22,6 +23,7 @@ import WorkspaceAssistantVisual from "@/components/WorkspaceAssistantVisual";
 import {
   dukaWhatsAppChatUrl,
   positioning,
+  serviceCentres,
   whatsappReach,
 } from "@/lib/brand";
 
@@ -50,25 +52,6 @@ const lifecycle = [
     title: "Understand",
     icon: BarChart3,
     text: "Turn customer journeys and connected business data into clear operational, customer and management reports.",
-  },
-];
-
-const adoption = [
-  {
-    stage: "Connect",
-    result: "Use Embedded Signup with your Facebook account to connect the business WhatsApp channel, then add entry points, a welcome experience, FAQs and human handoff.",
-  },
-  {
-    stage: "Serve",
-    result: "Add customer registration, appointments, tickets, catalogs, orders or sector workflows.",
-  },
-  {
-    stage: "Operate",
-    result: "Add staff roles, approvals, internal search, collections and operational alerts.",
-  },
-  {
-    stage: "Understand",
-    result: "Connect business data and activate journey, performance and management reporting.",
   },
 ];
 
@@ -118,6 +101,19 @@ export default function HomePage() {
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
               {positioning}
             </p>
+            <div className="mt-6 inline-flex items-center gap-4 rounded-md border border-white/15 bg-white px-4 py-2.5 text-slate-900 shadow-sm">
+              <Image
+                src="/meta-tech-provider.png"
+                alt="Meta Tech Provider"
+                width={980}
+                height={553}
+                className="h-11 w-auto object-contain"
+                priority
+              />
+              <span className="border-l border-slate-200 pl-4 text-sm font-semibold">
+                Approved Meta Tech Provider
+              </span>
+            </div>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600">
                 See Duka in action
@@ -181,22 +177,25 @@ export default function HomePage() {
           <div>
             <p className="text-sm font-semibold text-emerald-800">Adopt at your own pace</p>
             <h2 className="mt-3 text-3xl font-semibold text-slate-900 md:text-4xl">
-              Start with what matters now
+              Start with the service centre you need now
             </h2>
             <p className="mt-4 text-slate-600">
-              You do not need to connect every system or automate every process on day one. Each stage delivers a useful business outcome on its own.
+              Front Desk, Service Desk and Back Office are independently selectable. Activate one useful service centre first, then add another when the business is ready.
             </p>
             <Link href="/pricing" className="mt-6 inline-flex items-center gap-2 font-semibold text-orange-700 hover:text-orange-800">
-              View the adoption tiers
+              Compare service-centre modules
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <ol className="divide-y divide-slate-300 border-y border-slate-300">
-            {adoption.map((item, index) => (
-              <li key={item.stage} className="grid gap-2 py-5 sm:grid-cols-[80px_130px_1fr] sm:items-start">
-                <span className="text-sm font-semibold text-slate-400">Stage {index + 1}</span>
-                <span className="font-semibold text-slate-900">{item.stage}</span>
-                <span className="text-sm leading-6 text-slate-600">{item.result}</span>
+            {serviceCentres.map((centre, index) => (
+              <li key={centre.id} className="grid gap-2 py-5 sm:grid-cols-[80px_150px_1fr] sm:items-start">
+                <span className="text-sm font-semibold text-slate-400">Centre {index + 1}</span>
+                <span>
+                  <strong className="block font-semibold text-slate-900">{centre.name}</strong>
+                  <span className="text-xs font-semibold text-orange-700">{centre.capability}</span>
+                </span>
+                <span className="text-sm leading-6 text-slate-600">{centre.description}</span>
               </li>
             ))}
           </ol>

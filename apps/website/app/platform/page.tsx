@@ -14,6 +14,10 @@ import {
   Workflow,
 } from "lucide-react";
 
+import { serviceCentres } from "@/lib/brand";
+
+const centreIcons = [MessageCircle, Workflow, BarChart3];
+
 const runtime = [
   {
     title: "Connect the business",
@@ -56,6 +60,26 @@ export default function PlatformPage() {
           <p className="mt-6 max-w-3xl text-lg text-slate-300">
             Duka connects the customer conversation, the staff task and the management result without allowing a chat message to decide who has access or what business action is valid.
           </p>
+        </div>
+      </section>
+
+      <section className="bg-[#f2f5f3] px-6 py-12">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-sm font-semibold text-emerald-800">Where the assistant works</p>
+          <div className="mt-6 grid border-y border-slate-300 md:grid-cols-3">
+            {serviceCentres.map((centre, index) => {
+              const CentreIcon = centreIcons[index];
+
+              return (
+                <article key={centre.id} className="border-b border-slate-300 px-5 py-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
+                  <CentreIcon className="h-6 w-6 text-orange-600" />
+                  <p className="mt-4 text-xs font-semibold text-emerald-800">{centre.capability}</p>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-900">{centre.name}</h2>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{centre.description}</p>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -134,7 +158,7 @@ export default function PlatformPage() {
           <h2 className="mt-4 text-3xl font-semibold text-slate-900">Start with one journey, then reuse the foundation</h2>
           <p className="mt-4 text-slate-600">The same workspace, channel and controls can support additional customer, staff and reporting capabilities when the business is ready.</p>
           <Link href="/pricing" className="mt-7 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600">
-            Compare adoption tiers
+            Compare service-centre modules
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

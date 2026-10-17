@@ -6,10 +6,9 @@ import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 import { dukaWhatsAppChatUrl, dukaWhatsAppNumber } from "@/lib/brand";
 
 const startingPoints = [
-  "Connect a business WhatsApp account",
-  "Launch customer self-service",
-  "Help staff operate through WhatsApp",
-  "Connect business data and reporting",
+  "Front Desk: connect WhatsApp, onboard customers and route enquiries",
+  "Service Desk: launch customer self-service and transactions",
+  "Back Office: help authorized staff operate and understand the work",
 ];
 
 export default function ContactPage() {

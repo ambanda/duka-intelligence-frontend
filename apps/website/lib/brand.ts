@@ -1,5 +1,29 @@
 export const positioning =
-  "Duka Intelligence is a WhatsApp-first business assistant that helps people discover your business, register, buy and pay, and get support, while helping your staff operate and your managers understand what is happening.";
+  "Duka Intelligence is a WhatsApp-first business assistant that helps customers and staff across your Front Desk, Service Desk and Back Office.";
+
+export const serviceCentres = [
+  {
+    id: "front-desk",
+    name: "Front Desk",
+    capability: "Connect",
+    description:
+      "Help people discover the business, get welcomed, onboard, find approved information and reach the right next step.",
+  },
+  {
+    id: "service-desk",
+    name: "Service Desk",
+    capability: "Serve",
+    description:
+      "Help existing customers and newly onboarded customers complete requests, transactions, payments and support journeys.",
+  },
+  {
+    id: "back-office",
+    name: "Back Office",
+    capability: "Operate & Understand",
+    description:
+      "Help authorized staff coordinate work, use approved knowledge and understand operational and customer outcomes.",
+  },
+] as const;
 
 export const dukaWhatsAppNumber = "+254 725 375 358";
 
@@ -13,9 +37,5 @@ export const whatsappReach = {
   sourceLabel: "Meta, September 2025",
 };
 
-export const metaTechProviderApproved =
-  process.env.NEXT_PUBLIC_META_TECH_PROVIDER_APPROVED === "true";
-
-export const metaProviderStatement = metaTechProviderApproved
-  ? "Duka Intelligence is a Meta Tech Provider helping businesses connect and operate customer journeys on WhatsApp."
-  : "Duka Intelligence is built on the WhatsApp Business Platform.";
+export const metaProviderStatement =
+  "Duka Intelligence is a Meta Tech Provider helping businesses connect and operate customer journeys on WhatsApp.";

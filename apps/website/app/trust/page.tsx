@@ -1,5 +1,6 @@
 export const dynamic = "force-static";
 
+import Image from "next/image";
 import {
   BadgeCheck,
   Banknote,
@@ -66,7 +67,7 @@ export default function TrustPage() {
       </section>
 
       <section className="bg-[#12352f] px-6 py-16 text-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[1fr_auto] md:items-center">
           <div className="max-w-3xl">
             <ShieldCheck className="h-8 w-8 text-emerald-200" />
             <h2 className="mt-4 text-3xl font-semibold text-white">Meta discovery, governed WhatsApp journeys</h2>
@@ -81,7 +82,9 @@ export default function TrustPage() {
               </a>
             </p>
           </div>
-          <span className="rounded-lg border border-white/20 px-4 py-3 text-sm font-semibold text-white">Meta entry points to WhatsApp</span>
+          <div className="rounded-lg bg-white p-3">
+            <Image src="/meta-tech-provider.png" alt="Meta Tech Provider" width={980} height={553} className="h-28 w-auto object-contain" priority />
+          </div>
         </div>
       </section>
     </main>

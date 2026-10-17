@@ -4,19 +4,20 @@ import {
   CheckCircle2,
   ClipboardCheck,
   MessageCircle,
-  Search,
   ShoppingBag,
   UserCheck,
 } from "lucide-react";
 
-const journey = ["Discover", "Register", "Self-serve", "Staff action", "Report"];
+import { serviceCentres } from "@/lib/brand";
+
+const centreIcons = [MessageCircle, ShoppingBag, ClipboardCheck];
 
 export default function WorkspaceAssistantVisual() {
   return (
     <div className="border-y border-white/15 py-6 text-white">
       <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-orange-300">One connected journey</p>
+          <p className="text-sm font-semibold text-orange-300">One assistant, three service centres</p>
           <h2 className="mt-1 text-2xl font-semibold text-white">
             A customer starts on WhatsApp. Your team sees the work.
           </h2>
@@ -47,18 +48,18 @@ export default function WorkspaceAssistantVisual() {
         </section>
 
         <section className="flex flex-col justify-center py-2" aria-label="Duka customer journey">
-          <div className="grid gap-2 sm:grid-cols-5 sm:items-center">
-            {journey.map((step) => (
-              <div key={step} className="flex min-h-16 items-center justify-center border-b border-white/15 px-2 py-3 text-center text-sm font-semibold text-white sm:border-b-0 sm:border-r sm:last:border-r-0">
-                {step}
-              </div>
-            ))}
-          </div>
-          <div className="mt-5 grid grid-cols-4 gap-3 text-center text-xs text-slate-300">
-            <Search className="mx-auto h-5 w-5 text-orange-300" />
-            <ShoppingBag className="mx-auto h-5 w-5 text-orange-300" />
-            <UserCheck className="mx-auto h-5 w-5 text-orange-300" />
-            <BarChart3 className="mx-auto h-5 w-5 text-orange-300" />
+          <div className="grid gap-2 sm:grid-cols-3 sm:items-stretch">
+            {serviceCentres.map((centre, index) => {
+              const CentreIcon = centreIcons[index];
+
+              return (
+                <div key={centre.id} className="flex min-h-28 flex-col items-center justify-center border-b border-white/15 px-3 py-3 text-center sm:border-b-0 sm:border-r sm:last:border-r-0">
+                  <CentreIcon className="h-5 w-5 text-orange-300" />
+                  <span className="mt-3 text-sm font-semibold text-white">{centre.name}</span>
+                  <span className="mt-1 text-xs text-slate-300">{centre.capability}</span>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -70,11 +71,11 @@ export default function WorkspaceAssistantVisual() {
           <div className="mt-4 divide-y divide-white/10 text-sm">
             <div className="flex items-center gap-3 py-3">
               <CalendarCheck2 className="h-5 w-5 text-orange-300" />
-              <span>New booking added to today&apos;s schedule</span>
+              <span>Service Desk booking added to today&apos;s schedule</span>
             </div>
             <div className="flex items-center gap-3 py-3">
               <UserCheck className="h-5 w-5 text-orange-300" />
-              <span>Front desk notified and assigned</span>
+              <span>Back Office staff notified and assigned</span>
             </div>
             <div className="flex items-center gap-3 py-3">
               <BarChart3 className="h-5 w-5 text-orange-300" />
