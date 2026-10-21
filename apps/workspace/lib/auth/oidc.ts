@@ -105,7 +105,9 @@ export async function exchangeOidcCode(currentUrl: URL, transaction: OidcTransac
     accessToken: tokens.access_token,
     accessTokenExpiresAt: new Date(now + accessTokenLifetime * 1000).toISOString(),
     refreshToken: tokens.refresh_token ?? null,
-    idToken: tokens.id_token ?? null,
+    // The ID token is validated during the callback and is not used afterwards.
+    // Keeping a second JWT in the encrypted cookie can exceed browser limits.
+    idToken: null,
     csrfToken: oidc.randomState(),
     expiresAt: new Date(now + settings.sessionMaxAgeSeconds * 1000).toISOString(),
     principal: {
@@ -127,6 +129,6 @@ export async function refreshOidcSession(session: ServerWorkspaceSession): Promi
     accessToken: tokens.access_token,
     accessTokenExpiresAt: new Date(Date.now() + Math.max(tokens.expiresIn() ?? 300, 60) * 1000).toISOString(),
     refreshToken: tokens.refresh_token ?? session.refreshToken,
-    idToken: tokens.id_token ?? session.idToken,
+    idToken: null,
   };
 }

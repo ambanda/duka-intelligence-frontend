@@ -13,6 +13,7 @@ export const SESSION_COOKIE = process.env.NODE_ENV === "production"
   : "duka-workspace-session";
 
 const secure = process.env.NODE_ENV === "production";
+const MAX_SESSION_COOKIE_BYTES = 3_800;
 
 export async function readSessionCookie(): Promise<ServerWorkspaceSession | null> {
   const store = await cookies();
@@ -22,7 +23,12 @@ export async function readSessionCookie(): Promise<ServerWorkspaceSession | null
 
 export async function writeSessionCookie(session: ServerWorkspaceSession): Promise<void> {
   const store = await cookies();
-  store.set(SESSION_COOKIE, await encodeSession(session), {
+  const token = await encodeSession(session);
+  const cookieBytes = Buffer.byteLength(`${SESSION_COOKIE}=${token}`, "utf8");
+  if (cookieBytes > MAX_SESSION_COOKIE_BYTES) {
+    throw new Error(`Encrypted workspace session exceeds the cookie budget (${cookieBytes} bytes)`);
+  }
+  store.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure,
     sameSite: "lax",

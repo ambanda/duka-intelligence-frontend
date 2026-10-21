@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
     const fallback = firstWorkspace ? `/w/${firstWorkspace.workspaceSlug}/overview` : "/onboarding";
     const destination = safeReturnTo(transaction.returnTo, fallback);
     return NextResponse.redirect(new URL(destination === "/" ? fallback : destination, appBaseUrl));
-  } catch {
+  } catch (error) {
+    console.error("OIDC callback failed", error instanceof Error
+      ? { name: error.name, message: error.message }
+      : { name: "UnknownError" });
     return NextResponse.redirect(new URL("/auth/error?code=oidc_callback_failed", appBaseUrl));
   }
 }
