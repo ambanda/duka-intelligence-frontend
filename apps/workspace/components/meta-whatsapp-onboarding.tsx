@@ -225,6 +225,7 @@ export function MetaWhatsAppOnboarding({
     setMetaProgress("Opening Meta Embedded Signup.");
     let assetWaiter: ReturnType<typeof waitForMetaAssets> | null = null;
     let onboardingSessionId: string | null = null;
+    let completionSubmitted = false;
     try {
       const { onboarding, facebook } = preparedSignup;
       onboardingSessionId = onboarding.session_id;
@@ -263,6 +264,7 @@ export function MetaWhatsAppOnboarding({
         );
       });
       const [assets, authorizationCode] = await Promise.all([assetWaiter.promise, codePromise]);
+      completionSubmitted = true;
       const completeResponse = await fetch("/api/bff/channels/whatsapp/onboarding/complete", {
         method: "POST",
         headers: requestHeaders(csrfToken),
@@ -282,6 +284,13 @@ export function MetaWhatsAppOnboarding({
     } catch (reason) {
       assetWaiter?.cancel();
       if (onboardingSessionId) {
+        if (completionSubmitted) {
+          const recovered = await pollStatus(onboardingSessionId).catch(() => null);
+          if (recovered && recovered.status !== "awaiting_meta") {
+            setPreparedSignup(null);
+            return;
+          }
+        }
         try {
           await fetch(`/api/bff/channels/whatsapp/onboarding/${encodeURIComponent(onboardingSessionId)}`, {
             method: "DELETE",

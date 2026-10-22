@@ -645,7 +645,7 @@ export class DukaApiClient {
   }
 
   completeWhatsappOnboarding(payload: CompleteEmbeddedSignupRequest): Promise<OnboardingStatusResponse> {
-    return this.request("POST", "/v1/channels/whatsapp/meta/onboarding/complete", payload);
+    return this.request("POST", "/v1/channels/whatsapp/meta/onboarding/complete", payload, 45_000);
   }
 
   getWhatsappOnboardingStatus(sessionId: string): Promise<OnboardingStatusResponse> {
@@ -661,7 +661,7 @@ export class DukaApiClient {
   resumeWhatsappOnboarding(sessionId: string, registrationPin: string): Promise<OnboardingStatusResponse> {
     return this.request("POST", `/v1/channels/whatsapp/meta/onboarding/${encodeURIComponent(sessionId)}/resume`, {
       registration_pin: registrationPin,
-    });
+    }, 30_000);
   }
 
   verifyChannel(workspaceId: string, channelId: string): Promise<OnboardingStatusResponse> {
@@ -684,7 +684,12 @@ export class DukaApiClient {
     return this.request("GET", path);
   }
 
-  private async request<T>(method: "DELETE" | "GET" | "POST" | "PUT", path: string, body?: unknown): Promise<T> {
+  private async request<T>(
+    method: "DELETE" | "GET" | "POST" | "PUT",
+    path: string,
+    body?: unknown,
+    timeoutMs = this.timeoutMs,
+  ): Promise<T> {
     const requestId = this.requestIdFactory();
     const token = await this.getAccessToken?.();
     let lastError: unknown;
@@ -692,7 +697,7 @@ export class DukaApiClient {
     const attempts = method === "GET" ? 2 : 1;
     for (let attempt = 0; attempt < attempts; attempt += 1) {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
       try {
         const response = await this.fetchImpl(`${this.baseUrl}${path}`, {
           method,
