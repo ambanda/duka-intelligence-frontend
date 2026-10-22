@@ -210,10 +210,10 @@ export function MetaWhatsAppOnboarding({
   }, [csrfToken, sector, shopId, workspaceSlug]);
 
   useEffect(() => {
-    if (!canManage || preparationStarted.current) return;
+    if (!canManage || initialSessionId || preparationStarted.current) return;
     preparationStarted.current = true;
     void prepareConnection();
-  }, [canManage, prepareConnection]);
+  }, [canManage, initialSessionId, prepareConnection]);
 
   async function startConnection() {
     if (!preparedSignup) {
