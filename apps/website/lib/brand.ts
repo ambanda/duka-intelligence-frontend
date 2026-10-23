@@ -25,10 +25,10 @@ export const serviceCentres = [
   },
 ] as const;
 
-export const dukaWhatsAppNumber = "+254 725 375 358";
+export const dukaWhatsAppNumber = "+254 184 106629";
 
 export const dukaWhatsAppChatUrl =
-  "https://wa.me/254725375358?text=Hello%20Duka%20Intelligence%2C%20I%20would%20like%20to%20connect%20my%20business%20to%20WhatsApp.";
+  "https://api.dukaintelligence.co.ke/public/channels/whatsapp/eGyP4mUDaXQv1jpO";
 
 export const whatsappReach = {
   text: "More than 3 billion people in over 180 countries use WhatsApp.",
