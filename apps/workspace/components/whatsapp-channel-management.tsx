@@ -5,12 +5,14 @@ import {
   AlertTriangle,
   CheckCircle2,
   FileText,
+  Megaphone,
   MessagesSquare,
   Plus,
   RefreshCw,
   Save,
   Send,
   Trash2,
+  Users,
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -23,8 +25,9 @@ import type {
   WorkspaceMessageListView,
   WorkspaceMessageView,
 } from "@/lib/whatsapp-management/contracts";
+import { CampaignManagement, ContactDirectory } from "@/components/whatsapp-campaign-management";
 
-type Panel = "templates" | "messages";
+type Panel = "templates" | "contacts" | "campaigns" | "messages";
 type TemplateCategory = "UTILITY" | "MARKETING";
 type ParameterFormat = "named" | "positional";
 type HeaderFormat = "NONE" | "TEXT" | "IMAGE" | "VIDEO" | "DOCUMENT" | "LOCATION";
@@ -434,6 +437,8 @@ export function WhatsAppChannelManagement({
     <div className="whatsapp-operations">
       <div className="whatsapp-tabs" role="tablist" aria-label="WhatsApp operations">
         <button aria-selected={panel === "templates"} className={panel === "templates" ? "is-active" : ""} onClick={() => setPanel("templates")} role="tab" type="button"><FileText size={16} />Templates <span>{templates.length}</span></button>
+        <button aria-selected={panel === "contacts"} className={panel === "contacts" ? "is-active" : ""} onClick={() => setPanel("contacts")} role="tab" type="button"><Users size={16} />Contacts <span>{contacts.length}</span></button>
+        <button aria-selected={panel === "campaigns"} className={panel === "campaigns" ? "is-active" : ""} onClick={() => setPanel("campaigns")} role="tab" type="button"><Megaphone size={16} />Campaigns</button>
         <button aria-selected={panel === "messages"} className={panel === "messages" ? "is-active" : ""} onClick={() => setPanel("messages")} role="tab" type="button"><MessagesSquare size={16} />Messages <span>{messages.length}</span></button>
       </div>
       {error ? <div className="error-state"><AlertTriangle size={20} /><div><strong>WhatsApp operation unavailable</strong><p>{error}</p><button className="duka-button duka-button--secondary" onClick={() => void load()} type="button">Retry</button></div></div> : null}
@@ -447,14 +452,17 @@ export function WhatsAppChannelManagement({
           {templates.length ? templates.map((template) => <div className="operations-table__row" key={template.template_record_id}><div><strong>{template.name}</strong><small>{template.language} / {template.source} / quality {template.quality_score.toLowerCase()}</small>{template.rejection_reason ? <small className="danger-text">{template.rejection_reason}</small> : null}</div><span>{formatStatus(template.category)}</span><StatusBadge tone={statusTone(template.status)}>{formatStatus(template.status)}</StatusBadge><span>{formatTimestamp(template.updated_at)}</span><div>{canManage ? <button aria-label={`Delete ${template.name}`} className="icon-button" disabled={busy === template.template_record_id} onClick={() => void removeTemplate(template)} title="Delete template" type="button"><Trash2 size={16} /></button> : null}</div></div>) : <p className="operations-empty">No message templates have been synchronized for this channel.</p>}
         </div>
         {!canManage ? <p className="permission-message">You can inspect template status, but a channel administrator must make changes.</p> : null}
-      </> : <>
+      </> : null}
+      {panel === "contacts" ? <ContactDirectory base={base} canManage={canManage} contacts={contacts} csrfToken={csrfToken} onContactsChanged={setContacts} /> : null}
+      {panel === "campaigns" ? <CampaignManagement base={base} canManage={canManage} contacts={contacts} csrfToken={csrfToken} templates={templates} /> : null}
+      {panel === "messages" ? <>
         {canManage ? <SendMessageForm channelId={channelId} contacts={contacts} csrfToken={csrfToken} onSent={(message) => { pollingRequest.current = message.request_id; setMessages((current) => [message, ...current.filter((item) => item.request_id !== message.request_id)]); setNotice("Meta accepted the message. Waiting for delivery evidence."); }} templates={templates} workspaceSlug={workspaceSlug} /> : null}
         <div className="operations-table operations-table--messages">
           <div className="operations-table__header"><span>Message</span><span>Category</span><span>Status</span><span>Evidence</span><span>Created</span></div>
           {messages.length ? messages.map((message) => <div className="operations-table__row" key={message.request_id}><div><strong>{message.template_name}</strong><small>{message.provider_message_id || "Awaiting Meta ID"}</small>{message.error_code ? <small className="danger-text">{message.error_code}</small> : null}</div><span>{formatStatus(message.template_category)}</span><StatusBadge tone={statusTone(message.delivery_status || message.processing_status)}>{formatStatus(message.delivery_status || message.processing_status)}</StatusBadge><div><strong>{message.read_at ? "Read" : message.delivered_at ? "Delivered" : message.sent_at ? "Sent" : "Pending"}</strong><small>{formatTimestamp(message.read_at || message.delivered_at || message.sent_at)}</small></div><span>{formatTimestamp(message.created_at)}</span></div>) : <p className="operations-empty">No template messages have been sent from this workspace.</p>}
         </div>
         {!canManage ? <p className="permission-message">A channel administrator must select contacts and send templates.</p> : null}
-      </>}
+      </> : null}
     </div>
   );
 }

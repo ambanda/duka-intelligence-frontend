@@ -12,8 +12,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const body = await readBffJson<CreateOnboardingSessionRequest>(request);
     const sector = body.sector && membership.sectors.includes(body.sector) ? body.sector : membership.sectors[0];
     const shopId = body.shop_id && membership.shopIds.includes(body.shop_id) ? body.shop_id : membership.shopIds[0];
+    const onboardingMode = body.onboarding_mode === "coexistence" ? "coexistence" : "standard_cloud_api";
     return NextResponse.json(
-      await client.createWhatsappOnboardingSession(membership.workspaceId, { sector, shop_id: shopId }),
+      await client.createWhatsappOnboardingSession(membership.workspaceId, {
+        sector,
+        shop_id: shopId,
+        onboarding_mode: onboardingMode,
+      }),
       { status: 201 },
     );
   } catch (error) {

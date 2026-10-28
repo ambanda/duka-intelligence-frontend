@@ -10,18 +10,27 @@ describe("WhatsApp workspace management", () => {
     expect(canManageChannels(["viewer"])).toBe(false);
   });
 
-  it("masks the contact label while preserving the authorized send address", () => {
+  it("shows full contact identity to an authorized workspace administrator", () => {
     const contact = sanitizeWhatsAppContact({
       contact_id: "contact-1",
       phone_number_e164: "+254725375358",
+      display_name: "Francis Oundo",
+      preferred_name: "Francis",
+      first_name: "Francis",
+      last_name: "Oundo",
+      locale: "en_KE",
+      name_source: "workspace_admin",
       contact_type: "customer",
       identity_status: "verified",
       marketing_consent_status: "opted_in",
+      consent_purposes: ["all_marketing"],
+      tags: ["front_desk_interest"],
       status: "active",
       last_seen_at: "2030-01-01T00:00:00Z",
     });
-    expect(contact.display_phone_number).toBe("+254 *** 5358");
+    expect(contact.display_phone_number).toBe("+254725375358");
     expect(contact.recipient).toBe("+254725375358");
+    expect(contact).toMatchObject({ preferred_name: "Francis", tags: ["front_desk_interest"] });
     expect(contact).not.toHaveProperty("status");
   });
 

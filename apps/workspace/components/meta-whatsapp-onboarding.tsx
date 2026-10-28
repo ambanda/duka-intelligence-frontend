@@ -12,7 +12,7 @@ interface MetaAssets {
   wabaId: string;
   phoneNumberId?: string;
   businessId?: string;
-  completionType: "phone_complete" | "waba_only";
+  completionType: "phone_complete" | "waba_only" | "business_app_coexistence";
   eventName: string;
 }
 
@@ -101,7 +101,7 @@ function waitForMetaAssets(onProgress?: (message: string) => void): { promise: P
         finish(() => reject(new Error(message.data?.error_message || message.error_message || "Meta could not complete asset selection")));
         return;
       }
-      if (message.event !== "FINISH" && message.event !== "FINISH_ONLY_WABA") return;
+      if (!["FINISH", "FINISH_ONLY_WABA", "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING"].includes(message.event ?? "")) return;
       const wabaId = message.data?.waba_id;
       const phoneNumberId = message.data?.phone_number_id;
       if (!wabaId) {
@@ -114,7 +114,9 @@ function waitForMetaAssets(onProgress?: (message: string) => void): { promise: P
       }
       const completionType = message.event === "FINISH_ONLY_WABA"
         ? "waba_only"
-        : "phone_complete";
+        : message.event === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING"
+          ? "business_app_coexistence"
+          : "phone_complete";
       onProgress?.(
         phoneNumberId
           ? "WhatsApp assets selected. Securing the authorization with Duka."
@@ -160,6 +162,7 @@ export function MetaWhatsAppOnboarding({
   const [error, setError] = useState<string | null>(null);
   const [metaProgress, setMetaProgress] = useState<string | null>(null);
   const [pin, setPin] = useState("");
+  const [onboardingMode, setOnboardingMode] = useState<"standard_cloud_api" | "coexistence">("standard_cloud_api");
   const preparationStarted = useRef(false);
   const sessionId = status?.session_id ?? initialSessionId;
 
@@ -194,7 +197,7 @@ export function MetaWhatsAppOnboarding({
       const createResponse = await fetch(`/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/channels/whatsapp/onboarding-sessions`, {
         method: "POST",
         headers: requestHeaders(csrfToken),
-        body: JSON.stringify({ sector, shop_id: shopId }),
+        body: JSON.stringify({ sector, shop_id: shopId, onboarding_mode: onboardingMode }),
       });
       if (!createResponse.ok) throw new Error("Duka could not prepare WhatsApp onboarding");
       const onboarding = await createResponse.json() as CreateOnboardingSessionResponse;
@@ -207,7 +210,7 @@ export function MetaWhatsAppOnboarding({
       setPreparing(false);
       setMetaProgress(null);
     }
-  }, [csrfToken, sector, shopId, workspaceSlug]);
+  }, [csrfToken, onboardingMode, sector, shopId, workspaceSlug]);
 
   useEffect(() => {
     if (!canManage || initialSessionId || preparationStarted.current) return;
@@ -255,11 +258,7 @@ export function MetaWhatsAppOnboarding({
             config_id: onboarding.meta_configuration_id,
             response_type: "code",
             override_default_response_type: true,
-            extras: {
-              sessionInfoVersion: "3",
-              version: onboarding.embedded_signup_version,
-              setup: {},
-            },
+            extras: onboarding.launch_extras,
           },
         );
       });
@@ -336,13 +335,26 @@ export function MetaWhatsAppOnboarding({
     <section className="connect-layout">
       <div className="connect-main">
         <div className="section-heading"><div><h2>Meta Embedded Signup</h2><p>Select the Business Portfolio, WhatsApp Business Account, and phone number in Meta&apos;s secured flow.</p></div>{status ? <StatusBadge tone={channelStatusTone(status.status)}>{channelStatusLabel(status.status)}</StatusBadge> : null}</div>
+        <fieldset className="whatsapp-segmented" disabled={busy || preparing || status?.status === "active"}>
+          <legend>Connection mode</legend>
+          <button className={onboardingMode === "standard_cloud_api" ? "is-active" : ""} onClick={() => { setOnboardingMode("standard_cloud_api"); setPreparedSignup(null); setStatus(null); setError(null); }} type="button">Cloud API only</button>
+          <button className={onboardingMode === "coexistence" ? "is-active" : ""} onClick={() => { setOnboardingMode("coexistence"); setPreparedSignup(null); setStatus(null); setError(null); }} type="button">Keep Business app</button>
+        </fieldset>
+        <p className="field-help">{onboardingMode === "coexistence" ? "Keep using the existing WhatsApp Business app while Duka connects the same number to Cloud API." : "Connect a new or dedicated number directly to WhatsApp Cloud API."}</p>
         <ol className="setup-steps">
           <li><span><Check size={17} /></span><div><strong>Workspace authorization</strong><p>Duka confirms your principal and administrator role for this workspace.</p></div></li>
           <li><span>2</span><div><strong>Authorize Meta assets</strong><p>Meta returns a one-time code. Duka exchanges it immediately on the server.</p></div></li>
-          <li><span>3</span><div><strong>Validate and activate</strong><p>Duka validates ownership, secures credentials, registers the phone, and waits for a signed webhook.</p></div></li>
+          <li><span>3</span><div><strong>Validate and activate</strong><p>{onboardingMode === "coexistence" ? "Duka validates coexistence, secures credentials, and starts the approved contact and history synchronization." : "Duka validates ownership, secures credentials, registers the phone, and waits for a signed webhook."}</p></div></li>
         </ol>
         {error ? <div className="inline-error"><AlertTriangle size={17} /><span>{error}</span></div> : null}
         {status?.error_summary ? <div className="inline-error"><AlertTriangle size={17} /><span>{status.error_summary}</span></div> : null}
+        {status?.onboarding_mode === "coexistence" && status.coexistence_syncs ? (
+          <div className="segment-strip">
+            {Object.entries(status.coexistence_syncs).map(([syncType, sync]) => (
+              <div key={syncType}><strong>{syncType === "history" ? "Chat history" : "Business app contacts"}</strong><span>{sync.status}{sync.progress ? ` (${sync.progress}%)` : ""}</span></div>
+            ))}
+          </div>
+        ) : null}
         {(busy || preparing) && metaProgress ? <p className="field-help" aria-live="polite">{metaProgress}</p> : null}
         {status?.required_action === "provide_registration_pin" ? (
           <form className="pin-form" onSubmit={submitPin}>

@@ -53,7 +53,7 @@ test("Meta Embedded Signup submits the one-time code immediately through the BFF
   await page.route("**/api/bff/workspaces/workspace-e2e/channels/whatsapp/onboarding-sessions", async (route) => route.fulfill({
     status: 201,
     contentType: "application/json",
-    body: JSON.stringify({ session_id: "session-1", status: "pending", state: "state-12345678901234567890123456789012", expires_at: "2030-01-01T00:00:00Z", meta_app_id: "app-1", meta_configuration_id: "config-v4", embedded_signup_version: "v4", graph_api_version: "v25.0" }),
+    body: JSON.stringify({ session_id: "session-1", status: "pending", state: "state-12345678901234567890123456789012", expires_at: "2030-01-01T00:00:00Z", meta_app_id: "app-1", meta_configuration_id: "config-v4", embedded_signup_version: "v4", graph_api_version: "v25.0", onboarding_mode: "standard_cloud_api", launch_extras: { sessionInfoVersion: "3", version: "v4", setup: {} } }),
   }));
   await page.route("**/api/bff/channels/whatsapp/onboarding/complete", async (route) => {
     completionBody = route.request().postDataJSON();

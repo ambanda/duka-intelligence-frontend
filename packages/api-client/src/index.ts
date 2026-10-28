@@ -289,15 +289,159 @@ export interface WhatsAppTemplateReconciliationResponse {
 export interface WhatsAppContact {
   contact_id: string;
   phone_number_e164: string;
+  display_name: string | null;
+  preferred_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  locale: string | null;
+  name_source: string | null;
   contact_type: string;
   identity_status: string;
   marketing_consent_status: string;
+  consent_purposes: string[];
+  tags: string[];
   status: string;
   last_seen_at: string;
 }
 
 export interface WhatsAppContactListResponse {
   contacts: WhatsAppContact[];
+}
+
+export interface UpdateWhatsAppContactRequest {
+  display_name?: string | null;
+  preferred_name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  locale?: string | null;
+  contact_type?: "unknown" | "prospect" | "member" | "customer";
+}
+
+export interface WhatsAppContactTag {
+  tag_id: string;
+  tag_key: string;
+  display_name: string;
+  description: string | null;
+  status: string;
+  contact_count: number;
+}
+
+export interface WhatsAppContactTagListResponse {
+  tags: WhatsAppContactTag[];
+}
+
+export interface CreateWhatsAppContactTagRequest {
+  tag_key: string;
+  display_name: string;
+  description?: string | null;
+}
+
+export interface WhatsAppMarketingSegment {
+  segment_id: string;
+  name: string;
+  description: string | null;
+  definition: {
+    contact_types?: string[];
+    tag_keys_any?: string[];
+    tag_keys_all?: string[];
+    consent_purpose?: string | null;
+    last_seen_within_days?: number | null;
+    not_contacted_within_days?: number | null;
+    entry_sources?: string[];
+    journey_events_any?: string[];
+  };
+  status: string;
+  eligible_count: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WhatsAppMarketingSegmentListResponse {
+  segments: WhatsAppMarketingSegment[];
+}
+
+export interface CreateWhatsAppMarketingSegmentRequest {
+  name: string;
+  description?: string | null;
+  definition: WhatsAppMarketingSegment["definition"];
+}
+
+export interface WhatsAppTemplateActivation {
+  activation_id: string;
+  template_record_id: string;
+  template_name: string | null;
+  activation_version: number;
+  status: string;
+  consent_purpose: string;
+  field_mappings: Record<string, string>;
+  default_values: Record<string, unknown>;
+  button_routes: Record<string, string>;
+  missing_value_policy: "skip_recipient" | "fail_campaign";
+  validation_errors: Array<{ code?: string; message: string; path?: string }>;
+  tested_at: string | null;
+  activated_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateWhatsAppTemplateActivationRequest {
+  consent_purpose: string;
+  field_mappings: Record<string, string>;
+  default_values: Record<string, unknown>;
+  button_routes: Record<string, string>;
+  missing_value_policy: "skip_recipient" | "fail_campaign";
+}
+
+export interface WhatsAppTemplateActivationListResponse {
+  activations: WhatsAppTemplateActivation[];
+}
+
+export interface WhatsAppCampaignAudienceSummary {
+  total: number;
+  eligible: number;
+  pending: number;
+  sent: number;
+  skipped: number;
+  failed: number;
+  exclusions: Record<string, number>;
+}
+
+export interface WhatsAppMarketingCampaign {
+  campaign_id: string;
+  campaign_name: string;
+  activation_id: string;
+  audience_mode: "selected" | "segment" | "all_eligible";
+  segment_id: string | null;
+  status: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  timezone: string;
+  recipient_limit: number;
+  summary: WhatsAppCampaignAudienceSummary;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WhatsAppMarketingCampaignListResponse {
+  campaigns: WhatsAppMarketingCampaign[];
+}
+
+export interface CreateWhatsAppMarketingCampaignRequest {
+  campaign_id: string;
+  campaign_name: string;
+  activation_id: string;
+  audience_mode: "selected" | "segment" | "all_eligible";
+  contact_ids: string[];
+  segment_id?: string | null;
+  campaign_values?: Record<string, unknown>;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  timezone?: string;
+  allowed_send_start?: string | null;
+  allowed_send_end?: string | null;
+  recipient_limit?: number;
+  delay_seconds?: number;
+  daily_frequency_cap?: number;
 }
 
 export interface SendWorkspaceWhatsAppTemplateRequest {
@@ -347,9 +491,12 @@ export interface JsonSchema {
   default?: unknown;
 }
 
+export type WhatsAppOnboardingMode = "standard_cloud_api" | "coexistence";
+
 export interface CreateOnboardingSessionRequest {
   sector?: string | null;
   shop_id?: string | null;
+  onboarding_mode?: WhatsAppOnboardingMode;
 }
 
 export interface CreateOnboardingSessionResponse {
@@ -361,6 +508,8 @@ export interface CreateOnboardingSessionResponse {
   meta_configuration_id: string;
   embedded_signup_version: "v3" | "v4";
   graph_api_version: string;
+  onboarding_mode: WhatsAppOnboardingMode;
+  launch_extras: Record<string, unknown>;
 }
 
 export interface CompleteEmbeddedSignupRequest {
@@ -370,7 +519,7 @@ export interface CompleteEmbeddedSignupRequest {
   waba_id: string;
   phone_number_id?: string | null;
   meta_business_id?: string | null;
-  completion_type?: "phone_complete" | "phone_pending" | "waba_only" | null;
+  completion_type?: "phone_complete" | "phone_pending" | "waba_only" | "business_app_coexistence" | null;
   meta_event_name?: string | null;
   registration_pin?: string | null;
 }
@@ -391,6 +540,14 @@ export interface OnboardingStatusResponse {
   error_code: string | null;
   error_summary: string | null;
   required_action: string | null;
+  onboarding_mode?: WhatsAppOnboardingMode;
+  coexistence_syncs?: Record<string, {
+    status: string;
+    progress: number;
+    phase?: string | null;
+    provider_error_code?: string | null;
+    provider_error_summary?: string | null;
+  }>;
 }
 
 export class DukaApiError extends Error {
@@ -602,8 +759,130 @@ export class DukaApiClient {
     channelId: string,
   ): Promise<WhatsAppContactListResponse> {
     return this.get(
-      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts`,
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts?limit=200`,
     );
+  }
+
+  updateWhatsappContact(
+    workspaceId: string,
+    channelId: string,
+    contactId: string,
+    payload: UpdateWhatsAppContactRequest,
+  ): Promise<WhatsAppContact> {
+    return this.request(
+      "PATCH",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts/${encodeURIComponent(contactId)}`,
+      payload,
+    );
+  }
+
+  listWhatsappContactTags(workspaceId: string, channelId: string): Promise<WhatsAppContactTagListResponse> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contact-tags`);
+  }
+
+  createWhatsappContactTag(
+    workspaceId: string,
+    channelId: string,
+    payload: CreateWhatsAppContactTagRequest,
+  ): Promise<WhatsAppContactTag> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contact-tags`, payload);
+  }
+
+  assignWhatsappContactTags(
+    workspaceId: string,
+    channelId: string,
+    contactId: string,
+    tagKeys: string[],
+  ): Promise<{ contact_id: string; tag_keys: string[] }> {
+    return this.request(
+      "PUT",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts/${encodeURIComponent(contactId)}/tags`,
+      { tag_keys: tagKeys },
+    );
+  }
+
+  listWhatsappMarketingSegments(workspaceId: string, channelId: string): Promise<WhatsAppMarketingSegmentListResponse> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/marketing-segments`);
+  }
+
+  createWhatsappMarketingSegment(
+    workspaceId: string,
+    channelId: string,
+    payload: CreateWhatsAppMarketingSegmentRequest,
+  ): Promise<WhatsAppMarketingSegment> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/marketing-segments`, payload);
+  }
+
+  createWhatsappTemplateActivation(
+    workspaceId: string,
+    channelId: string,
+    templateRecordId: string,
+    payload: CreateWhatsAppTemplateActivationRequest,
+  ): Promise<WhatsAppTemplateActivation> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-templates/${encodeURIComponent(templateRecordId)}/activations`,
+      payload,
+    );
+  }
+
+  getWhatsappTemplateActivation(
+    workspaceId: string,
+    channelId: string,
+    activationId: string,
+  ): Promise<WhatsAppTemplateActivation> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/template-activations/${encodeURIComponent(activationId)}`);
+  }
+
+  listWhatsappTemplateActivations(
+    workspaceId: string,
+    channelId: string,
+  ): Promise<WhatsAppTemplateActivationListResponse> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/template-activations`);
+  }
+
+  testWhatsappTemplateActivation(
+    workspaceId: string,
+    channelId: string,
+    activationId: string,
+    payload: { contact_id: string; campaign_values: Record<string, unknown>; idempotency_key: string },
+  ): Promise<{ status: string; provider_message_id?: string }> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/template-activations/${encodeURIComponent(activationId)}/test`,
+      payload,
+    );
+  }
+
+  activateWhatsappTemplateActivation(
+    workspaceId: string,
+    channelId: string,
+    activationId: string,
+  ): Promise<WhatsAppTemplateActivation> {
+    return this.request(
+      "POST",
+      `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/template-activations/${encodeURIComponent(activationId)}/activate`,
+    );
+  }
+
+  listWhatsappMarketingCampaigns(workspaceId: string, channelId: string): Promise<WhatsAppMarketingCampaignListResponse> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/marketing-campaigns`);
+  }
+
+  createWhatsappMarketingCampaign(
+    workspaceId: string,
+    channelId: string,
+    payload: CreateWhatsAppMarketingCampaignRequest,
+  ): Promise<WhatsAppMarketingCampaign> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/marketing-campaigns`, payload);
+  }
+
+  scheduleWhatsappMarketingCampaign(
+    workspaceId: string,
+    channelId: string,
+    campaignId: string,
+  ): Promise<WhatsAppMarketingCampaign> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/marketing-campaigns/${encodeURIComponent(campaignId)}/schedule`);
   }
 
   listWorkspaceWhatsappMessages(
@@ -685,7 +964,7 @@ export class DukaApiClient {
   }
 
   private async request<T>(
-    method: "DELETE" | "GET" | "POST" | "PUT",
+    method: "DELETE" | "GET" | "PATCH" | "POST" | "PUT",
     path: string,
     body?: unknown,
     timeoutMs = this.timeoutMs,

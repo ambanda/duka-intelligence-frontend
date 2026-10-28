@@ -43,6 +43,10 @@ export interface WhatsAppContactView {
   contact_id: string;
   recipient: string;
   display_phone_number: string;
+  display_name: string | null;
+  preferred_name: string | null;
+  tags: string[];
+  consent_purposes: string[];
   contact_type: string;
   identity_status: string;
   marketing_consent_status: string;

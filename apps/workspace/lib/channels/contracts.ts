@@ -24,6 +24,13 @@ export interface OnboardingView {
   error_code: string | null;
   error_summary: string | null;
   required_action: string | null;
+  onboarding_mode?: "standard_cloud_api" | "coexistence";
+  coexistence_syncs?: Record<string, {
+    status: string;
+    progress: number;
+    phase?: string | null;
+    provider_error_summary?: string | null;
+  }>;
 }
 
 export interface PendingOnboardingView extends OnboardingView {

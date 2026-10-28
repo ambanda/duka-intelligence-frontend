@@ -11,12 +11,14 @@ export async function POST(request: NextRequest) {
     const body = await readBffJson<CompleteEmbeddedSignupRequest>(request);
     const eventName = body.meta_event_name?.toUpperCase();
     const wabaOnly = eventName === "FINISH_ONLY_WABA" || body.completion_type === "waba_only";
+    const coexistence = eventName === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING"
+      || body.completion_type === "business_app_coexistence";
     if (
       !body.session_id
       || !body.state
       || !body.authorization_code
       || !body.waba_id
-      || (!wabaOnly && !body.phone_number_id)
+      || (!wabaOnly && !coexistence && !body.phone_number_id)
     ) {
       throw new BffError(400, "embedded_signup_payload_invalid", "Meta onboarding information is incomplete.");
     }

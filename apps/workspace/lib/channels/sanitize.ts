@@ -21,6 +21,8 @@ export function sanitizeOnboarding(status: OnboardingStatusResponse): Onboarding
     error_code: status.error_code,
     error_summary: status.error_summary,
     required_action: status.required_action,
+    onboarding_mode: status.onboarding_mode,
+    coexistence_syncs: status.coexistence_syncs,
   };
 }
 

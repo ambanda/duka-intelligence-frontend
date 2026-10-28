@@ -18,11 +18,6 @@ import type {
   WorkspaceMessageView,
 } from "./contracts";
 
-function displayPhoneNumber(phone: string): string {
-  if (phone.length <= 7) return phone;
-  return `${phone.slice(0, 4)} *** ${phone.slice(-4)}`;
-}
-
 export function sanitizeMessageTemplate(template: WhatsAppMessageTemplate): MessageTemplateView {
   return {
     template_record_id: template.template_record_id,
@@ -60,7 +55,11 @@ export function sanitizeWhatsAppContact(contact: WhatsAppContact): WhatsAppConta
   return {
     contact_id: contact.contact_id,
     recipient: contact.phone_number_e164,
-    display_phone_number: displayPhoneNumber(contact.phone_number_e164),
+    display_phone_number: contact.phone_number_e164,
+    display_name: contact.display_name,
+    preferred_name: contact.preferred_name,
+    tags: [...contact.tags],
+    consent_purposes: [...contact.consent_purposes],
     contact_type: contact.contact_type,
     identity_status: contact.identity_status,
     marketing_consent_status: contact.marketing_consent_status,
