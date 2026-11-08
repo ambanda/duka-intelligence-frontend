@@ -11,6 +11,7 @@ import { AlertTriangle, CheckCircle2, Megaphone, Plus, Save, Search, Send, Tags,
 import { useEffect, useMemo, useState } from "react";
 
 import type { MessageTemplateView, WhatsAppContactView } from "@/lib/whatsapp-management/contracts";
+import { WhatsAppContactDialog } from "@/components/whatsapp-contact-dialog";
 
 type AudienceMode = "selected" | "segment" | "all_eligible";
 
@@ -47,6 +48,8 @@ export function ContactDirectory({ base, canManage, contacts, csrfToken, onConta
   const [search, setSearch] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [editing, setEditing] = useState<WhatsAppContactView | null>(null);
+  const [contactForm, setContactForm] = useState<{ contact?: WhatsAppContactView } | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [tagName, setTagName] = useState("");
   const [segmentName, setSegmentName] = useState("");
   const [segmentTag, setSegmentTag] = useState("");
@@ -154,11 +157,14 @@ export function ContactDirectory({ base, canManage, contacts, csrfToken, onConta
   }
 
   return <div className="campaign-stack">
+    {notice ? <div className="inline-success" role="status">{notice}</div> : null}
+    {contactForm ? <WhatsAppContactDialog base={base} csrfToken={csrfToken} contact={contactForm.contact} onClose={() => setContactForm(null)} onSaved={(saved, message) => { onContactsChanged([saved, ...contacts.filter((item) => item.contact_id !== saved.contact_id)]); setNotice(message); }} /> : null}
     {error ? <div className="inline-error"><AlertTriangle size={16} />{error}</div> : null}
     <div className="operations-toolbar">
       <div><strong>{contacts.length} active contacts</strong><span>Full numbers are visible to authorized workspace administrators.</span></div>
       <div className="contact-search"><Search size={15} /><input aria-label="Search contacts" onChange={(event) => setSearch(event.target.value)} placeholder="Name or phone" value={search} /></div>
       <label className="compact-filter">Tag<select onChange={(event) => setTagFilter(event.target.value)} value={tagFilter}><option value="">All tags</option>{tags.map((tag) => <option key={tag.tag_id} value={tag.tag_key}>{tag.display_name}</option>)}</select></label>
+      {canManage ? <button className="duka-button duka-button--primary" onClick={() => setContactForm({})} type="button"><Plus size={16} />Add contact</button> : null}
     </div>
     <div className="operations-table operations-table--contacts">
       <div className="operations-table__header"><span>Contact</span><span>Type</span><span>Consent</span><span>Tags</span><span>Action</span></div>
@@ -167,7 +173,7 @@ export function ContactDirectory({ base, canManage, contacts, csrfToken, onConta
         <span>{contact.contact_type}</span>
         <div><strong>{contact.marketing_consent_status.replaceAll("_", " ")}</strong><small>{contact.consent_purposes.join(", ") || "No marketing purpose"}</small></div>
         <span>{contact.tags.join(", ") || "None"}</span>
-        <div><button className="duka-button duka-button--secondary" disabled={!canManage} onClick={() => setEditing(contact)} type="button">Edit</button></div>
+        <div className="contact-row-actions"><button className="duka-button duka-button--secondary" disabled={!canManage} onClick={() => setEditing(contact)} type="button">Edit</button>{canManage ? <button className="duka-button duka-button--secondary" onClick={() => setContactForm({ contact })} type="button">Record permission</button> : null}</div>
       </div>)}
       {!filtered.length ? <p className="operations-empty">No contacts match these filters.</p> : null}
     </div>

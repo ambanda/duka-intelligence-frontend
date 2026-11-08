@@ -18,7 +18,10 @@ async function configuration(): Promise<oidc.Configuration> {
       settings.clientSecret,
       undefined,
       { timeout: 10 },
-    );
+    ).catch((error) => {
+      configurationPromise = null;
+      throw error;
+    });
   }
   return configurationPromise;
 }

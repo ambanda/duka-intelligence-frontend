@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { takeTransactionCookie, writeSessionCookie } from "@/lib/auth/cookies";
 import { exchangeOidcCode } from "@/lib/auth/oidc";
+import { callbackErrorCode } from "@/lib/auth/callback-error";
 import { safeReturnTo } from "@/lib/auth/return-to";
 import { decodeOidcTransaction } from "@/lib/auth/session-codec";
 
@@ -24,6 +25,6 @@ export async function GET(request: NextRequest) {
     console.error("OIDC callback failed", error instanceof Error
       ? { name: error.name, message: error.message }
       : { name: "UnknownError" });
-    return NextResponse.redirect(new URL("/auth/error?code=oidc_callback_failed", appBaseUrl));
+    return NextResponse.redirect(new URL(`/auth/error?code=${callbackErrorCode(error)}`, appBaseUrl));
   }
 }

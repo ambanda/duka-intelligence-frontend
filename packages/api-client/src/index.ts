@@ -22,6 +22,16 @@ export interface WorkspaceListResponse {
   workspaces: WorkspaceSummary[];
 }
 
+export interface WorkspaceKnowledgeInventory {
+  workspace_id: string;
+  collections: Record<string, unknown>[];
+  objects: Record<string, unknown>[];
+  drafts: Record<string, unknown>[];
+  bindings: Record<string, unknown>[];
+  sources: Record<string, unknown>[];
+  events: Record<string, unknown>[];
+}
+
 export interface WorkspaceDetailResponse {
   workspace: WorkspaceSummary;
 }
@@ -306,6 +316,42 @@ export interface WhatsAppContact {
 
 export interface WhatsAppContactListResponse {
   contacts: WhatsAppContact[];
+}
+
+export interface ExistingMarketingConsentRequest {
+  confirmed: true;
+  purposes: string[];
+  source: "offline_form" | "website_form" | "recorded_conversation" | "other";
+  evidence_reference: string;
+  policy_version: string;
+  consented_at: string;
+  consent_expires_at?: string | null;
+}
+
+export interface CreateWhatsAppContactRequest {
+  phone_number_e164: string;
+  display_name?: string | null;
+  preferred_name?: string | null;
+  contact_type?: "unknown" | "prospect" | "member" | "customer";
+  tag_keys?: string[];
+  marketing_consent?: ExistingMarketingConsentRequest | null;
+}
+
+export interface WhatsAppContactSaveResponse {
+  contact: WhatsAppContact;
+  created: boolean;
+  consent_outcome: "not_recorded" | "imported" | "unchanged";
+}
+
+export interface WorkspaceMessageEligibility {
+  eligible: boolean;
+  reason: string;
+}
+
+export interface WorkspaceMessageEligibilityRequest {
+  recipient: string;
+  template_record_id: string;
+  purpose: string;
 }
 
 export interface UpdateWhatsAppContactRequest {
@@ -593,6 +639,14 @@ export class DukaApiClient {
     return this.get("/v1/me");
   }
 
+  knowledgeInventory(workspaceId: string): Promise<WorkspaceKnowledgeInventory> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/knowledge`);
+  }
+
+  knowledgeOperation(workspaceId: string, path: string[], method: "GET" | "PUT" | "POST", body?: unknown): Promise<Record<string, unknown>> {
+    return this.request(method, `/v1/workspaces/${encodeURIComponent(workspaceId)}/knowledge/${path.map(encodeURIComponent).join("/")}`, body);
+  }
+
   listWorkspaces(): Promise<WorkspaceListResponse> {
     return this.get("/v1/me/workspaces");
   }
@@ -761,6 +815,14 @@ export class DukaApiClient {
     return this.get(
       `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts?limit=200`,
     );
+  }
+
+  createWhatsappContact(workspaceId: string, channelId: string, payload: CreateWhatsAppContactRequest): Promise<WhatsAppContactSaveResponse> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/contacts`, payload);
+  }
+
+  whatsappMessageEligibility(workspaceId: string, channelId: string, payload: WorkspaceMessageEligibilityRequest): Promise<WorkspaceMessageEligibility> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/message-eligibility`, payload);
   }
 
   updateWhatsappContact(

@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@duka/ui";
+import type { WorkspaceMessageEligibility } from "@duka/api-client";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -26,6 +27,8 @@ import type {
   WorkspaceMessageView,
 } from "@/lib/whatsapp-management/contracts";
 import { CampaignManagement, ContactDirectory } from "@/components/whatsapp-campaign-management";
+import { WhatsAppContactDialog } from "@/components/whatsapp-contact-dialog";
+import { marketingEligibilityMessage } from "@/lib/whatsapp-management/eligibility";
 
 type Panel = "templates" | "contacts" | "campaigns" | "messages";
 type TemplateCategory = "UTILITY" | "MARKETING";
@@ -240,6 +243,7 @@ function SendMessageForm({
   contacts,
   csrfToken,
   onSent,
+  onContactSaved,
   templates,
   workspaceSlug,
   channelId,
@@ -247,6 +251,7 @@ function SendMessageForm({
   contacts: WhatsAppContactView[];
   csrfToken: string;
   onSent: (message: WorkspaceMessageView) => void;
+  onContactSaved: (contact: WhatsAppContactView, notice: string) => void;
   templates: MessageTemplateView[];
   workspaceSlug: string;
   channelId: string;
@@ -257,11 +262,41 @@ function SendMessageForm({
   const [purpose, setPurpose] = useState("");
   const [reference, setReference] = useState("");
   const [values, setValues] = useState<Record<string, unknown>>({});
+  const [contactForm, setContactForm] = useState<{ contact?: WhatsAppContactView } | null>(null);
+  const [eligibilityRevision, setEligibilityRevision] = useState(0);
+  const [eligibility, setEligibility] = useState<{ key: string; decision?: WorkspaceMessageEligibility; error?: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const idempotencyKey = useRef<string | null>(null);
   const template = approved.find((item) => item.template_record_id === templateId);
   const sendFields = template?.send_schema.fields || [];
+  const base = `/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/channels/${encodeURIComponent(channelId)}`;
+  const isMarketing = template?.category === "MARKETING";
+  const eligibilityKey = isMarketing && templateId && recipient && purpose.trim()
+    ? JSON.stringify([templateId, recipient, purpose.trim(), eligibilityRevision]) : "";
+  const currentEligibility = eligibility?.key === eligibilityKey ? eligibility : null;
+  const marketingBlocked = isMarketing && (!eligibilityKey || !currentEligibility?.decision?.eligible);
+
+  useEffect(() => {
+    idempotencyKey.current = null;
+  }, [templateId, recipient, purpose, reference, values]);
+
+  useEffect(() => {
+    if (!eligibilityKey) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void fetch(`${base}/message-eligibility`, {
+        method: "POST", headers: mutationHeaders(csrfToken), signal: controller.signal,
+        body: JSON.stringify({ recipient, template_record_id: templateId, purpose: purpose.trim() }),
+      }).then(async (response) => {
+        if (!response.ok) throw new Error(await responseError(response, "Eligibility could not be verified."));
+        setEligibility({ key: eligibilityKey, decision: await response.json() as WorkspaceMessageEligibility });
+      }).catch((reason) => {
+        if (!controller.signal.aborted) setEligibility({ key: eligibilityKey, error: reason instanceof Error ? reason.message : "Eligibility could not be verified." });
+      });
+    }, 250);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [base, csrfToken, eligibilityKey, purpose, recipient, templateId, contacts]);
 
   function chooseTemplate(value: string) {
     setTemplateId(value);
@@ -282,6 +317,7 @@ function SendMessageForm({
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (marketingBlocked) return;
     setBusy(true);
     setError(null);
     idempotencyKey.current ||= `workspace-message-${crypto.randomUUID()}`;
@@ -310,17 +346,19 @@ function SendMessageForm({
       setError(reason instanceof Error ? reason.message : "Message could not be sent.");
     } finally {
       setBusy(false);
+      setEligibilityRevision((current) => current + 1);
     }
   }
 
-  return (
+  return (<>
     <form className="whatsapp-form whatsapp-send-form" onSubmit={submit}>
       <div className="section-heading"><div><h2>Send approved template</h2><p>Use a known channel contact and record the business purpose.</p></div><Send size={19} /></div>
       {error ? <div className="inline-error"><AlertTriangle size={17} /><span>{error}</span></div> : null}
       <div className="whatsapp-form-grid">
         <label>Template<select onChange={(event) => chooseTemplate(event.target.value)} required value={templateId}><option value="">Select approved template</option>{approved.map((item) => <option key={item.template_record_id} value={item.template_record_id}>{item.name} ({item.category.toLowerCase()})</option>)}</select></label>
-        <label>Contact<select onChange={(event) => setRecipient(event.target.value)} required value={recipient}><option value="">Select active contact</option>{contacts.map((contact) => <option key={contact.contact_id} value={contact.recipient}>{contact.display_phone_number} ({contact.contact_type})</option>)}</select></label>
+        <label>Contact<select onChange={(event) => setRecipient(event.target.value)} required value={recipient}><option value="">Select active contact</option>{contacts.map((contact) => <option key={contact.contact_id} value={contact.recipient}>{contact.preferred_name || contact.display_name || contact.display_phone_number} / {contact.display_phone_number}</option>)}</select></label>
       </div>
+      <div className="whatsapp-form-actions"><button className="duka-button duka-button--secondary" onClick={() => setContactForm({})} type="button"><Plus size={16} />Add contact</button>{recipient ? <button className="duka-button duka-button--secondary" onClick={() => setContactForm({ contact: contacts.find((item) => item.recipient === recipient) })} type="button">Record permission</button> : null}</div>
       {sendFields.map((field) => {
         const current = values[field.key];
         if (field.value_type === "currency") return <fieldset className="send-field-group" key={field.key}><legend>{field.label}</legend><div className="whatsapp-form-grid"><label>Display value<input onChange={(event) => setObjectValue(field.key, "fallback_value", event.target.value)} required={field.required} value={(current as Record<string, string> | undefined)?.fallback_value || ""} /></label><label>Currency code<input maxLength={3} onChange={(event) => setObjectValue(field.key, "code", event.target.value.toUpperCase())} required={field.required} value={(current as Record<string, string> | undefined)?.code || "KES"} /></label><label>Amount x 1000<input min="0" onChange={(event) => setObjectValue(field.key, "amount_1000", Number(event.target.value))} required={field.required} type="number" value={(current as Record<string, number> | undefined)?.amount_1000 ?? ""} /></label></div></fieldset>;
@@ -333,9 +371,12 @@ function SendMessageForm({
         <label>Business purpose<input onChange={(event) => setPurpose(event.target.value)} placeholder={template?.category === "MARKETING" ? "catalog_updates" : "appointment_confirmation"} required value={purpose} /></label>
         <label>Business reference<input onChange={(event) => setReference(event.target.value)} placeholder="APT-001" required value={reference} /></label>
       </div>
-      {template?.category === "MARKETING" ? <p className="field-help">Duka will send only when the selected contact has active consent for this purpose.</p> : null}
-      <div className="whatsapp-form-actions"><button className="duka-button duka-button--primary" disabled={busy || !templateId || !recipient} type="submit"><Send size={17} />{busy ? "Sending..." : "Send template"}</button></div>
+      {isMarketing ? <p aria-live="polite" className="field-help">{!eligibilityKey ? "Select a contact and enter the marketing purpose." : currentEligibility?.error || (currentEligibility?.decision ? marketingEligibilityMessage(currentEligibility.decision.reason) : "Checking marketing eligibility...")}</p> : null}
+      {isMarketing && currentEligibility?.error ? <button className="duka-button duka-button--secondary" onClick={() => setEligibilityRevision((current) => current + 1)} type="button"><RefreshCw size={15} />Check eligibility again</button> : null}
+      <div className="whatsapp-form-actions"><button className="duka-button duka-button--primary" disabled={busy || !templateId || !recipient || marketingBlocked} type="submit"><Send size={17} />{busy ? "Sending..." : "Send template"}</button></div>
     </form>
+    {contactForm ? <WhatsAppContactDialog base={base} csrfToken={csrfToken} contact={contactForm.contact} onClose={() => setContactForm(null)} onSaved={(saved, notice) => { setEligibility(null); setEligibilityRevision((current) => current + 1); onContactSaved(saved, notice); setRecipient(saved.recipient); }} /> : null}
+    </>
   );
 }
 
@@ -456,7 +497,7 @@ export function WhatsAppChannelManagement({
       {panel === "contacts" ? <ContactDirectory base={base} canManage={canManage} contacts={contacts} csrfToken={csrfToken} onContactsChanged={setContacts} /> : null}
       {panel === "campaigns" ? <CampaignManagement base={base} canManage={canManage} contacts={contacts} csrfToken={csrfToken} templates={templates} /> : null}
       {panel === "messages" ? <>
-        {canManage ? <SendMessageForm channelId={channelId} contacts={contacts} csrfToken={csrfToken} onSent={(message) => { pollingRequest.current = message.request_id; setMessages((current) => [message, ...current.filter((item) => item.request_id !== message.request_id)]); setNotice("Meta accepted the message. Waiting for delivery evidence."); }} templates={templates} workspaceSlug={workspaceSlug} /> : null}
+        {canManage ? <SendMessageForm channelId={channelId} contacts={contacts} csrfToken={csrfToken} onContactSaved={(saved, message) => { setContacts((current) => [saved, ...current.filter((item) => item.contact_id !== saved.contact_id)]); setNotice(message); }} onSent={(message) => { pollingRequest.current = message.request_id; setMessages((current) => [message, ...current.filter((item) => item.request_id !== message.request_id)]); setNotice("Meta accepted the message. Waiting for delivery evidence."); }} templates={templates} workspaceSlug={workspaceSlug} /> : null}
         <div className="operations-table operations-table--messages">
           <div className="operations-table__header"><span>Message</span><span>Category</span><span>Status</span><span>Evidence</span><span>Created</span></div>
           {messages.length ? messages.map((message) => <div className="operations-table__row" key={message.request_id}><div><strong>{message.template_name}</strong><small>{message.provider_message_id || "Awaiting Meta ID"}</small>{message.error_code ? <small className="danger-text">{message.error_code}</small> : null}</div><span>{formatStatus(message.template_category)}</span><StatusBadge tone={statusTone(message.delivery_status || message.processing_status)}>{formatStatus(message.delivery_status || message.processing_status)}</StatusBadge><div><strong>{message.read_at ? "Read" : message.delivered_at ? "Delivered" : message.sent_at ? "Sent" : "Pending"}</strong><small>{formatTimestamp(message.read_at || message.delivered_at || message.sent_at)}</small></div><span>{formatTimestamp(message.created_at)}</span></div>) : <p className="operations-empty">No template messages have been sent from this workspace.</p>}

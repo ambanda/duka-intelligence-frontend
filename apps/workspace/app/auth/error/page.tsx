@@ -3,6 +3,8 @@ import Link from "next/link";
 const messages: Record<string, string> = {
   invalid_login_transaction: "The sign-in attempt expired or could not be verified. Start a new sign-in.",
   oidc_callback_failed: "Your identity provider responded, but Duka could not create an authorized workspace session.",
+  workspace_api_unavailable: "Duka could not reach the workspace service. Please try again shortly.",
+  workspace_access_denied: "Your identity was verified, but workspace access could not be authorized. Contact your workspace administrator.",
   oidc_not_configured: "Organization sign-in has not been configured for this deployment.",
   oidc_start_failed: "Duka could not reach the configured identity provider.",
 };
