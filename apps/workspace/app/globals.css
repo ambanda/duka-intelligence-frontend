@@ -396,3 +396,21 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(218, 93, 38, 0.3
   .operations-table__row, .operations-table--messages .operations-table__row { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
   .operations-table__row > .duka-status { grid-column: 2; grid-row: 1; }
 }
+/* Operational controls retain their dimensions on narrow screens. */
+.people-panel, .people-composer { min-width: 0; }
+.people-search { display: flex; align-items: center; gap: 8px; max-width: 520px; margin: 16px 0; }
+.people-search input { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #ccd6d3; border-radius: 6px; background: #fff; font: inherit; }
+.people-panel .knowledge-scroll { max-width: 100%; overflow-x: auto; }
+.people-panel .knowledge-scroll table { min-width: 720px; table-layout: auto; }
+.people-panel .knowledge-scroll th { white-space: nowrap; overflow-wrap: normal; }
+.people-panel .knowledge-scroll td { min-width: 90px; max-width: 280px; word-break: normal; }
+.people-panel .knowledge-toolbar h2 { min-width: 0; overflow-wrap: break-word; }
+.reference-text { overflow-wrap: anywhere; font-size: 12px; }
+small.reference-text { display: block; }
+.parameter-field { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; }
+.message-preview { white-space: pre-wrap; overflow-wrap: anywhere; border-left: 3px solid #13a36e; padding: 12px; margin: 4px 0; background: #f3f8f5; }
+.knowledge-form fieldset { min-width: 0; border: 1px solid #d5dadd; border-radius: 6px; padding: 12px; display: grid; gap: 12px; }
+.knowledge-form input[type="checkbox"] { width: 16px; height: 16px; }
+.people-panel details { padding: 12px 0; }
+.people-panel summary { cursor: pointer; font-weight: 600; }
+@media (max-width: 640px) { .parameter-field { grid-template-columns: minmax(0, 1fr); } .people-panel .knowledge-toolbar { flex-wrap: wrap; gap: 12px; } }

@@ -476,6 +476,7 @@ export function WhatsAppChannelManagement({
 
   return (
     <div className="whatsapp-operations">
+      {canManage && <div className="knowledge-actions"><a className="duka-button duka-button--secondary" href={`/w/${encodeURIComponent(workspaceSlug)}/users`}>Manage contacts</a><a className="duka-button duka-button--primary" href={`/w/${encodeURIComponent(workspaceSlug)}/users?compose=1`}>Compose from contacts</a></div>}
       <div className="whatsapp-tabs" role="tablist" aria-label="WhatsApp operations">
         <button aria-selected={panel === "templates"} className={panel === "templates" ? "is-active" : ""} onClick={() => setPanel("templates")} role="tab" type="button"><FileText size={16} />Templates <span>{templates.length}</span></button>
         <button aria-selected={panel === "contacts"} className={panel === "contacts" ? "is-active" : ""} onClick={() => setPanel("contacts")} role="tab" type="button"><Users size={16} />Contacts <span>{contacts.length}</span></button>

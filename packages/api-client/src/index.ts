@@ -643,6 +643,10 @@ export class DukaApiClient {
     return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/knowledge`);
   }
 
+  workspaceOperation(workspaceId: string, path: string[], method: "GET" | "PUT" | "POST", body?: unknown, query = ""): Promise<Record<string, unknown>> {
+    return this.request(method, `/v1/workspaces/${encodeURIComponent(workspaceId)}/operations/${path.map(encodeURIComponent).join("/")}${query}`, body);
+  }
+
   knowledgeOperation(workspaceId: string, path: string[], method: "GET" | "PUT" | "POST", body?: unknown): Promise<Record<string, unknown>> {
     return this.request(method, `/v1/workspaces/${encodeURIComponent(workspaceId)}/knowledge/${path.map(encodeURIComponent).join("/")}`, body);
   }

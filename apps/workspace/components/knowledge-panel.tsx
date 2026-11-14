@@ -15,6 +15,8 @@ export function KnowledgePanel({ workspaceSlug, csrfToken }: { workspaceSlug: st
   const [busy, setBusy] = useState(false);
   const [objectId, setObjectId] = useState("");
   const [collection, setCollection] = useState("");
+  const [audience, setAudience] = useState("public");
+  const [advanced, setAdvanced] = useState(false);
   const [kind, setKind] = useState("common.business_profile");
   const [name, setName] = useState("");
   const [question, setQuestion] = useState("");
@@ -48,30 +50,38 @@ export function KnowledgePanel({ workspaceSlug, csrfToken }: { workspaceSlug: st
     const payload = item.payload as Row;
     setObjectId(text(row, "knowledge_object_id")); setCollection(text(row, "collection_key"));
     setKind(text(item, "type")); setName(text(item, "display_name"));
+    setAudience(text(item, "access_scope") || (item.visibility === "public" ? "public" : "workspace"));
     setQuestion(text(payload, "question"));
-    setAnswer(text(payload, "answer") || text(payload, "introduction") || text(payload, "description"));
+    setAnswer(text(payload, "answer") || text(payload, "introduction") || text(payload, "description") || text(payload, "content"));
     setVersion(Number(row.draft_version)); setDirty(false); setTab("editor");
   }
   function useRevision(row: Row) {
     const aliases: Record<string, string> = { business_profile: "common.business_profile", public_faq: "common.public_faq" };
     const objectType = aliases[text(row, "knowledge_object_type")] || text(row, "knowledge_object_type");
     const target = data?.collections.find((entry) => entry.knowledge_collection_id === row.knowledge_collection_id);
-    if (!target || !["common.business_profile", "common.public_faq", "common.booking_policy"].includes(objectType)) {
+    if (!target || !["common.business_profile", "common.public_faq", "common.booking_policy", "common.operating_document"].includes(objectType)) {
       throw new Error("This content is maintained by its connected source.");
     }
     editDraft({ knowledge_object_id: row.knowledge_object_id, collection_key: target.collection_key,
-      draft_version: 0, object_json: { type: objectType, display_name: row.display_name, payload: row.object_payload } });
+      draft_version: 0, object_json: { type: objectType, display_name: row.display_name, payload: row.object_payload, access_scope: row.access_scope, visibility: row.visibility } });
     setDirty(true); setHistory([]);
   }
   async function save(event: FormEvent) {
     event.preventDefault();
     await run(async () => {
       const payload = kind === "common.public_faq" ? { question, answer }
-        : kind === "common.business_profile" ? { introduction: answer } : { description: answer };
-      const result = await request(`/objects/${encodeURIComponent(objectId)}/draft`, "PUT", {
+        : kind === "common.business_profile" ? { introduction: answer } : kind === "common.operating_document" ? { content: answer } : { description: answer };
+      const result = collection ? await request(`/objects/${encodeURIComponent(objectId)}/draft`, "PUT", {
         collection_key: collection, expected_version: version,
-        object: { type: kind, display_name: name, payload, visibility: "public", data_classification: "public", access_scope: "public" },
-      });
+        object: { type: kind, display_name: name, payload, visibility: audience === "public" ? "public" : "internal", data_classification: audience === "public" ? "public" : "internal", access_scope: audience },
+      }) : await (async () => {
+        const response = await fetch(`/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/operations/content`, {
+          method: "POST", headers: { "Content-Type": "application/json", "x-duka-csrf": csrfToken },
+          body: JSON.stringify({ object_id: objectId, object_type: kind, title: name, audience, payload, expected_version: version }),
+        });
+        const body = await response.json(); if (!response.ok) throw new Error(body.error?.message || "Content could not be saved");
+        setCollection(body.collection_key); return body;
+      })();
       setVersion(result.draft_version);
       setDirty(false);
     });
@@ -95,14 +105,15 @@ export function KnowledgePanel({ workspaceSlug, csrfToken }: { workspaceSlug: st
   const objectRows = data?.objects || [];
   return <div className="knowledge-panel">
     <div className="knowledge-toolbar"><div role="tablist" aria-label="Knowledge views">
-      {[['objects', 'Published'], ['drafts', 'Drafts'], ['collections', 'Collections'], ['sources', 'Sources'], ['bindings', 'Skill bindings'], ['events', 'Activity']].map(([key, label]) => <button role="tab" aria-selected={tab === key} key={key} onClick={() => setTab(key)}>{label}</button>)}
+      {[['objects', 'Published'], ['drafts', 'Drafts'], ['events', 'Activity'], ...(advanced ? [['collections', 'Collections'], ['bindings', 'Skill bindings']] : [])].map(([key, label]) => <button role="tab" aria-selected={tab === key} key={key} onClick={() => setTab(key)}>{label}</button>)}
     </div><div><button className="icon-button" title="Refresh knowledge" aria-label="Refresh knowledge" onClick={load} disabled={busy}><RefreshCw size={18} /></button>
-      <button className="duka-button duka-button--primary" onClick={() => { setObjectId(`knowledge_${crypto.randomUUID()}`); setName(""); setQuestion(""); setAnswer(""); setVersion(0); setTab("editor"); }}><FilePlus2 size={16} />New content</button></div></div>
+      <button className="duka-button duka-button--primary" onClick={() => { setObjectId(`knowledge_${crypto.randomUUID()}`); setCollection(""); setName(""); setQuestion(""); setAnswer(""); setVersion(0); setTab("editor"); }}><FilePlus2 size={16} />New content</button></div></div>
+    <div className="knowledge-actions"><label><input type="checkbox" checked={advanced} onChange={(e) => { setAdvanced(e.target.checked); setTab("objects"); }} />Advanced settings</label><a href={`/w/${encodeURIComponent(workspaceSlug)}/data-sources`}>Data sources</a></div>
     {error && <p role="alert" className="error-state">{error}</p>}
     {!data && !error && <p role="status">Loading knowledge...</p>}
     {tab === "editor" && <form className="knowledge-form" onSubmit={save} onChange={() => setDirty(true)}>
-      <label>Content type<select name="content_type" value={kind} onChange={(e) => setKind(e.target.value)}><option value="common.business_profile">Business introduction</option><option value="common.public_faq">FAQ</option><option value="common.booking_policy">Booking policy</option></select></label>
-      <label>Collection<select name="collection" value={collection} required onChange={(e) => setCollection(e.target.value)}><option value="">Select collection</option>{data?.collections.filter((row) => row.visibility === "public").map((row) => <option key={text(row, "collection_key")} value={text(row, "collection_key")}>{text(row, "display_name")}</option>)}</select></label>
+      <label>Content type<select name="content_type" value={kind} disabled={version > 0} onChange={(e) => { setKind(e.target.value); setCollection(""); setAudience(e.target.value === "common.operating_document" ? "workspace" : "public"); }}><option value="common.business_profile">Business introduction</option><option value="common.public_faq">FAQ</option><option value="common.booking_policy">Booking policy</option><option value="common.operating_document">Staff document</option></select></label>
+      <label>Audience<select name="audience" value={audience} disabled={version > 0} onChange={(e) => { setAudience(e.target.value); setCollection(""); }}><option value="public" disabled={kind === "common.operating_document"}>Public customers</option><option value="workspace" disabled={["common.business_profile", "common.public_faq"].includes(kind)}>Authorized workspace staff</option></select></label>
       <label>Title<input name="title" value={name} onChange={(e) => setName(e.target.value)} required maxLength={200} /></label>
       {kind === "common.public_faq" && <label>Question<input name="question" value={question} onChange={(e) => setQuestion(e.target.value)} required maxLength={1000} /></label>}
       <label>{kind === "common.public_faq" ? "Answer" : "Content"}<textarea name="content" rows={7} value={answer} onChange={(e) => setAnswer(e.target.value)} required maxLength={10000} /></label>

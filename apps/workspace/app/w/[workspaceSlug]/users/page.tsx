@@ -1,9 +1,14 @@
-import { Users } from "lucide-react";
-
-import { WorkspaceSectionPage } from "@/components/workspace-section-page";
+import { PageHeader } from "@duka/ui";
+import { requireWorkspace } from "@/lib/auth/workspace";
+import { PeoplePanel } from "@/components/people-panel";
 
 export const metadata = { title: "Users" };
 
-export default function UsersPage() {
-  return <WorkspaceSectionPage eyebrow="Workspace access" title="Users" description="Manage principals authorized to use this workspace and its channels." emptyTitle="User administration is not connected" emptyDescription="Assigned principals will appear after the authenticated user-management contract is available. Channel allowlists remain authoritative in Duka." icon={Users} />;
+export default async function UsersPage({ params }: { params: Promise<{ workspaceSlug: string }> }) {
+  const { workspaceSlug } = await params;
+  const { membership, session } = await requireWorkspace(workspaceSlug);
+  const canManage = membership.roles.some((role) => ["owner", "admin", "workspace_admin"].includes(role));
+  return <><PageHeader eyebrow="People and identity" title="Users" description="Contacts, customer journeys, consent and workspace access." />
+    {canManage ? <PeoplePanel workspaceSlug={workspaceSlug} csrfToken={session.csrfToken} /> : <p>Administrator access is required.</p>}
+  </>;
 }

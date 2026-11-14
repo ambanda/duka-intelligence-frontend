@@ -8,6 +8,11 @@ test("knowledge drafts publish with scope, CSRF, and responsive layouts", async 
   };
   let draftBody: Record<string, unknown> = {};
   let csrf = "";
+  await page.route("**/api/bff/workspaces/workspace-e2e/operations/content", async (route) => {
+    const body = route.request().postDataJSON(); csrf = route.request().headers()["x-duka-csrf"];
+    draftBody = { collection_key: "public.common_public_faq", object: { type: body.object_type, visibility: body.audience, payload: body.payload } };
+    await route.fulfill({ json: { draft_version: 1, collection_key: "public.common_public_faq" } });
+  });
   await page.route("**/api/bff/workspaces/workspace-e2e/knowledge**", async (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
@@ -28,7 +33,7 @@ test("knowledge drafts publish with scope, CSRF, and responsive layouts", async 
   await page.goto("/w/workspace-e2e/knowledge");
   await page.getByRole("button", { name: "New content" }).click();
   await page.getByLabel("Content type").selectOption("common.public_faq");
-  await page.getByRole("combobox", { name: "Collection", exact: true }).selectOption("public.faqs");
+  await expect(page.getByRole("combobox", { name: "Collection", exact: true })).toHaveCount(0);
   await page.getByLabel("Title", { exact: true }).fill("Opening hours");
   await page.getByLabel("Question", { exact: true }).fill("When are you open?");
   await page.getByLabel("Answer", { exact: true }).fill("Weekdays, 8 AM to 5 PM.");
@@ -36,7 +41,7 @@ test("knowledge drafts publish with scope, CSRF, and responsive layouts", async 
   await page.getByRole("button", { name: "Save draft" }).click();
   await expect(page.getByRole("button", { name: "Publish saved draft" })).toBeEnabled();
   expect(csrf).toBe("development-csrf-token");
-  expect(draftBody).toMatchObject({ collection_key: "public.faqs", object: { type: "common.public_faq", visibility: "public" } });
+  expect(draftBody).toMatchObject({ collection_key: "public.common_public_faq", object: { type: "common.public_faq", visibility: "public" } });
   await page.screenshot({ path: testInfo.outputPath("knowledge-editor.png"), fullPage: true });
   await page.getByRole("button", { name: "Publish saved draft" }).click();
   await expect(page.getByRole("cell", { name: "Opening hours" })).toBeVisible();
