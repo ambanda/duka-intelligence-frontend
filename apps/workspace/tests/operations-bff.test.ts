@@ -41,3 +41,13 @@ it("does not turn the BFF into an arbitrary backend proxy", async () => {
   expect(read.status).toBe(403); expect(write.status).toBe(403);
   expect(mocks.operation).not.toHaveBeenCalled();
 });
+
+it("allows channel administrators to select audiences but not grant access", async () => {
+  mocks.membership.mockReturnValue({ workspaceId: "authorized-workspace", roles: ["channel_admin"] });
+  expect((await GET(new NextRequest("https://app.test/operations/people"), params(["people"]))).status).toBe(200);
+  expect((await POST(new NextRequest("https://app.test/operations/dispatches", { method: "POST", body: "{}" }), params(["dispatches"]))).status).toBe(200);
+  mocks.operation.mockClear();
+  expect((await POST(new NextRequest("https://app.test/operations/people/p/access", { method: "POST", body: "{}" }), params(["people", "p", "access"]))).status).toBe(403);
+  expect((await PUT(new NextRequest("https://app.test/operations/lifecycle-rules", { method: "PUT", body: "{}" }), params(["lifecycle-rules"]))).status).toBe(403);
+  expect(mocks.operation).not.toHaveBeenCalled();
+});

@@ -83,44 +83,33 @@ test("Meta Embedded Signup submits the one-time code immediately through the BFF
 });
 
 test("workspace administrator can discover and publish a sector skill", async ({ page }) => {
-  const summary = {
-    skill_id: "sacco.evidence_retrieval", sector: "sacco", skill_name: "Document Evidence Retrieval",
-    description: "Retrieve citation-ready evidence from authorized SACCO documents.", interaction_profile: "internal_assistance",
-    workflow_id: null, workflow_version: null, risk_level: "read_only", supported_channels: ["whatsapp", "web", "api"],
-    binding_status: "not_configured", enabled: false, config_version: null,
-  };
   const schema = { type: "object", additionalProperties: false, properties: { retrieval_mode: { type: "string", enum: ["lexical", "vector", "hybrid"] }, result_limit: { type: "integer", minimum: 1, maximum: 20 } } };
-  const detail = (status: string, version: number | null, config: Record<string, unknown>) => ({
-    workspace_id: "workspace-e2e",
-    skill: { ...summary, binding_status: status, enabled: status === "active", config_version: version, allowed_roles: ["admin"], required_permission_set: "read_knowledge", config_schema: schema, published_config: status === "active" ? config : {}, draft_config: config, validation_errors: [], published_at: status === "active" ? "2030-01-01T00:00:00Z" : null, published_by_principal_id: status === "active" ? "principal-e2e" : null },
-  });
+  let version = 0;
+  let activated = false;
+  let config: Record<string, unknown> = {};
   let draftBody: Record<string, unknown> | null = null;
-  let csrfSeen = false;
-
-  await page.route("**/api/bff/workspaces/workspace-e2e/skills", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ workspace_id: "workspace-e2e", skills: [summary] }) }));
-  await page.route("**/api/bff/workspaces/workspace-e2e/channels", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ channels: [], pending_onboarding_sessions: [] }) }));
-  await page.route("**/api/bff/workspaces/workspace-e2e/skills/sacco.evidence_retrieval", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(detail("not_configured", null, {})) }));
-  await page.route("**/api/bff/workspaces/workspace-e2e/skills/sacco.evidence_retrieval/draft", async (route) => {
+  await page.route("**/api/bff/workspaces/workspace-e2e/operations/setup", (route) => route.fulfill({ json: { skills: [{ skill_id: "sacco.evidence_retrieval", skill_name: "Document Evidence Retrieval", service_centre: "back_office", entitled: true, readiness: activated ? "active" : "not_configured", config_version: version || null, config_schema_json: schema, default_config: {}, draft_config_json: config, requirements: [] }] } }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/knowledge", (route) => route.fulfill({ json: { collections: [], bindings: [], sources: [] } }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/channels", (route) => route.fulfill({ json: { channels: [], pending_onboarding_sessions: [] } }));
+  await page.route("**/api/bff/workspaces/workspace-e2e/operations/setup/skills/sacco.evidence_retrieval", async (route) => {
+    expect(route.request().headers()["x-duka-csrf"]).toBeTruthy();
     draftBody = route.request().postDataJSON();
-    csrfSeen = Boolean(route.request().headers()["x-duka-csrf"]);
-    await route.fulfill({ contentType: "application/json", body: JSON.stringify(detail("draft", 1, (draftBody?.config as Record<string, unknown>) ?? {})) });
+    expect(draftBody?.expected_version).toBe(version || null);
+    config = draftBody?.config as Record<string, unknown>;
+    activated = Boolean(draftBody?.activate); version += 1;
+    return route.fulfill({ json: { activated, validation: { valid: true, errors: [] } } });
   });
-  await page.route("**/api/bff/workspaces/workspace-e2e/skills/sacco.evidence_retrieval/validate", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ workspace_id: "workspace-e2e", skill_id: summary.skill_id, valid: true, errors: [], config_version: 1 }) }));
-  await page.route("**/api/bff/workspaces/workspace-e2e/skills/sacco.evidence_retrieval/publish", async (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(detail("active", 1, { retrieval_mode: "hybrid", result_limit: 5 })) }));
-
   await page.goto("/w/workspace-e2e/skills", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Document Evidence Retrieval")).toBeVisible();
-  await page.getByRole("link", { name: "Configure" }).click();
+  await page.getByRole("button", { name: "Set up", exact: true }).click();
   await page.getByLabel("Retrieval Mode").selectOption("hybrid");
   await page.getByLabel("Result Limit").fill("5");
-  await page.getByRole("button", { name: "Save draft" }).click();
-  await expect.poll(() => draftBody).toMatchObject({ config: { retrieval_mode: "hybrid", result_limit: 5 } });
-  expect(csrfSeen).toBe(true);
-  await page.getByRole("button", { name: "Validate" }).click();
-  await expect(page.getByText("Configuration is valid and ready to publish.")).toBeVisible();
-  await page.getByRole("button", { name: "Publish" }).click();
-  await expect(page.getByText("Skill published and available to the workspace runtime.")).toBeVisible();
-  await expect(page.getByText("Active")).toBeVisible();
+  await page.getByRole("button", { name: "Save and validate", exact: true }).click();
+  await expect.poll(() => draftBody).toMatchObject({ config: { retrieval_mode: "hybrid", result_limit: 5 }, activate: false });
+  await expect(page.getByText("Saved and ready to activate.")).toBeVisible();
+  await page.getByRole("button", { name: "Validate and activate", exact: true }).click();
+  await expect(page.getByText("Skill activated.")).toBeVisible();
+  await expect(page.getByRole("cell", { name: "active", exact: true })).toBeVisible();
 });
 
 test("channel administrator submits a template and sends an approved message", async ({ page }) => {
@@ -137,6 +126,12 @@ test("channel administrator submits a template and sends an approved message", a
   };
   let templateCsrf = false;
   let messageBody: Record<string, unknown> | null = null;
+  await page.route("**/api/bff/workspaces/workspace-e2e/operations/**", (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/people")) return route.fulfill({ json: { contacts: [{ contact_id: "person-1", display_name: "Francis", identities: [{ channel_id: "channel-1", provider_identity: "+254725375358" }] }], categories: [], next_cursor: null } });
+    if (path.endsWith("/dispatches")) messageBody = route.request().postDataJSON();
+    return route.fulfill({ json: { dispatch_id: "dispatch-1", payload_hash: "a".repeat(64), status: path.endsWith("/confirm") ? "completed" : "draft", recipients: [{ contact_id: "person-1", display_name: "Francis", eligibility_reason: "eligible", status: path.endsWith("/confirm") ? "accepted" : "pending", provider_message_id: path.endsWith("/confirm") ? "wamid-1" : null }] } });
+  });
 
   await page.route("**/api/bff/workspaces/workspace-e2e/channels/channel-1/message-templates", async (route) => {
     await route.fulfill({ contentType: "application/json", body: JSON.stringify({ templates: [approvedTemplate] }) });
@@ -173,12 +168,13 @@ test("channel administrator submits a template and sends an approved message", a
   expect(templateCsrf).toBe(true);
 
   await page.getByRole("tab", { name: /Messages/ }).click();
-  await page.getByLabel("Template").selectOption("template-approved");
-  await page.getByLabel("Contact").selectOption("+254725375358");
+  await page.getByRole("combobox", { name: "Template", exact: true }).selectOption("template-approved");
+  await page.getByRole("checkbox", { name: /Francis/ }).check();
   await page.getByLabel("Appointment reference").fill("APT-001");
-  await page.getByLabel("Business purpose").fill("appointment_confirmation");
-  await page.getByLabel("Business reference").fill("APT-001");
-  await page.getByRole("button", { name: "Send template" }).click();
-  await expect.poll(() => messageBody).toMatchObject({ recipient: "+254725375358", template_record_id: "template-approved", values: { "body.1": "APT-001" } });
+  await page.getByLabel("Purpose", { exact: true }).fill("appointment_confirmation");
+  await page.getByLabel("Business / campaign reference").fill("APT-001");
+  await page.getByRole("button", { name: "Review audience" }).click();
+  await expect.poll(() => messageBody).toMatchObject({ contact_ids: ["person-1"], template_record_id: "template-approved", values: { "body.1": "APT-001" } });
+  await page.getByRole("button", { name: "Confirm eligible recipients" }).click();
   await expect(page.getByText("wamid-1")).toBeVisible();
 });

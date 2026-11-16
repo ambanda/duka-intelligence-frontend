@@ -8,16 +8,19 @@ async function handle(request: NextRequest, { params }: Params) {
     const { workspaceSlug, path } = await params;
     const { client, session } = await requireBffContext(request);
     const membership = requireBffWorkspace(session, workspaceSlug);
-    if (!membership.roles.some((role) => ["owner", "admin", "workspace_admin"].includes(role))) {
+    const route = path.join("/");
+    const messagingOperation = (request.method === "GET" && /^(people|dispatches\/[^/]+)$/.test(route))
+      || (request.method === "POST" && /^(dispatches|dispatches\/[^/]+\/confirm)$/.test(route));
+    if (!membership.roles.some((role) => ["owner", "admin", "workspace_admin"].includes(role)
+      || (role === "channel_admin" && messagingOperation))) {
       throw new BffError(403, "workspace_admin_required", "Workspace administrator access is required.");
     }
     const method = request.method as "GET" | "POST" | "PUT";
-    const route = path.join("/");
     const allowed = method === "GET"
-      ? /^(people(\/[^/]+)?|channels|dispatches\/[^/]+|data-sources|setup)$/.test(route)
+      ? /^(people(\/[^/]+)?|lifecycle-rules|channels|dispatches\/[^/]+|data-sources|setup)$/.test(route)
       : method === "POST"
-        ? /^(people|people\/[^/]+\/(reachability|principal|access)|dispatches|dispatches\/[^/]+\/confirm|data-sources\/[^/]+\/(test|sync|pause|resume)|content)$/.test(route)
-        : /^(people\/[^/]+|data-sources\/[^/]+|setup\/skills\/[^/]+)$/.test(route);
+        ? /^(people|people\/[^/]+\/(reachability|principal|access|membership)|dispatches|dispatches\/[^/]+\/confirm|data-sources\/[^/]+\/(test|sync|pause|resume)|content)$/.test(route)
+        : /^(people\/[^/]+|lifecycle-rules|data-sources\/[^/]+|setup\/skills\/[^/]+)$/.test(route);
     if (!allowed || path.some((part) => !/^[a-zA-Z0-9_.:-]+$/.test(part))) throw new BffError(404, "operation_not_found", "Workspace operation was not found.");
     if (method !== "GET") requireBffMutation(request, session);
     const query = new URLSearchParams();

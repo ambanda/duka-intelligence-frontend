@@ -11,6 +11,16 @@ test("add contact, record evidenced permission, and send only after eligibility"
     components: [{ type: "BODY", text: "Welcome to our business." }], status: "APPROVED", source: "meta",
     quality_score: "GREEN", send_schema: { fields: [] }, validation_errors: [],
   };
+  await page.route("**/api/bff/workspaces/workspace-e2e/operations/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    const recipient = { contact_id: "person-contact-1", display_name: "Amina Otieno", eligibility_reason: consented ? "eligible" : "marketing_consent_missing", status: consented ? "pending" : "excluded", journey_reference: "outreach-test" };
+    if (path.endsWith("/people")) return route.fulfill({ json: { contacts: contacts.length ? [{ contact_id: "person-contact-1", display_name: "Amina Otieno", preferred_name: "Amina", relationships: ["prospect"], identities: [{ channel_id: "channel-1", provider_identity: "+254700000001" }] }] : [], categories: [], next_cursor: null } });
+    if (path.endsWith("/confirm")) {
+      expect(consented).toBe(true); sends += 1;
+      return route.fulfill({ json: { dispatch_id: "dispatch-test", status: "completed", payload_hash: "a".repeat(64), recipients: [{ ...recipient, status: "accepted", delivery_status: "delivered", provider_message_id: "wamid.test-only" }] } });
+    }
+    return route.fulfill({ json: { dispatch_id: "dispatch-test", status: "draft", payload_hash: "a".repeat(64), recipients: [recipient] } });
+  });
   await page.route(`${base}/message-templates`, (route) => route.fulfill({ json: { templates: [template] } }));
   await page.route(`${base}/contact-tags`, (route) => route.fulfill({ json: { tags: [] } }));
   await page.route(`${base}/marketing-segments`, (route) => route.fulfill({ json: { segments: [] } }));
@@ -58,12 +68,14 @@ test("add contact, record evidenced permission, and send only after eligibility"
 
   await page.getByRole("tab", { name: /Messages/ }).click();
   await page.getByRole("combobox", { name: "Template", exact: true }).selectOption("marketing-1");
-  await page.getByRole("combobox", { name: "Contact", exact: true }).selectOption("+254700000001");
-  await page.getByLabel("Business purpose").fill("catalog_updates");
-  await page.getByLabel("Business reference").fill("DEMO-1");
-  await expect(page.getByText("Marketing permission has not been recorded for this contact.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Send template" })).toBeDisabled();
+  await page.getByRole("checkbox", { name: /Amina/ }).check();
+  await page.getByLabel("Purpose", { exact: true }).fill("catalog_updates");
+  await page.getByLabel("Business / campaign reference").fill("DEMO-1");
+  await page.getByRole("button", { name: "Review audience" }).click();
+  await expect(page.getByRole("cell", { name: "marketing_consent_missing" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Confirm eligible recipients" })).toBeDisabled();
 
+  await page.getByRole("tab", { name: /Contacts/ }).click();
   await page.getByRole("button", { name: "Record permission" }).click();
   await expect(dialog.getByLabel("Phone number")).toHaveValue("+254700000001");
   await expect(dialog.getByLabel("Phone number")).toHaveAttribute("readonly", "");
@@ -83,8 +95,13 @@ test("add contact, record evidenced permission, and send only after eligibility"
     policy_version: "tenant-marketing-v1", source: "offline_form",
   } });
   expect(sends).toBe(0);
-  await expect(page.getByRole("button", { name: "Send template" })).toBeEnabled();
-  await page.getByRole("button", { name: "Send template" }).click();
+  await page.getByRole("tab", { name: /Messages/ }).click();
+  await page.getByRole("combobox", { name: "Template", exact: true }).selectOption("marketing-1");
+  await page.getByRole("checkbox", { name: /Amina/ }).check();
+  await page.getByLabel("Purpose", { exact: true }).fill("catalog_updates");
+  await page.getByLabel("Business / campaign reference").fill("DEMO-1");
+  await page.getByRole("button", { name: "Review audience" }).click();
+  await page.getByRole("button", { name: "Confirm eligible recipients" }).click();
   await expect.poll(() => sends).toBe(1);
   await expect(page.getByText("wamid.test-only")).toBeVisible();
 });

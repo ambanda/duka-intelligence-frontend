@@ -398,6 +398,22 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(218, 93, 38, 0.3
 }
 /* Operational controls retain their dimensions on narrow screens. */
 .people-panel, .people-composer { min-width: 0; }
+.people-send-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; }
+.people-send-actions label { display: grid; gap: 4px; font-size: 13px; }
+.people-send-actions select { max-width: 220px; min-height: 38px; }
+.people-tag { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 6px; border-radius: 4px; font-size: 12px; background: #eaf0ec; }
+.people-tag--source { background: #e9eff8; color: #25496f; }
+.contact-dialog .whatsapp-form fieldset { min-width: 0; border: 0; border-top: 1px solid #d4deda; padding: 14px 0; margin: 0; display: grid; gap: 8px; }
+.contact-dialog .whatsapp-form fieldset legend { padding-right: 8px; font-size: 13px; font-weight: 600; }
+.contact-dialog .whatsapp-form fieldset label { font-size: 13px; }
+.contact-dialog .whatsapp-form label:has(> input[type="checkbox"]), .people-composer .knowledge-form label:has(> input[type="checkbox"]) { display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 13px; line-height: 1.4; }
+.contact-dialog input[type="checkbox"], .people-composer input[type="checkbox"] { width: 16px; height: 16px; min-height: 16px; margin: 0; padding: 0; flex: 0 0 16px; }
+.people-composer .knowledge-form fieldset fieldset { display: flex; flex-wrap: wrap; gap: 10px 20px; }
+.people-composer .knowledge-form fieldset fieldset label:not(:has(> input[type="checkbox"])) { flex-basis: 100%; }
+.people-composer .reference-text { display: block; }
+.audience-picker { max-height: 320px; overflow: auto; border-block: 1px solid #d4deda; padding: 8px 0; }
+.audience-picker label { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 2px; align-items: center; }
+.audience-picker small { color: #53675f; overflow-wrap: anywhere; }
 .people-search { display: flex; align-items: center; gap: 8px; max-width: 520px; margin: 16px 0; }
 .people-search input { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #ccd6d3; border-radius: 6px; background: #fff; font: inherit; }
 .people-panel .knowledge-scroll { max-width: 100%; overflow-x: auto; }

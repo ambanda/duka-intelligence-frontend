@@ -1069,11 +1069,13 @@ export class DukaApiClient {
         }
 
         const errorBody = await response.json().catch(() => null) as { detail?: unknown; error?: { code?: unknown; message?: unknown } } | null;
-        const detail = typeof errorBody?.detail === "string"
+        const validation = Array.isArray(errorBody?.detail) ? errorBody.detail as { loc?: unknown[]; msg?: string }[] : [];
+        const validationMessage = validation.map((item) => `${(item.loc || []).filter((part) => part !== "body").join(".")}: ${item.msg || "Invalid value"}`).join("; ");
+        const detail = validationMessage || (typeof errorBody?.detail === "string"
           ? errorBody.detail
           : typeof errorBody?.error?.message === "string"
             ? errorBody.error.message
-            : null;
+            : null);
         const code = typeof errorBody?.error?.code === "string" ? errorBody.error.code : "duka_api_request_failed";
         throw new DukaApiError(
           detail ?? `Duka API request failed with status ${response.status}.`,

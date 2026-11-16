@@ -2,6 +2,11 @@ import { DukaApiClient } from "@duka/api-client";
 import { describe, expect, it, vi } from "vitest";
 
 describe("Duka API client", () => {
+  it("preserves field-level FastAPI validation errors without echoing input values", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(Response.json({ detail: [{ loc: ["body", "identity", "phone_number_e164"], msg: "Invalid phone number", input: "private-value" }] }, { status: 422 }));
+    const client = new DukaApiClient({ baseUrl: "https://api.example", fetchImpl });
+    await expect(client.workspaceOperation("workspace-a", ["people"], "POST", {})).rejects.toMatchObject({ status: 422, message: "identity.phone_number_e164: Invalid phone number" });
+  });
   it("retries a safe GET once and preserves the correlation ID", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(new Response("", { status: 503 }))

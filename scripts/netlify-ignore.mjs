@@ -4,6 +4,11 @@ const target = process.argv[2];
 const base = process.env.CACHED_COMMIT_REF;
 const head = process.env.COMMIT_REF;
 
+if (head) {
+  const message = spawnSync("git", ["log", "-1", "--format=%s", head], { encoding: "utf8" });
+  if (message.status === 0 && message.stdout.trim().startsWith("[duka-deploy]")) process.exit(1);
+}
+
 if (!base || !head || !["website", "workspace"].includes(target)) process.exit(1);
 
 const result = spawnSync("git", ["diff", "--name-only", base, head], { encoding: "utf8" });

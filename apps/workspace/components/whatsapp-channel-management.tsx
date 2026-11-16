@@ -1,7 +1,6 @@
 "use client";
 
 import { StatusBadge } from "@duka/ui";
-import type { WorkspaceMessageEligibility } from "@duka/api-client";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -27,8 +26,7 @@ import type {
   WorkspaceMessageView,
 } from "@/lib/whatsapp-management/contracts";
 import { CampaignManagement, ContactDirectory } from "@/components/whatsapp-campaign-management";
-import { WhatsAppContactDialog } from "@/components/whatsapp-contact-dialog";
-import { marketingEligibilityMessage } from "@/lib/whatsapp-management/eligibility";
+import { ChannelTemplateComposer } from "@/components/channel-template-composer";
 
 type Panel = "templates" | "contacts" | "campaigns" | "messages";
 type TemplateCategory = "UTILITY" | "MARKETING";
@@ -239,146 +237,6 @@ function TemplateForm({ csrfToken, onSaved, onDismiss, workspaceSlug, channelId 
   );
 }
 
-function SendMessageForm({
-  contacts,
-  csrfToken,
-  onSent,
-  onContactSaved,
-  templates,
-  workspaceSlug,
-  channelId,
-}: {
-  contacts: WhatsAppContactView[];
-  csrfToken: string;
-  onSent: (message: WorkspaceMessageView) => void;
-  onContactSaved: (contact: WhatsAppContactView, notice: string) => void;
-  templates: MessageTemplateView[];
-  workspaceSlug: string;
-  channelId: string;
-}) {
-  const approved = templates.filter((template) => template.status.toUpperCase() === "APPROVED" && template.category !== "AUTHENTICATION");
-  const [templateId, setTemplateId] = useState("");
-  const [recipient, setRecipient] = useState("");
-  const [purpose, setPurpose] = useState("");
-  const [reference, setReference] = useState("");
-  const [values, setValues] = useState<Record<string, unknown>>({});
-  const [contactForm, setContactForm] = useState<{ contact?: WhatsAppContactView } | null>(null);
-  const [eligibilityRevision, setEligibilityRevision] = useState(0);
-  const [eligibility, setEligibility] = useState<{ key: string; decision?: WorkspaceMessageEligibility; error?: string } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const idempotencyKey = useRef<string | null>(null);
-  const template = approved.find((item) => item.template_record_id === templateId);
-  const sendFields = template?.send_schema.fields || [];
-  const base = `/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/channels/${encodeURIComponent(channelId)}`;
-  const isMarketing = template?.category === "MARKETING";
-  const eligibilityKey = isMarketing && templateId && recipient && purpose.trim()
-    ? JSON.stringify([templateId, recipient, purpose.trim(), eligibilityRevision]) : "";
-  const currentEligibility = eligibility?.key === eligibilityKey ? eligibility : null;
-  const marketingBlocked = isMarketing && (!eligibilityKey || !currentEligibility?.decision?.eligible);
-
-  useEffect(() => {
-    idempotencyKey.current = null;
-  }, [templateId, recipient, purpose, reference, values]);
-
-  useEffect(() => {
-    if (!eligibilityKey) return;
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      void fetch(`${base}/message-eligibility`, {
-        method: "POST", headers: mutationHeaders(csrfToken), signal: controller.signal,
-        body: JSON.stringify({ recipient, template_record_id: templateId, purpose: purpose.trim() }),
-      }).then(async (response) => {
-        if (!response.ok) throw new Error(await responseError(response, "Eligibility could not be verified."));
-        setEligibility({ key: eligibilityKey, decision: await response.json() as WorkspaceMessageEligibility });
-      }).catch((reason) => {
-        if (!controller.signal.aborted) setEligibility({ key: eligibilityKey, error: reason instanceof Error ? reason.message : "Eligibility could not be verified." });
-      });
-    }, 250);
-    return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [base, csrfToken, eligibilityKey, purpose, recipient, templateId, contacts]);
-
-  function chooseTemplate(value: string) {
-    setTemplateId(value);
-    setValues({});
-    idempotencyKey.current = null;
-  }
-
-  function setValue(key: string, value: unknown) {
-    setValues((current) => ({ ...current, [key]: value }));
-  }
-
-  function setObjectValue(key: string, property: string, value: string | number) {
-    setValues((current) => ({
-      ...current,
-      [key]: { ...(typeof current[key] === "object" ? current[key] as Record<string, unknown> : { code: "KES" }), [property]: value },
-    }));
-  }
-
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    if (marketingBlocked) return;
-    setBusy(true);
-    setError(null);
-    idempotencyKey.current ||= `workspace-message-${crypto.randomUUID()}`;
-    try {
-      const response = await fetch(
-        `/api/bff/workspaces/${encodeURIComponent(workspaceSlug)}/channels/${encodeURIComponent(channelId)}/messages`,
-        {
-          method: "POST",
-          headers: mutationHeaders(csrfToken),
-          body: JSON.stringify({
-            recipient,
-            template_record_id: templateId,
-            body_parameters: [],
-            header_parameters: [],
-            values,
-            purpose,
-            business_reference: reference,
-            idempotency_key: idempotencyKey.current,
-          }),
-        },
-      );
-      if (!response.ok) throw new Error(await responseError(response, "Message could not be sent."));
-      onSent(await response.json() as WorkspaceMessageView);
-      idempotencyKey.current = null;
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Message could not be sent.");
-    } finally {
-      setBusy(false);
-      setEligibilityRevision((current) => current + 1);
-    }
-  }
-
-  return (<>
-    <form className="whatsapp-form whatsapp-send-form" onSubmit={submit}>
-      <div className="section-heading"><div><h2>Send approved template</h2><p>Use a known channel contact and record the business purpose.</p></div><Send size={19} /></div>
-      {error ? <div className="inline-error"><AlertTriangle size={17} /><span>{error}</span></div> : null}
-      <div className="whatsapp-form-grid">
-        <label>Template<select onChange={(event) => chooseTemplate(event.target.value)} required value={templateId}><option value="">Select approved template</option>{approved.map((item) => <option key={item.template_record_id} value={item.template_record_id}>{item.name} ({item.category.toLowerCase()})</option>)}</select></label>
-        <label>Contact<select onChange={(event) => setRecipient(event.target.value)} required value={recipient}><option value="">Select active contact</option>{contacts.map((contact) => <option key={contact.contact_id} value={contact.recipient}>{contact.preferred_name || contact.display_name || contact.display_phone_number} / {contact.display_phone_number}</option>)}</select></label>
-      </div>
-      <div className="whatsapp-form-actions"><button className="duka-button duka-button--secondary" onClick={() => setContactForm({})} type="button"><Plus size={16} />Add contact</button>{recipient ? <button className="duka-button duka-button--secondary" onClick={() => setContactForm({ contact: contacts.find((item) => item.recipient === recipient) })} type="button">Record permission</button> : null}</div>
-      {sendFields.map((field) => {
-        const current = values[field.key];
-        if (field.value_type === "currency") return <fieldset className="send-field-group" key={field.key}><legend>{field.label}</legend><div className="whatsapp-form-grid"><label>Display value<input onChange={(event) => setObjectValue(field.key, "fallback_value", event.target.value)} required={field.required} value={(current as Record<string, string> | undefined)?.fallback_value || ""} /></label><label>Currency code<input maxLength={3} onChange={(event) => setObjectValue(field.key, "code", event.target.value.toUpperCase())} required={field.required} value={(current as Record<string, string> | undefined)?.code || "KES"} /></label><label>Amount x 1000<input min="0" onChange={(event) => setObjectValue(field.key, "amount_1000", Number(event.target.value))} required={field.required} type="number" value={(current as Record<string, number> | undefined)?.amount_1000 ?? ""} /></label></div></fieldset>;
-        if (field.value_type === "location") return <fieldset className="send-field-group" key={field.key}><legend>{field.label}</legend><div className="whatsapp-form-grid"><label>Latitude<input onChange={(event) => setObjectValue(field.key, "latitude", event.target.value)} required={field.required} type="number" value={(current as Record<string, string> | undefined)?.latitude || ""} /></label><label>Longitude<input onChange={(event) => setObjectValue(field.key, "longitude", event.target.value)} required={field.required} type="number" value={(current as Record<string, string> | undefined)?.longitude || ""} /></label><label>Location name<input onChange={(event) => setObjectValue(field.key, "name", event.target.value)} required={field.required} value={(current as Record<string, string> | undefined)?.name || ""} /></label><label>Address<input onChange={(event) => setObjectValue(field.key, "address", event.target.value)} required={field.required} value={(current as Record<string, string> | undefined)?.address || ""} /></label></div></fieldset>;
-        const inputType = field.value_type === "date_time" ? "datetime-local" : "text";
-        const placeholder = ["image", "video", "document"].includes(field.value_type) ? "Meta media ID or HTTPS URL" : field.value_type === "url_suffix" ? "Dynamic URL value" : field.value_type === "copy_code" ? "Offer code" : undefined;
-        return <label key={field.key}>{field.label}{!field.required ? <span>Optional</span> : null}<input onChange={(event) => setValue(field.key, event.target.value)} placeholder={placeholder} required={field.required} type={inputType} value={String(current || "")} /></label>;
-      })}
-      <div className="whatsapp-form-grid">
-        <label>Business purpose<input onChange={(event) => setPurpose(event.target.value)} placeholder={template?.category === "MARKETING" ? "catalog_updates" : "appointment_confirmation"} required value={purpose} /></label>
-        <label>Business reference<input onChange={(event) => setReference(event.target.value)} placeholder="APT-001" required value={reference} /></label>
-      </div>
-      {isMarketing ? <p aria-live="polite" className="field-help">{!eligibilityKey ? "Select a contact and enter the marketing purpose." : currentEligibility?.error || (currentEligibility?.decision ? marketingEligibilityMessage(currentEligibility.decision.reason) : "Checking marketing eligibility...")}</p> : null}
-      {isMarketing && currentEligibility?.error ? <button className="duka-button duka-button--secondary" onClick={() => setEligibilityRevision((current) => current + 1)} type="button"><RefreshCw size={15} />Check eligibility again</button> : null}
-      <div className="whatsapp-form-actions"><button className="duka-button duka-button--primary" disabled={busy || !templateId || !recipient || marketingBlocked} type="submit"><Send size={17} />{busy ? "Sending..." : "Send template"}</button></div>
-    </form>
-    {contactForm ? <WhatsAppContactDialog base={base} csrfToken={csrfToken} contact={contactForm.contact} onClose={() => setContactForm(null)} onSaved={(saved, notice) => { setEligibility(null); setEligibilityRevision((current) => current + 1); onContactSaved(saved, notice); setRecipient(saved.recipient); }} /> : null}
-    </>
-  );
-}
 
 export function WhatsAppChannelManagement({
   canManage,
@@ -425,6 +283,18 @@ export function WhatsAppChannelManagement({
   }, [base, canManage]);
 
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      void fetch(`${base}/message-templates`, { cache: "no-store" }).then(async (response) => {
+        if (response.ok) setTemplates((await response.json() as MessageTemplateListView).templates);
+      }).catch(() => undefined);
+    }, 60000);
+    return () => window.clearInterval(timer);
+  }, [base]);
+  useEffect(() => {
+    if (new URL(window.location.href).searchParams.get("panel") === "messages") setPanel("messages");
+  }, []);
 
   useEffect(() => {
     if (!pollingRequest.current) return;
@@ -476,7 +346,7 @@ export function WhatsAppChannelManagement({
 
   return (
     <div className="whatsapp-operations">
-      {canManage && <div className="knowledge-actions"><a className="duka-button duka-button--secondary" href={`/w/${encodeURIComponent(workspaceSlug)}/users`}>Manage contacts</a><a className="duka-button duka-button--primary" href={`/w/${encodeURIComponent(workspaceSlug)}/users?compose=1`}>Compose from contacts</a></div>}
+      {canManage && <div className="knowledge-actions"><a className="duka-button duka-button--secondary" href={`/w/${encodeURIComponent(workspaceSlug)}/users`}>Manage contacts</a></div>}
       <div className="whatsapp-tabs" role="tablist" aria-label="WhatsApp operations">
         <button aria-selected={panel === "templates"} className={panel === "templates" ? "is-active" : ""} onClick={() => setPanel("templates")} role="tab" type="button"><FileText size={16} />Templates <span>{templates.length}</span></button>
         <button aria-selected={panel === "contacts"} className={panel === "contacts" ? "is-active" : ""} onClick={() => setPanel("contacts")} role="tab" type="button"><Users size={16} />Contacts <span>{contacts.length}</span></button>
@@ -498,7 +368,7 @@ export function WhatsAppChannelManagement({
       {panel === "contacts" ? <ContactDirectory base={base} canManage={canManage} contacts={contacts} csrfToken={csrfToken} onContactsChanged={setContacts} /> : null}
       {panel === "campaigns" ? <CampaignManagement base={base} canManage={canManage} contacts={contacts} csrfToken={csrfToken} templates={templates} /> : null}
       {panel === "messages" ? <>
-        {canManage ? <SendMessageForm channelId={channelId} contacts={contacts} csrfToken={csrfToken} onContactSaved={(saved, message) => { setContacts((current) => [saved, ...current.filter((item) => item.contact_id !== saved.contact_id)]); setNotice(message); }} onSent={(message) => { pollingRequest.current = message.request_id; setMessages((current) => [message, ...current.filter((item) => item.request_id !== message.request_id)]); setNotice("Meta accepted the message. Waiting for delivery evidence."); }} templates={templates} workspaceSlug={workspaceSlug} /> : null}
+        {canManage ? <ChannelTemplateComposer channelId={channelId} csrfToken={csrfToken} templates={templates} workspaceSlug={workspaceSlug} /> : null}
         <div className="operations-table operations-table--messages">
           <div className="operations-table__header"><span>Message</span><span>Category</span><span>Status</span><span>Evidence</span><span>Created</span></div>
           {messages.length ? messages.map((message) => <div className="operations-table__row" key={message.request_id}><div><strong>{message.template_name}</strong><small>{message.provider_message_id || "Awaiting Meta ID"}</small>{message.error_code ? <small className="danger-text">{message.error_code}</small> : null}</div><span>{formatStatus(message.template_category)}</span><StatusBadge tone={statusTone(message.delivery_status || message.processing_status)}>{formatStatus(message.delivery_status || message.processing_status)}</StatusBadge><div><strong>{message.read_at ? "Read" : message.delivered_at ? "Delivered" : message.sent_at ? "Sent" : "Pending"}</strong><small>{formatTimestamp(message.read_at || message.delivered_at || message.sent_at)}</small></div><span>{formatTimestamp(message.created_at)}</span></div>) : <p className="operations-empty">No template messages have been sent from this workspace.</p>}
