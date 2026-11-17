@@ -1,5 +1,5 @@
 import { PageHeader } from "@duka/ui";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 
 import { WhatsAppChannelManagement } from "@/components/whatsapp-channel-management";
@@ -19,7 +19,7 @@ export default async function WhatsAppChannelPage({
   return (
     <>
       <PageHeader
-        actions={<Link className="duka-button duka-button--secondary" href={`/w/${workspaceSlug}/channels`}><ArrowLeft size={17} />All channels</Link>}
+        actions={<><Link className="duka-button duka-button--secondary" href={`/w/${workspaceSlug}/channels/${channelId}/conversations`}><MessagesSquare size={17} />Conversations</Link><Link className="duka-button duka-button--secondary" href={`/w/${workspaceSlug}/channels`}><ArrowLeft size={17} />All channels</Link></>}
         description="Manage Meta templates and inspect message-delivery evidence for this connected channel."
         eyebrow="WhatsApp channel"
         title="WhatsApp operations"

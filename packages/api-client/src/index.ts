@@ -596,6 +596,52 @@ export interface OnboardingStatusResponse {
   }>;
 }
 
+export interface HandoffMessage {
+  message_record_id: string;
+  author: "customer" | "assistant" | "human";
+  text: string;
+  created_at: string;
+  message_type: string;
+  delivery_status: string | null;
+  attachments: { type: string }[];
+}
+
+export interface HandoffConversation {
+  handoff_case_id: string;
+  status: string;
+  priority: string;
+  assigned_principal_id: string | null;
+  ownership_version: number;
+  customer_name: string;
+  summary: string;
+  trigger_message: string;
+  claimed_at: string | null;
+  closed_at: string | null;
+  closure_reason: string | null;
+  unread_count: number;
+  bot_paused: boolean;
+  can_manage: boolean;
+  customer_window_open: boolean;
+  current_principal_id: string;
+  journey_id: string | null;
+  updated_at: string;
+  candidates: { principal_id: string; display_name: string }[];
+  messages: HandoffMessage[];
+  next_before: string | null;
+  deliveries: { outbox_id: string; direction: string; status: string; text: string; error_code: string | null; created_at: string }[];
+}
+
+export interface HandoffActionRequest {
+  action: "claim" | "reassign" | "read" | "reply" | "resolve" | "return_to_bot" | "cancel_delivery";
+  ownership_version: number;
+  request_id: string;
+  text?: string;
+  target?: string;
+  cancel_pending?: boolean;
+}
+
+export type HandoffCaseSummary = Pick<HandoffConversation, "handoff_case_id" | "status" | "priority" | "assigned_principal_id" | "ownership_version" | "customer_name" | "claimed_at" | "closed_at" | "closure_reason" | "unread_count" | "bot_paused" | "journey_id" | "updated_at">;
+
 export class DukaApiError extends Error {
   constructor(
     message: string,
@@ -949,6 +995,18 @@ export class DukaApiClient {
     campaignId: string,
   ): Promise<WhatsAppMarketingCampaign> {
     return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/marketing-campaigns/${encodeURIComponent(campaignId)}/schedule`);
+  }
+
+  listHandoffConversations(workspaceId: string, channelId: string, status = "open"): Promise<{ cases: HandoffCaseSummary[] }> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/handoffs?status=${encodeURIComponent(status)}`);
+  }
+
+  getHandoffConversation(workspaceId: string, channelId: string, caseId: string, before?: string): Promise<HandoffConversation> {
+    return this.get(`/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/handoffs/${encodeURIComponent(caseId)}${before ? `?before=${encodeURIComponent(before)}` : ""}`);
+  }
+
+  actOnHandoffConversation(workspaceId: string, channelId: string, caseId: string, payload: HandoffActionRequest): Promise<HandoffConversation> {
+    return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/handoffs/${encodeURIComponent(caseId)}/actions`, payload);
   }
 
   listWorkspaceWhatsappMessages(

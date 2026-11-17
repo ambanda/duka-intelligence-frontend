@@ -1,7 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@duka/ui";
-import { AlertTriangle, MessageCircleMore, RefreshCw, Settings2, Trash2 } from "lucide-react";
+import { AlertTriangle, MessageCircleMore, MessagesSquare, RefreshCw, Settings2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -40,6 +40,7 @@ function ChannelRow({ canManage, channel, csrfToken, onChanged, workspaceSlug }:
       <div><span className="data-label">Webhook</span><strong>{channel.webhook_health.healthy ? "Healthy" : channel.webhook_health.status}</strong><small>{formatTimestamp(channel.webhook_health.last_received_at)}</small></div>
       <div><span className="data-label">WABA</span><strong>{channel.waba_identifier}</strong><small>Connected {formatTimestamp(channel.created_at)}</small></div>
       <div className="channel-row__actions">
+        <Link aria-label={`Conversations for ${channel.display_name}`} className="icon-button" href={`/w/${workspaceSlug}/channels/${encodeURIComponent(channel.channel_id)}/conversations`} title="Conversations"><MessagesSquare size={17} /></Link>
         <Link aria-label={`Manage ${channel.display_name}`} className="icon-button" href={`/w/${workspaceSlug}/channels/${encodeURIComponent(channel.channel_id)}`} title="Manage channel"><Settings2 size={17} /></Link>
         {canManage ? <button aria-label={`Disconnect ${channel.display_name}`} className="icon-button" disabled={busy} onClick={disconnect} title="Disconnect channel" type="button"><Trash2 size={17} /></button> : null}
       </div>
