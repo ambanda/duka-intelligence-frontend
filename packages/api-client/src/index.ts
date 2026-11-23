@@ -1009,6 +1009,11 @@ export class DukaApiClient {
     return this.request("POST", `/v1/workspaces/${encodeURIComponent(workspaceId)}/channels/${encodeURIComponent(channelId)}/handoffs/${encodeURIComponent(caseId)}/actions`, payload);
   }
 
+  shopPaymentsOperation<T>(workspaceId: string, path: string[] = [], method: "GET" | "PUT" | "POST" = "GET", payload?: unknown): Promise<T> {
+    const suffix = path.length ? `/${path.map(encodeURIComponent).join("/")}` : "";
+    return this.request(method, `/v1/workspaces/${encodeURIComponent(workspaceId)}/shop-payments${suffix}`, payload, 30_000);
+  }
+
   listWorkspaceWhatsappMessages(
     workspaceId: string,
     channelId: string,
